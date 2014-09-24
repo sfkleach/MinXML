@@ -14,7 +14,8 @@ Minimal XML is a cut down subset of XML suitable for representing hierarchical o
 * Entities - only numerical entities and the standard entities &lt; &gt; &quot; &apos; &amp; are recognised.
 * Character encoding - the API requires streams of decoded characters.
 
-+ What remains?
+What remains?
+-------------
 
 * Start tags, with attributes.
 * End tags.

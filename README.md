@@ -63,6 +63,8 @@ The second advantage is that a MinXML document is completely self-contained.
 
 And this simplicity leads to both simpler implementations and simpler processing code. In particular, and in contrast to JSON, it is suited to languages with inflexible static typing, such as C++ and Java.
 
+See http://steelypip.wikidot.com/minxml-examples for examples.
+
 Disadvantages
 -------------
 

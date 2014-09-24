@@ -3,7 +3,8 @@ MinXML
 
 Minimal XML - a cut down version of XML; simpler, purer and better. 
 
-+ What Is It?
+What Is It?
+-----------
 
 Minimal XML is a cut down subset of XML suitable for representing hierarchical or 'tree-like' data. In particular it leaves out:
 
@@ -21,7 +22,8 @@ Minimal XML is a cut down subset of XML suitable for representing hierarchical o
 
 See the [MinXML Grammar](http://steelypip.wikidot.com/minxml-grammar) for a formal description.
 
-+ Why?
+Why?
+----
 
 MinXML is syntax neutral. By “syntax neutral” we mean that we have a no-frills data format that can be processed with reasonable ease in a very wide variety of programming languages, can be read by programmers and, at a pinch, written as well. We mean that it is free of features that strongly favour people from one particular background. In other words, we have aimed to make it accessible to a very wide range of people, without bias, to the best of our judgement.
 
@@ -33,7 +35,8 @@ Secondly, full XML has some generally undesirable properties. For example, you c
 
 So we stripped away everything we could do without, except for comments. We retained comments because the JSON experience shows that omitting them is too extreme. However, we mandate that MinX comments are discarded on reading - they are annotations for people, not machines - and we don’t want our programs cluttered up with the consideration of whether or not they should process comments.
 
-+ Advantages
+Advantages
+----------
 
 The first advantage of this format is that the internal representation is very neat; it is a tree of dictionaries, although the element name is only a single tag. Representing this in code is simple and the iteration idioms are simple. Here's the core of a naive implementation in Java.
 
@@ -59,6 +62,7 @@ The second advantage is that a MinXML document is completely self-contained.
 
 And this simplicity leads to both simpler implementations and simpler processing code. In particular, and in contrast to JSON, it is suited to languages with inflexible static typing, such as C++ and Java.
 
-+ Disadvantages
+Disadvantages
+-------------
 
 The disadvantage is that it is very verbose and that basic types such as integers end up being encoded rather clumsily i.e. <constant type="int" value="-3"/>. And, of course, it is not XML.

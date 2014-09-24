@@ -66,4 +66,4 @@ And this simplicity leads to both simpler implementations and simpler processing
 Disadvantages
 -------------
 
-The disadvantage is that it is very verbose and that basic types such as integers end up being encoded rather clumsily i.e. <constant type="int" value="-3"/>. And, of course, it is not XML.
+The disadvantage is that it is very verbose and that basic types such as integers end up being encoded rather clumsily i.e. `<constant type="int" value="-3"/>`. And, of course, it is not XML.

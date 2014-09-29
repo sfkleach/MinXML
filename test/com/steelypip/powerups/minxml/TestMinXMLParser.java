@@ -97,5 +97,16 @@ public class TestMinXMLParser {
 		}
 		assertEquals( 3, n );
 	}
+	
+	@Test
+	public void testEscape() {
+		MinXML m = new MinXMLParser( new StringReader( "<foo bar='&lt;&gt;&amp;&quot;&apos;'/>" ) ).readElement();
+		assertEquals( "<>&\"'", m.getAttribute( "bar" ) );
+	}
+			
+	@Test( expected=Exception.class )
+	public void testUnfinished() {
+		MinXML m = new MinXMLParser( new StringReader( "<foo>" ) ).readElement();
+	}
 			
 }

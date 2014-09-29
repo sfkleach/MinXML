@@ -81,6 +81,10 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 		return this.culprit( desc, new Integer( arg ) );
 	}
 
+	public Alert culprit( final String desc, final char ch ) {
+		return this.culprit( desc, new Character( ch ) );
+	}
+
 	public Alert culprit( final Iterable< Culprit > list ) {
 		for ( Culprit c : list ) {
 			this.add( c );

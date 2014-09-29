@@ -194,19 +194,19 @@ public class MinXMLParser implements Iterable< MinXML > {
 	
 
 	
-	private void read() {
+	private boolean read() {
 		
 		if ( this.pending_end_tag ) {
 			this.parent.endTag( this.tag_name );
 			this.pending_end_tag = false;
 			this.level -= 1;
-			return;
+			return true;
 		}
 			
 		this.eatWhiteSpace();
 		
 		if ( !this.cucharin.hasNextChar() ) {
-			return;
+			return false;
 		}
 		
 		this.mustReadChar( '<' );
@@ -219,11 +219,11 @@ public class MinXMLParser implements Iterable< MinXML > {
 			this.mustReadChar( '>' );
 			this.parent.endTag( end_tag );
 			this.level -= 1;
-			return;
+			return true;
 		} else if ( ch == '!' || ch == '?' ) {
 			this.eatComment();
 			this.read();
-			return;
+			return true;
 		} else {
 			this.cucharin.pushChar( ch );
 		}
@@ -241,20 +241,23 @@ public class MinXMLParser implements Iterable< MinXML > {
 			this.mustReadChar( '>' );
 			this.pending_end_tag = true;
 			this.level += 1;
-			return;
+			return true;
 		} else if ( ch == '>' ) {
 			this.level += 1;
-			return;
+			return true;
 		} else {
 			throw new Alert( "Invalid continuation" );
 		}
 				
 	}
 	
-	public MinXML readElement() { 
-		for (;;) {
+	public MinXML readElement() {
+		while ( this.read() ) {
 			this.read();
 			if ( this.level == 0 ) break;
+		}
+		if ( this.level != 0 ) {
+			throw new Alert( "Unexpected end of input" );
 		}
 		return parent.build();
 	}

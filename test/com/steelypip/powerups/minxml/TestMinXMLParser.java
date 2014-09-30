@@ -25,6 +25,8 @@ import java.io.StringReader;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.steelypip.powerups.alert.Alert;
+
 public class TestMinXMLParser {
 
 	@Before
@@ -87,6 +89,46 @@ public class TestMinXMLParser {
 		assertNotNull( m );
 		assertEquals( "xxx", m.getName() );
 		assertTrue( m.isEmpty() );
+	}
+	
+	@Test( expected=Alert.class ) 
+	public void testForbiddenLessThan() {
+		new MinXMLParser( new StringReader( "<xxx a='<'/>" ) ).readElement();
+	}
+	
+	@Test( expected=Exception.class ) 
+	public void testForbiddenAmpersand() {
+		new MinXMLParser( new StringReader( "<xxx a='&'/>" ) ).readElement();
+	}
+	
+	@Test( expected=Exception.class ) 
+	public void testForbiddenDoubleInDouble() {
+		new MinXMLParser( new StringReader( "<xxx a=\"\"\"/>" ) ).readElement();
+	}
+	
+	@Test( expected=Exception.class ) 
+	public void testForbiddenSingleInSingle() {
+		new MinXMLParser( new StringReader( "<xxx a='\''/>" ) ).readElement();
+	}
+	
+	@Test( expected=Alert.class ) 
+	public void testForbiddenBackslash() {
+		new MinXMLParser( new StringReader( "<xxx a='\\'/>" ) ).readElement();
+	}
+	
+	@Test
+	public void testAllowedGreaterThan() {
+		assertNotNull( new MinXMLParser( new StringReader( "<xxx a='>'/>" ) ).readElement() );
+	}
+	
+	@Test
+	public void testAllowedSingleInDouble() {
+		assertNotNull( new MinXMLParser( new StringReader( "<xxx a=\"'\"/>" ) ).readElement() );
+	}
+	
+	@Test
+	public void testAllowedDoubleInSingle() {
+		assertNotNull( new MinXMLParser( new StringReader( "<xxx a='\"'/>" ) ).readElement() );		
 	}
 	
 	@Test

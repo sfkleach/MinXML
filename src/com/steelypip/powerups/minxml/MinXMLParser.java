@@ -170,6 +170,9 @@ public class MinXMLParser implements Iterable< MinXML > {
 			if ( ch == '&' ) {
 				attr.append( this.readEscape() );
 			} else {
+				if ( ch == '<' || ch == q || ch == '\\' ) {
+					throw new Alert( "Forbidden character in attribute value" ).hint( "Use an entity reference" ).culprit( "Character", ch );
+				}
 				attr.append( ch );
 			}
 		}

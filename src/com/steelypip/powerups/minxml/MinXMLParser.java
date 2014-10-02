@@ -80,8 +80,34 @@ public class MinXMLParser implements Iterable< MinXML > {
 		}		
 	}
 	
-	private void eatComment() {
-		while ( this.nextChar() != '>' ) {
+	private void eatComment( final char ch ) {
+		if ( ch == '!' ) {
+			if ( this.cucharin.isNextChar( '-' ) ) {
+				this.cucharin.skipChar();
+				this.mustReadChar( '-' );
+				int count_minuses = 0;
+				for (;;) {
+					final char nch = this.nextChar();
+					if ( nch == '-' ) {
+						count_minuses += 1;
+					} else if ( nch == '>' && count_minuses >= 2 ) {
+						break;
+					} else {
+						if ( count_minuses >= 2 ) {
+							throw new Alert( "Invalid XML comment" ).hint( "Detected -- within the body of comment" ).culprit( "Character following --", (int)nch );
+						}
+						count_minuses = 0;
+					}
+				}
+			} else {
+				for (;;) {
+					final char nch = this.nextChar();
+					if ( nch == '>' ) break;
+					if ( nch == '<' ) this.eatComment( this.nextChar() );
+				}
+			}
+		} else {
+			this.eatUpTo( '>' );
 		}
 	}
 	
@@ -170,7 +196,7 @@ public class MinXMLParser implements Iterable< MinXML > {
 			if ( ch == '&' ) {
 				attr.append( this.readEscape() );
 			} else {
-				if ( ch == '<' || ch == q || ch == '\\' ) {
+				if ( ch == '<' || ch == q ) {
 					throw new Alert( "Forbidden character in attribute value" ).hint( "Use an entity reference" ).culprit( "Character", ch );
 				}
 				attr.append( ch );
@@ -224,7 +250,7 @@ public class MinXMLParser implements Iterable< MinXML > {
 			this.level -= 1;
 			return true;
 		} else if ( ch == '!' || ch == '?' ) {
-			this.eatComment();
+			this.eatComment( ch  );
 			this.read();
 			return true;
 		} else {

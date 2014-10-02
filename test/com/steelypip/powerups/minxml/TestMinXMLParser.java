@@ -41,7 +41,7 @@ public class TestMinXMLParser {
 	@Test
 	public void testEmptyAsIterable() {
 		int n = 0;
-		for ( MinXML m : new MinXMLParser( new StringReader( "" ) ) ) {
+		for ( @SuppressWarnings("unused") MinXML m : new MinXMLParser( new StringReader( "" ) ) ) {
 			n += 1;
 		}
 		assertEquals( 0, n );
@@ -84,6 +84,20 @@ public class TestMinXMLParser {
 	}
 	
 	@Test
+	public void testCommentWithEmbeddedSigns() {
+		MinXML m = new MinXMLParser( new StringReader( "<outer><!-- <- this -> is -> a <- comment <! --><foo left='right' less=\"more\"></foo></outer>" ) ).readElement();
+		assertNotNull( m );
+		assertEquals( 1, m.size() );
+		assertEquals( "foo", m.get( 0 ).getName() );
+		assertTrue( m.get( 0 ).isEmpty() );
+	}
+	
+	@Test( expected=Alert.class )
+	public void testBadComment() {
+		new MinXMLParser( new StringReader( "<outer><!-- <- this --> is -> a <- bad comment <! --><foo left='right' less=\"more\"></foo></outer>" ) ).readElement();
+	}
+	
+	@Test
 	public void testPrologElison() {
 		MinXML m = new MinXMLParser( new StringReader( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><xxx/>" ) ).readElement();
 		assertNotNull( m );
@@ -111,11 +125,6 @@ public class TestMinXMLParser {
 		new MinXMLParser( new StringReader( "<xxx a='\''/>" ) ).readElement();
 	}
 	
-	@Test( expected=Alert.class ) 
-	public void testForbiddenBackslash() {
-		new MinXMLParser( new StringReader( "<xxx a='\\'/>" ) ).readElement();
-	}
-	
 	@Test
 	public void testAllowedGreaterThan() {
 		assertNotNull( new MinXMLParser( new StringReader( "<xxx a='>'/>" ) ).readElement() );
@@ -134,7 +143,7 @@ public class TestMinXMLParser {
 	@Test
 	public void testAsIterable() {
 		int n = 0;
-		for ( MinXML m :  new MinXMLParser( new StringReader( "<xxx/><yyy/><!-- woot --><zzz/>" ) ) ) {
+		for ( @SuppressWarnings("unused") MinXML m :  new MinXMLParser( new StringReader( "<xxx/><yyy/><!-- woot --><zzz/>" ) ) ) {
 			n += 1;
 		}
 		assertEquals( 3, n );
@@ -149,6 +158,21 @@ public class TestMinXMLParser {
 	@Test( expected=Exception.class )
 	public void testUnfinished() {
 		MinXML m = new MinXMLParser( new StringReader( "<foo>" ) ).readElement();
+	}
+	
+	@Test
+	public void testNestedDiscard() {
+		MinXML m = (
+			new MinXMLParser( new StringReader( 
+				"<?xml version=\"1.0\" standalone=\"yes\" ?>\n" +
+				"<!DOCTYPE author [\n" +
+				"  <!ELEMENT author (#PCDATA)>\n" +
+				"  <!ENTITY js \"Jo Smith\">\n" +
+				"]>\n" +
+				"<author name='Jo Smith'></author>"
+			) ).readElement()
+		);
+		assertEquals( "author", m.getName() );
 	}
 			
 }

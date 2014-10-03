@@ -76,7 +76,7 @@ public class MinXMLParser implements Iterable< MinXML > {
 	
 	private void eatUpTo( final char stop_char ) {
 		final char not_stop_char = ( stop_char != '\0' ? '\0' : '_' );
-		while ( this.cucharin.nextChar( not_stop_char ) != '>' ) {
+		while ( this.cucharin.nextChar( not_stop_char ) != stop_char ) {
 		}		
 	}
 	
@@ -114,10 +114,7 @@ public class MinXMLParser implements Iterable< MinXML > {
 	private void eatWhiteSpace() {
 		while ( this.cucharin.hasNextChar() ) {
 			final char ch = this.cucharin.nextChar();
-			if ( ch == '#' && this.level == 0 ) {
-				//	EOL comment.
-				this.eatUpTo( '\n' );
-			} else if ( ! Character.isWhitespace( ch ) ) {
+			if ( ! Character.isWhitespace( ch ) ) {
 				this.cucharin.pushChar( ch );
 				return;
 			}
@@ -196,7 +193,7 @@ public class MinXMLParser implements Iterable< MinXML > {
 			if ( ch == '&' ) {
 				attr.append( this.readEscape() );
 			} else {
-				if ( ch == '<' || ch == q ) {
+				if ( ch == '<' ) {
 					throw new Alert( "Forbidden character in attribute value" ).hint( "Use an entity reference" ).culprit( "Character", ch );
 				}
 				attr.append( ch );

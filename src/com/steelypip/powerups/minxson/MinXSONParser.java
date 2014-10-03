@@ -128,16 +128,33 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	
 	private void eatUpTo( final char stop_char ) {
 		final char not_stop_char = ( stop_char != '\0' ? '\0' : '_' );
-		while ( this.cucharin.nextChar( not_stop_char ) != '>' ) {
+		while ( this.cucharin.nextChar( not_stop_char ) != stop_char ) {
 		}		
 	}
 	
 	private void eatWhiteSpace() {
 		while ( this.cucharin.hasNextChar() ) {
 			final char ch = this.cucharin.nextChar();
-			if ( ch == '#' && this.isAtTopLevel() ) {
-				//	EOL comment.
+			if ( ch == '#' && this.peekChar( '\0' ) == '!' && this.isAtTopLevel() ) {
+				//	Shebang - note that this is coded quite carefully to leave 
+				//	the options open for other interpretations of #.
 				this.eatUpTo( '\n' );
+			} else if ( ch == '/' ) {
+				final char nch = this.peekChar( '\0' );
+				if ( nch == '/' ) {
+					this.eatUpTo( '\n' );
+				} else if ( nch == '*' ) {
+					for (;;) {
+						this.eatUpTo( '*' );
+						while ( this.tryReadChar( '*' ) ) {
+							//	skip.
+						}
+						if ( this.nextChar() == '/' ) break;
+					}
+				} else {
+					this.cucharin.pushChar( ch );
+					return;
+				}
 			} else if ( ! Character.isWhitespace( ch ) ) {
 				this.cucharin.pushChar( ch );
 				return;
@@ -223,8 +240,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			}
 		} else {
 			return this.entityLookup( esc );
-		}
-		
+		}	
 	}
 	
 	private String readAttributeValue() {
@@ -237,6 +253,9 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			if ( ch == '&' ) {
 				attr.append( this.readEscape() );
 			} else {
+				if ( ch == '<' ) {
+					throw new Alert( "Forbidden character in attribute value" ).hint( "Use an entity reference" ).culprit( "Character", ch );
+				}
 				attr.append( ch );
 			}
 		}
@@ -305,19 +324,46 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			}
 		}
 	}
-	
-	private void discardXMLProcessingDirective() {
-		char nch = ' ';
-		for (;;) {
-			char prev = nch;
-			nch = nextChar();
-			if ( prev == '?' && nch == '>' ) break;
+
+	private void discardXMLComment( final char ch ) {
+		if ( ch == '!' ) {
+			if ( this.cucharin.isNextChar( '-' ) ) {
+				//	This section discards XML comments.
+				this.cucharin.skipChar();
+				this.mustReadChar( '-' );
+				int count_minuses = 0;
+				for (;;) {
+					final char nch = this.nextChar();
+					if ( nch == '-' ) {
+						count_minuses += 1;
+					} else if ( nch == '>' && count_minuses >= 2 ) {
+						break;
+					} else {
+						if ( count_minuses >= 2 ) {
+							throw new Alert( "Invalid XML comment" ).hint( "Detected -- within the body of comment" ).culprit( "Character following --", (int)nch );
+						}
+						count_minuses = 0;
+					}
+				}
+			} else {
+				//	This section discards the DTD compopnents. This is an 
+				//	optional extension of the MinXSON language designed to make
+				//	importing from XML less onerous.
+				for (;;) {
+					final char nch = this.nextChar();
+					if ( nch == '>' ) break;
+					if ( nch == '<' ) this.discardXMLComment( this.nextChar() );
+				}
+			}
+		} else {
+			//	This is responsible for consuming the Prolog <?xml version=.... ?>.
+			//	Also processing instructions: <? PITarget .... ?>.  This is an 
+			//	optional extension of the MinXSON language designed to make
+			//	importing from XML less onerous.
+			this.eatUpTo( '>' );
 		}
 	}
 
-	private void discardXMLComment() {
-		this.eatUpTo( '>' );
-	}
 	
 	static boolean charEndsAttributes( final char c ) {
 		return c == '/' || c == '>' || c == '[' || c == '{' || c == '(';
@@ -445,14 +491,9 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		final char ch = this.peekChar();
 		if ( ch == '/' ) {
 			this.readEndTag();
-		} else if ( ch == '!' ) {
+		} else if ( ch == '!' || ch == '?' ) {
 			this.discardChar();
-			this.discardXMLComment();
-			this.read();
-			return;
-		} else if ( ch == '?' ) {
-			this.discardChar();
-			this.discardXMLProcessingDirective();
+			this.discardXMLComment( ch );
 			this.read();
 			return;
 		} else {
@@ -642,7 +683,8 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	}
 	
 	void readClassTag() {
-		final String name = this.readName();
+		final boolean is_string = this.cucharin.isNextChar( '"' ) || this.cucharin.isNextChar( '\'' );
+		final String name = is_string ? this.readJSONStringText() : this.readName();
 		this.extra_attributes.put( TYPE, name );
 		this.readWithoutPending();
 	}

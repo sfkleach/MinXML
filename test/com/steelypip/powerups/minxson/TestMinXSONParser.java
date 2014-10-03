@@ -25,6 +25,7 @@ import java.io.StringReader;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.minxml.MinXML;
 import com.steelypip.powerups.minxml.MinXMLParser;
 
@@ -85,11 +86,68 @@ public class TestMinXSONParser {
 	}
 	
 	@Test
+	public void testCommentWithEmbeddedSigns() {
+		MinXML m = new MinXSONParser( new StringReader( "<outer><!-- <- this -> is -> a <- comment <! --><foo left='right' less=\"more\"></foo></outer>" ) ).readElement();
+		assertNotNull( m );
+		assertEquals( 1, m.size() );
+		assertEquals( "foo", m.get( 0 ).getName() );
+		assertTrue( m.get( 0 ).isEmpty() );
+	}
+	
+	@Test( expected=Alert.class )
+	public void testBadComment() {
+		new MinXSONParser( new StringReader( "<outer><!-- <- this --> is -> a <- bad comment <! --><foo left='right' less=\"more\"></foo></outer>" ) ).readElement();
+	}
+	
+	
+	@Test
 	public void testPrologElison() {
 		MinXML m = new MinXSONParser( new StringReader( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><xxx/>" ) ).readElement();
 		assertNotNull( m );
 		assertEquals( "xxx", m.getName() );
 		assertTrue( m.isEmpty() );
+	}
+	
+	@Test( expected=Alert.class ) 
+	public void testForbiddenLessThan() {
+		new MinXSONParser( new StringReader( "<xxx a='<'/>" ) ).readElement();
+	}
+	
+	@Test( expected=Exception.class ) 
+	public void testForbiddenAmpersand() {
+		new MinXSONParser( new StringReader( "<xxx a='&'/>" ) ).readElement();
+	}
+	
+	@Test( expected=Exception.class ) 
+	public void testForbiddenDoubleInDouble() {
+		new MinXSONParser( new StringReader( "<xxx a=\"\"\"/>" ) ).readElement();
+	}
+	
+	@Test( expected=Exception.class ) 
+	public void testForbiddenSingleInSingle() {
+		new MinXSONParser( new StringReader( "<xxx a='\''/>" ) ).readElement();
+	}
+	
+	@Test
+	public void testAllowedGreaterThan() {
+		assertNotNull( new MinXSONParser( new StringReader( "<xxx a='>'/>" ) ).readElement() );
+	}
+	
+	@Test
+	public void testAllowedSingleInDouble() {
+		assertNotNull( new MinXSONParser( new StringReader( "<xxx a=\"'\"/>" ) ).readElement() );
+	}
+	
+	@Test
+	public void testAllowedDoubleInSingle() {
+		assertNotNull( new MinXSONParser( new StringReader( "<xxx a='\"'/>" ) ).readElement() );		
+	}
+	
+	
+	@Test
+	public void testEscape() {
+		MinXML m = new MinXSONParser( new StringReader( "<foo bar='&lt;&gt;&amp;&quot;&apos;'/>" ) ).readElement();
+		assertEquals( "<>&\"'", m.getAttribute( "bar" ) );
 	}
 	
 	@Test
@@ -251,29 +309,56 @@ public class TestMinXSONParser {
 	@Test
 	public void testEOLComment() {
 		equivalent( 
-			"#Foo\n<xxx/>", 
+			"#!Foo\n<xxx/>", 
 			"<xxx/>" 
 		);		
+		equivalent( 
+				"<abc>//Foo\n<xxx/></abc>", 
+				"<abc><xxx/></abc>" 
+			);		
+		equivalent( 
+				"<abc>/*Foo/**/<xxx/></abc>", 
+				"<abc><xxx/></abc>" 
+			);		
 	}
 	
 	@Test
 	public void testClassName() {
 		equivalent(
-				"@foo[]",
-				"<array type=\"foo\"/>"
-			);
+			"@foo[]",
+			"<array type=\"foo\"/>"
+		);
 		equivalent(
-				"@null[]",
-				"<array type=\"null\"/>"
-			);
+			"@null[]",
+			"<array type=\"null\"/>"
+		);
 		equivalent(
-				"@\"***\"[]",
-				"<array type=\"***\"/>"
-			);
+			"@\"abc\"[]",
+			"<array type=\"abc\"/>"
+		);
 		equivalent(
-				"@\'***\'[]",
-				"<array type=\"***\"/>"
-			);
+			"@\"***\"[]",
+			"<array type=\"***\"/>"
+		);
+		equivalent(
+			"@\'*!*\'[]",
+			"<array type=\"*!*\"/>"
+		);
+	}
+	
+	@Test
+	public void testNestedDiscard() {
+		MinXML m = (
+			new MinXSONParser( new StringReader( 
+				"<?xml version=\"1.0\" standalone=\"yes\" ?>\n" +
+				"<!DOCTYPE author [\n" +
+				"  <!ELEMENT author (#PCDATA)>\n" +
+				"  <!ENTITY js \"Jo Smith\">\n" +
+				"]>\n" +
+				"<author name='Jo Smith'></author>"
+			) ).readElement()
+		);
+		assertEquals( "author", m.getName() );
 	}
 	
 }

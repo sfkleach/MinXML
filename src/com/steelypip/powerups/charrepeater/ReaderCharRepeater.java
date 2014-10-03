@@ -59,6 +59,26 @@ public class ReaderCharRepeater implements CharRepeater {
 			this.buffer.peekChar() == wanted
 		);
 	}
+	
+	private boolean isNextString( final String wanted, final int offset ) {
+		if ( offset >= wanted.length() ) {
+			return true;
+		} else {
+			if ( this.isNextChar( wanted.charAt( offset ) ) ) {
+				final char ch = this.nextChar();
+				final boolean result = this.isNextString( wanted, offset + 1 );
+				this.pushChar( ch );
+				return result;
+			} else {
+				return false;
+			}			
+		}
+	}
+	
+	@Override
+	public boolean isNextString( final String wanted ) {
+		return this.isNextString( wanted, 0 );	
+	}
 
 	@Override
 	public char nextChar() {

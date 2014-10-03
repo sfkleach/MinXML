@@ -76,7 +76,7 @@ public class MinXMLParser implements Iterable< MinXML > {
 	
 	private void eatUpTo( final char stop_char ) {
 		final char not_stop_char = ( stop_char != '\0' ? '\0' : '_' );
-		while ( this.cucharin.nextChar( not_stop_char ) != '>' ) {
+		while ( this.cucharin.nextChar( not_stop_char ) != stop_char ) {
 		}		
 	}
 	
@@ -114,10 +114,7 @@ public class MinXMLParser implements Iterable< MinXML > {
 	private void eatWhiteSpace() {
 		while ( this.cucharin.hasNextChar() ) {
 			final char ch = this.cucharin.nextChar();
-			if ( ch == '#' && this.level == 0 ) {
-				//	EOL comment.
-				this.eatUpTo( '\n' );
-			} else if ( ! Character.isWhitespace( ch ) ) {
+			if ( ! Character.isWhitespace( ch ) ) {
 				this.cucharin.pushChar( ch );
 				return;
 			}
@@ -196,7 +193,7 @@ public class MinXMLParser implements Iterable< MinXML > {
 			if ( ch == '&' ) {
 				attr.append( this.readEscape() );
 			} else {
-				if ( ch == '<' || ch == q ) {
+				if ( ch == '<' ) {
 					throw new Alert( "Forbidden character in attribute value" ).hint( "Use an entity reference" ).culprit( "Character", ch );
 				}
 				attr.append( ch );
@@ -223,19 +220,19 @@ public class MinXMLParser implements Iterable< MinXML > {
 	
 
 	
-	private void read() {
+	private boolean read() {
 		
 		if ( this.pending_end_tag ) {
 			this.parent.endTag( this.tag_name );
 			this.pending_end_tag = false;
 			this.level -= 1;
-			return;
+			return true;
 		}
 			
 		this.eatWhiteSpace();
 		
 		if ( !this.cucharin.hasNextChar() ) {
-			return;
+			return false;
 		}
 		
 		this.mustReadChar( '<' );
@@ -248,11 +245,11 @@ public class MinXMLParser implements Iterable< MinXML > {
 			this.mustReadChar( '>' );
 			this.parent.endTag( end_tag );
 			this.level -= 1;
-			return;
+			return true;
 		} else if ( ch == '!' || ch == '?' ) {
 			this.eatComment( ch  );
 			this.read();
-			return;
+			return true;
 		} else {
 			this.cucharin.pushChar( ch );
 		}
@@ -270,20 +267,23 @@ public class MinXMLParser implements Iterable< MinXML > {
 			this.mustReadChar( '>' );
 			this.pending_end_tag = true;
 			this.level += 1;
-			return;
+			return true;
 		} else if ( ch == '>' ) {
 			this.level += 1;
-			return;
+			return true;
 		} else {
 			throw new Alert( "Invalid continuation" );
 		}
 				
 	}
 	
-	public MinXML readElement() { 
-		for (;;) {
+	public MinXML readElement() {
+		while ( this.read() ) {
 			this.read();
 			if ( this.level == 0 ) break;
+		}
+		if ( this.level != 0 ) {
+			throw new Alert( "Unexpected end of input" );
 		}
 		return parent.build();
 	}

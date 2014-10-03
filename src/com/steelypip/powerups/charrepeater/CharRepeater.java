@@ -21,6 +21,7 @@ package com.steelypip.powerups.charrepeater;
 public interface CharRepeater {
 	boolean hasNextChar();
 	boolean isNextChar( char wanted );
+	boolean isNextString( String wanted );
     char nextChar();
     char nextChar( char value_if_needed );
     void pushChar( char value );

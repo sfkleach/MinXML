@@ -27,7 +27,6 @@ import org.junit.Test;
 
 import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.minxml.MinXML;
-import com.steelypip.powerups.minxml.MinXMLParser;
 
 public class TestMinXSONParser {
 

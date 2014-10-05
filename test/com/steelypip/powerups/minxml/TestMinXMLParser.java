@@ -29,9 +29,6 @@ import com.steelypip.powerups.alert.Alert;
 
 public class TestMinXMLParser {
 
-	@Before
-	public void setUp() throws Exception {
-	}
 
 	@Test
 	public void testEmpty() {
@@ -153,6 +150,12 @@ public class TestMinXMLParser {
 	public void testEscape() {
 		MinXML m = new MinXMLParser( new StringReader( "<foo bar='&lt;&gt;&amp;&quot;&apos;'/>" ) ).readElement();
 		assertEquals( "<>&\"'", m.getAttribute( "bar" ) );
+	}
+			
+	@Test
+	public void testPrintNumericEntities() {
+		MinXML m = new MinXMLParser( new StringReader( "<foo bar='&#12;'/>" ) ).readElement();
+		assertEquals( "<foo bar=\"&#12;\"/>", m.toString() );
 	}
 			
 	@Test( expected=Exception.class )

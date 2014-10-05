@@ -9,10 +9,12 @@ import java.math.BigInteger;
 import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.charrepeater.CharRepeater;
 import com.steelypip.powerups.charrepeater.ReaderCharRepeater;
+import com.steelypip.powerups.json.JSONKeywords;
 import com.steelypip.powerups.minxml.FlexiMinXMLBuilder;
 import com.steelypip.powerups.minxml.MinXML;
 import com.steelypip.powerups.minxml.MinXMLBuilder;
-import static com.steelypip.powerups.json.Keys.*;
+
+import static com.steelypip.powerups.json.JSONKeywords.*;
 
 public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	final String CLASS_ATTRIBUTE_PREFIX = "@";
@@ -23,6 +25,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	final String ID = "id";
 	final String ID_NAME = "name";
 	
+	protected JSONKeywords json_keys = JSONKeywords.KEYS;
 	private final CharRepeater cucharin;
 	private MinXMLBuilder parent = null;
 	
@@ -406,7 +409,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		this.eatWhiteSpace();
 		final char nch = nextChar();
 		if ( ( nch == '[' ) || ( nch == '{' ) ) {
-			final String tag = nch == '[' ? ARRAY : OBJECT;
+			final String tag = nch == '[' ? json_keys.ARRAY : json_keys.OBJECT;
 			this.startTagOpen( tag );
 			this.startTagClose( tag );
 			this.pushTag( tag, nch == '[' ? ']' : '}', nch == '[' ? Context.InEmbeddedArray : Context.InEmbeddedObject );
@@ -458,13 +461,13 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		if ( this.tryReadChar( '=' ) ) {
 			readNamelessStartTag( name );
 		} else if ( name.isEmpty() && this.tryReadChar( '[' ) ) {
-			this.startTagOpen( ARRAY );
-			this.startTagClose( ARRAY );
-			this.pushTag( ARRAY, ']', Context.InEmbeddedArray );
+			this.startTagOpen( json_keys.ARRAY );
+			this.startTagClose( json_keys.ARRAY );
+			this.pushTag( json_keys.ARRAY, ']', Context.InEmbeddedArray );
 		} else if ( name.isEmpty() && this.tryReadChar( '{' ) ) {
-			this.startTagOpen( OBJECT );
-			this.startTagClose( OBJECT );
-			this.pushTag( OBJECT, '}', Context.InEmbeddedObject );
+			this.startTagOpen( json_keys.OBJECT );
+			this.startTagClose( json_keys.OBJECT );
+			this.pushTag( json_keys.OBJECT, '}', Context.InEmbeddedObject );
 		} else if ( name.isEmpty() && this.tryReadChar( '(' ) ) {
 			this.pushTag( "()", ')', Context.InEmbeddedParentheses );
 		} else {
@@ -493,11 +496,11 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 
 	
 	void parseConstant( final String sofar, final String type ) {
-		this.startTagOpen( CONSTANT );
-		this.put( CONSTANT_TYPE, type );
-		this.put( CONSTANT_VALUE, sofar );
-		this.startTagClose( CONSTANT );
-		this.pushPendingTag( CONSTANT, '\0', Context.InAtom );
+		this.startTagOpen( json_keys.CONSTANT );
+		this.put( json_keys.CONSTANT_TYPE, type );
+		this.put( json_keys.CONSTANT_VALUE, sofar );
+		this.startTagClose( json_keys.CONSTANT );
+		this.pushPendingTag( json_keys.CONSTANT, '\0', Context.InAtom );
 	}
 	
 	void readNumber() {
@@ -532,7 +535,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			} else {
 				new BigInteger( s );
 			}
-			this.parseConstant( s, is_floating_point ? FLOAT : INTEGER );	
+			this.parseConstant( s, is_floating_point ? json_keys.FLOAT : json_keys.INTEGER );	
 		} catch ( NumberFormatException e ) {
 			throw new Alert( "Malformed number" ).culprit( "Bad number", sofar );
 		}
@@ -567,16 +570,16 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		final String s = readJSONStringText();
 		if ( 
 			this.isInObject() && 
-			( ! this.extra_attributes.containsKey( FIELD ) )  
+			( ! this.extra_attributes.containsKey( json_keys.FIELD ) )  
 		) {
 			if ( ! this.tryReadString( FIELD_ATTRIBUTE_SUFFIX1 ) ) {
 				this.eatWhiteSpace();
 				this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
 			}
-			this.extra_attributes.put( FIELD, s );
+			this.extra_attributes.put( json_keys.FIELD, s );
 			this.read();
 		} else {
-			this.parseConstant( s, STRING );
+			this.parseConstant( s, json_keys.STRING );
 		}
 	}
 
@@ -628,16 +631,16 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	
 	void readIdentifier() {
 		final String identifier = readIdentiferText();
-		if ( this.isInObject() && ! this.extra_attributes.containsKey( FIELD ) ) {
+		if ( this.isInObject() && ! this.extra_attributes.containsKey( json_keys.FIELD ) ) {
 			if ( ! this.tryReadString( FIELD_ATTRIBUTE_SUFFIX1 ) ) {
 				this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
 			}
-			this.extra_attributes.put( FIELD, identifier );
+			this.extra_attributes.put( json_keys.FIELD, identifier );
 			this.read();
 		} else if ( "true".equals( identifier ) || "false".equals( identifier ) ) {
-			this.parseConstant( identifier, BOOLEAN );
+			this.parseConstant( identifier, json_keys.BOOLEAN );
 		} else if ( identifier.equals( "null" ) ) {
-			this.parseConstant( identifier, NULLEAN );
+			this.parseConstant( identifier, json_keys.NULLEAN );
 		} else {
 			parseId( identifier );
 		}
@@ -659,22 +662,22 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	
 	private void readArray() {
 		this.discardChar();
-		this.startTagOpen( ARRAY );
-		this.startTagClose( ARRAY );
-		this.pushTag( ARRAY, ']', Context.InArray );
+		this.startTagOpen( json_keys.ARRAY );
+		this.startTagClose( json_keys.ARRAY );
+		this.pushTag( json_keys.ARRAY, ']', Context.InArray );
 	}
 	
 	private void readObject() {
 		this.discardChar();
-		this.startTagOpen( OBJECT );
-		this.startTagClose( OBJECT );
-		this.pushTag( OBJECT, '}', Context.InObject );
+		this.startTagOpen( json_keys.OBJECT );
+		this.startTagClose( json_keys.OBJECT );
+		this.pushTag( json_keys.OBJECT, '}', Context.InObject );
 	}
 	
 	void readClassTag() {
 		final boolean is_string = this.cucharin.isNextChar( '"' ) || this.cucharin.isNextChar( '\'' );
 		final String name = is_string ? this.readJSONStringText() : this.readName();
-		this.extra_attributes.put( TYPE, name );
+		this.extra_attributes.put( json_keys.TYPE, name );
 		this.readWithoutPending();
 	}
 	

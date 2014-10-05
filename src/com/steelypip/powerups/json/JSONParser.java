@@ -90,7 +90,25 @@ public class JSONParser< T > {
 		}
 	}
 	
-	void readEscapeChar( final StringBuilder sofar ) {
+	private void read4HexDigits( final StringBuilder sofar ) {
+		int code = 0;
+		for ( int i = 0; i < 4; i++ ) {
+			code <<= 8;
+			final char ch = this.cucharin.nextChar();
+			if ( Character.isDigit( ch ) ) {
+				code |= ( ch - '0' );
+			} else if ( 'A' <= ch && 'F' <= ch ) {
+				code |= ( ch - 'A' + 10 );
+			} else if ( 'a' <= ch && 'f' <= ch ) {
+				code |= ( ch - 'a' + 10 );
+			} else {
+				throw new Alert( "Hex digit required" ).culprit( "Character", ch );
+			}
+		}
+		sofar.append( (char)code );
+	}
+	
+	private void readEscapeChar( final StringBuilder sofar ) {
 		final char ch = this.cucharin.nextChar();
 		switch ( ch ) {
 			case 'n':
@@ -108,9 +126,11 @@ public class JSONParser< T > {
 			case 'b':
 				sofar.append( '\b' );
 				break;
-			default:
-				sofar.append( ch );
+			case 'u':
+				this.read4HexDigits( sofar );
 				break;
+			default:
+				throw new Alert( "Invalid characters starting escape sequence" ).culprit( "Character", ch );
 		}
 	}
 	
@@ -199,8 +219,6 @@ public class JSONParser< T > {
 		this.builder.endObject();
 	}
 	
-	
-	
 	private void readExpression() {
 		this.eatWhitespace();
 		final char ch = this.cucharin.peekChar();
@@ -215,7 +233,7 @@ public class JSONParser< T > {
 		} else if ( ch == '{' ) {
 			this.readObject();
 		} else {
-			new Alert( "Unexpected character" ).culprit( "Character", ch );
+			throw new Alert( "Unexpected character" ).culprit( "Character", ch );
 		}
 	}
 	

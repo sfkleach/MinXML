@@ -12,6 +12,7 @@ import com.steelypip.powerups.charrepeater.ReaderCharRepeater;
 import com.steelypip.powerups.minxml.FlexiMinXMLBuilder;
 import com.steelypip.powerups.minxml.MinXML;
 import com.steelypip.powerups.minxml.MinXMLBuilder;
+import static com.steelypip.powerups.json.Keys.*;
 
 public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	final String CLASS_ATTRIBUTE_PREFIX = "@";
@@ -19,20 +20,8 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	final String FIELD_ATTRIBUTE_SUFFIX1 = "⸬";
 	final char FIELD_ATTRIBUTE_SUFFIX2 = ':';
 
-	final String TYPE = "type";
-	final String FIELD = "field";
-	final String CONSTANT = "constant";
-	final String CONSTANT_TYPE = "type";
-	final String CONSTANT_VALUE = "value";
-	final String FLOAT = "float";
-	final String INTEGER = "integer";
-	final String STRING = "string";
-	final String BOOLEAN = "boolean";
-	final String NULLEAN = "null";
 	final String ID = "id";
 	final String ID_NAME = "name";
-	final String ARRAY = "array";
-	final String OBJECT = "object";
 	
 	private final CharRepeater cucharin;
 	private MinXMLBuilder parent = null;

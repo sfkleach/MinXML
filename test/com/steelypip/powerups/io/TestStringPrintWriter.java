@@ -20,8 +20,6 @@ package com.steelypip.powerups.io;
 
 import static org.junit.Assert.*;
 
-import java.io.PrintWriter;
-
 import org.junit.Before;
 import org.junit.Test;
 

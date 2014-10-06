@@ -14,8 +14,6 @@ import com.steelypip.powerups.minxml.FlexiMinXMLBuilder;
 import com.steelypip.powerups.minxml.MinXML;
 import com.steelypip.powerups.minxml.MinXMLBuilder;
 
-import static com.steelypip.powerups.json.JSONKeywords.*;
-
 public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	final String CLASS_ATTRIBUTE_PREFIX = "@";
 	final String CLASS_ATTRIBUTE_SUFFIX = "§";

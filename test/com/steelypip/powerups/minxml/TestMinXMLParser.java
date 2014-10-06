@@ -22,7 +22,6 @@ import static org.junit.Assert.*;
 
 import java.io.StringReader;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import com.steelypip.powerups.alert.Alert;
@@ -160,7 +159,7 @@ public class TestMinXMLParser {
 			
 	@Test( expected=Exception.class )
 	public void testUnfinished() {
-		MinXML m = new MinXMLParser( new StringReader( "<foo>" ) ).readElement();
+		new MinXMLParser( new StringReader( "<foo>" ) ).readElement();
 	}
 	
 	@Test

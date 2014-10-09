@@ -111,6 +111,11 @@ public class JSONParser< T > {
 	private void readEscapeChar( final StringBuilder sofar ) {
 		final char ch = this.cucharin.nextChar();
 		switch ( ch ) {
+			case '"':
+			case '/':
+			case '\\':
+				sofar.append(  ch  );
+				break;
 			case 'n':
 				sofar.append( '\n' );
 				break;

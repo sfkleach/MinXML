@@ -19,6 +19,10 @@ public class JSONKeywords {
 	public final String NULLEAN_NULL;
 	public final String BOOLEAN_TRUE;
 	public final String BOOLEAN_FALSE;
+	public final String ID;
+	public final String ID_NAME;
+	
+	
 	
 	private static String pick( Map< String, String > keys, String k, String otherwise ) {
 		if ( keys == null ) return otherwise;
@@ -42,6 +46,8 @@ public class JSONKeywords {
 		 NULLEAN_NULL = pick( keys, "NULLEAN_NULL", "null" );
 		 BOOLEAN_TRUE = pick( keys, "BOOLEAN_TRUE", "true" );
 		 BOOLEAN_FALSE = pick( keys, "BOOLEAN_FALSE", "false" );
+		 ID = pick( keys, "ID", "id" );
+		 ID_NAME = pick( keys, "ID_NAME", "name" );
 	}
 	
 	public static final JSONKeywords KEYS = new JSONKeywords( null );

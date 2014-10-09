@@ -6,6 +6,7 @@ class Level {
 	
 	private String tag;
 	private char expected;	//	If a particular character is expected, '\0' if not.
+	private boolean local_newline_extension;
 	private Context context;
 	
 	public Level( final String tag, final char expected, final Context context ) {
@@ -14,6 +15,11 @@ class Level {
 		this.tag = tag;
 		this.expected = expected;
 		this.context = context;
+	}
+	
+	public Level setNewlineTerminator( final boolean flag ) {
+		this.local_newline_extension = flag;
+		return this;
 	}
 	
 	public boolean isInObject() { return this.context == Context.InObject || this.context == Context.InEmbeddedObject; }
@@ -26,5 +32,6 @@ class Level {
 	public char getExpected() { return this.expected; }
 	public boolean hasExpected( char ch ) { return this.expected != '\0'; }
 	public boolean hasntExpected( char ch ) { return this.expected == '\0'; }
+	public boolean isNewlineTerminator() { return this.local_newline_extension; }
 	
 }

@@ -15,34 +15,63 @@ import com.steelypip.powerups.minxml.MinXML;
 import com.steelypip.powerups.minxml.MinXMLBuilder;
 
 public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
-	final String CLASS_ATTRIBUTE_PREFIX = "@";
-	final String CLASS_ATTRIBUTE_SUFFIX = "§";
-	final String FIELD_ATTRIBUTE_SUFFIX1 = "⸬";
-	final char FIELD_ATTRIBUTE_SUFFIX2 = ':';
+	private static final String TYPE_ATTRIBUTE_PREFIX = "@";
+	private static final char FIELD_ATTRIBUTE_SUFFIX1 = '⸬';
+	private static final char FIELD_ATTRIBUTE_SUFFIX2 = ':';
 
-	final String ID = "id";
-	final String ID_NAME = "name";
-	
 	protected JSONKeywords json_keys = JSONKeywords.KEYS;
 	private final CharRepeater cucharin;
 	private MinXMLBuilder parent = null;
 	
 	private final TreeMap< String, String > extra_attributes = new TreeMap< String, String >();
+	private boolean EMBEDDED_EXTENSION = false;
+	private boolean NEWLINE_EXTENSION = false;
+	private boolean TYPE_PREFIX_EXTENSION = false;
 	
-	public MinXSONParser( CharRepeater rep, MinXMLBuilder parent ) {
+	/**
+	 * These extensions toggle optional features.
+	 * 	Option 'A' switches on _A_ll extensions.
+	 *  Option 'E' switches on the _E_mbedded extension.
+	 *  Option 'N' switches on the _N_ewline extension.
+	 *  Option 'T' switches on the _T_ype-prefix extension.
+	 * @param extensions
+	 */
+	public MinXSONParser enableExtensions( char[] extensions ) {
+		for ( char ch : extensions ) {
+			boolean all = false;
+			switch ( ch ) {
+			case 'A': 
+				all = true;
+			case 'E': 
+				EMBEDDED_EXTENSION = true; 
+				if ( !all ) break;
+			case 'N': 
+				NEWLINE_EXTENSION = true; 
+				if ( !all ) break;
+			case 'T': 
+				TYPE_PREFIX_EXTENSION = true; 
+				break;
+			default:
+				throw new Alert( "Unrecognised extension" ).culprit( "Extension flag", ch );
+			}
+		}
+		return this;
+	}
+	
+	public MinXSONParser( CharRepeater rep, MinXMLBuilder parent, char... extensions ) {
 		this.parent = parent;
 		this.cucharin = rep;
+		this.enableExtensions( extensions );
 	}
 
-	public MinXSONParser( Reader rep, MinXMLBuilder parent ) {
-		this.parent = parent;
-		this.cucharin = new ReaderCharRepeater( rep );
+	public MinXSONParser( Reader rep, MinXMLBuilder parent, char... extensions ) {
+		this( new ReaderCharRepeater( rep ), parent, extensions );
 	}
 
-	public MinXSONParser( final Reader rep ) {
-		this.parent = new FlexiMinXMLBuilder();
-		this.cucharin = new ReaderCharRepeater( rep );
+	public MinXSONParser( final Reader rep, char... extensions ) {
+		this( new ReaderCharRepeater( rep ), new FlexiMinXMLBuilder(), extensions );
 	}
+	
 
 	private char nextChar() {
 		return this.cucharin.nextChar();
@@ -66,7 +95,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		return this.cucharin.peekChar( default_char );
 	}
 	
-	private boolean hasNext() {
+	private boolean hasNextExpression() {
 		this.eatWhiteSpace();
 		return this.cucharin.peekChar( '\0' ) == '<';
 	}
@@ -92,6 +121,15 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				throw new Alert( "Unexpected end of stream" );
 			}			
 		}
+	}
+	
+	private int mustReadOneOf( final String t ) {
+		final char ch = this.nextChar();
+		final int n = t.indexOf( ch );
+		if ( n == -1 ) {
+			throw new Alert( "Unexpected character" ).culprit( "Expected one of", t ).culprit( "Received", ch );
+		}
+		return n;
 	}
 	
 	private boolean tryReadChar( final char ch_want ) {
@@ -204,19 +242,12 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	}
 	
 	private char entityLookup( final String symbol ) {
-		if ( "lt".equals( symbol ) ) {
-			return '<';
-		} else if ( "gt".equals( symbol ) ) {
-			return '>';
-		} else if ( "amp".equals(  symbol  ) ) {
-			return '&';
-		} else if ( "quot".equals( symbol ) ) {
-			return '"';
-		} else if ( "apos".equals(  symbol ) ) {
-			return '\'';
+		Character c = Lookup.lookup( symbol );
+		if ( c != null ) {
+			return c;
 		} else {
 			throw new Alert( "Unexpected escape sequence after &" ).culprit( "Sequence", symbol );
-		}		
+		}
 	}
 	
 	private char readEscape() {
@@ -251,7 +282,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		}
 		return attr.toString();
 	}	
-	
+
 	
 	private void processAttributes() {
 		for (;;) {
@@ -261,9 +292,9 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			final String key = this.readName();
 			
 			this.eatWhiteSpace();
-			this.mustReadChar( '=' );
+			final int n = this.mustReadOneOf( "=:" );
 			this.eatWhiteSpace();
-			final String value = this.readAttributeValue();
+			final String value = n == 0 ? this.readAttributeValue() : this.readJSONStringText();
 			this.put( key, value );
 		}
 	}
@@ -276,7 +307,9 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				this.consumeOptionalTerminator( was_in_element );
 			}
 			return true;
-		} else if ( this.cucharin.hasNextChar() ){
+		} 
+		this.eatWhiteSpace();
+		if ( this.cucharin.hasNextChar() ){
 			this.readWithoutPending();
 			return true;
 		} else {
@@ -284,14 +317,19 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		}
 	}
 	
+	boolean isNewlineTerminator() {
+		return this.NEWLINE_EXTENSION || super.isNewlineTerminator();
+	}
+	
 	void consumeOptionalTerminator( final boolean was_in_element ) {
 		if ( this.isInParentheses() ) {
 			this.eatWhiteSpace();
 			this.mustPeekChar( ')' );
 		}
-		for (;;) {
+		// End of input is a valid terminator!
+		while ( this.cucharin.hasNextChar() ) {
 			final char ch  = this.peekChar();
-			if ( ch == '\n' || ch == ',' || ch == ';' ) {
+			if ( ch == ',' || ch == ';' || this.isNewlineTerminator() && ch == '\n' ) {
 				this.discardChar();
 				break;
 			} else if ( Character.isSpaceChar( ch ) ) {
@@ -434,19 +472,15 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			//	It was a standalone tag.
 			this.mustReadChar( '>' );
 			this.pushPendingTag( name, '\0', Context.InElement );
-			return;
 		} else if ( nch == '>' ) {
 			//	It was a start tag.
 			this.pushTag( name, '\0', Context.InElement );
-			return;
-		} else if ( nch == '[' ) {
+		} else if ( this.EMBEDDED_EXTENSION && nch == '[' ) {
 			//	It is a standalone tag with embedded children.
 			this.pushTag( name, ']', Context.InEmbeddedArray );
-			return;
-		} else if ( nch == '{' ) {
+		} else if ( this.EMBEDDED_EXTENSION && nch == '{' ) {
 			//	It is a standalone tag with embedded pairs.
 			this.pushTag( name, '}', Context.InEmbeddedObject );
-			return;
 		} else {
 			throw new Alert( "Invalid continuation" );
 		}
@@ -456,24 +490,26 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	private void readStartTag() {
 		final String name = this.readName();
 		this.eatWhiteSpace();
-		if ( this.tryReadChar( '=' ) ) {
-			readNamelessStartTag( name );
-		} else if ( name.isEmpty() && this.tryReadChar( '[' ) ) {
-			this.startTagOpen( json_keys.ARRAY );
-			this.startTagClose( json_keys.ARRAY );
-			this.pushTag( json_keys.ARRAY, ']', Context.InEmbeddedArray );
-		} else if ( name.isEmpty() && this.tryReadChar( '{' ) ) {
-			this.startTagOpen( json_keys.OBJECT );
-			this.startTagClose( json_keys.OBJECT );
-			this.pushTag( json_keys.OBJECT, '}', Context.InEmbeddedObject );
-		} else if ( name.isEmpty() && this.tryReadChar( '(' ) ) {
-			this.pushTag( "()", ')', Context.InEmbeddedParentheses );
+		if ( this.EMBEDDED_EXTENSION ) {
+			if ( this.tryReadChar( '=' ) ) {
+				readNamelessStartTag( name );
+			} else if ( name.isEmpty() && this.tryReadChar( '[' ) ) {
+				this.startTagOpen( json_keys.ARRAY );
+				this.startTagClose( json_keys.ARRAY );
+				this.pushTag( json_keys.ARRAY, ']', Context.InEmbeddedArray );
+			} else if ( name.isEmpty() && this.tryReadChar( '{' ) ) {
+				this.startTagOpen( json_keys.OBJECT );
+				this.startTagClose( json_keys.OBJECT );
+				this.pushTag( json_keys.OBJECT, '}', Context.InEmbeddedObject );
+			} else if ( name.isEmpty() && this.tryReadChar( '(' ) ) {
+				this.pushTag( "()", ')', Context.InEmbeddedParentheses );
+			} else {
+				this.normalStartTag( name );
+			} 
 		} else {
 			this.normalStartTag( name );
 		}
 	}
-
-
 	
 	private void readTag() {
 		this.discardChar();	//	Throw away leading <.
@@ -490,8 +526,6 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			this.readStartTag();
 		}
 	}
-	
-
 	
 	void parseConstant( final String sofar, final String type ) {
 		this.startTagOpen( json_keys.CONSTANT );
@@ -542,6 +576,12 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	void readEscapeChar( final StringBuilder sofar ) {
 		final char ch = this.nextChar();
 		switch ( ch ) {
+			case '\'':
+			case '"':
+			case '/':
+			case '\\':
+				sofar.append(  ch  );
+				break;
 			case 'n':
 				sofar.append( '\n' );
 				break;
@@ -557,6 +597,9 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			case 'b':
 				sofar.append( '\b' );
 				break;
+			case '&':
+				sofar.append( this.readEscape() );
+				break;
 			default:
 				sofar.append( ch );
 				break;
@@ -570,7 +613,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			this.isInObject() && 
 			( ! this.extra_attributes.containsKey( json_keys.FIELD ) )  
 		) {
-			if ( ! this.tryReadString( FIELD_ATTRIBUTE_SUFFIX1 ) ) {
+			if ( ! this.tryReadChar( FIELD_ATTRIBUTE_SUFFIX1 ) ) {
 				this.eatWhiteSpace();
 				this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
 			}
@@ -621,16 +664,16 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	}
 
 	void parseId( final String sofar ) {
-		this.startTagOpen( ID );
-		this.put( ID_NAME, sofar );
-		this.startTagClose( ID );
-		this.pushPendingTag( ID, '\0', Context.InAtom );
+		this.startTagOpen( json_keys.ID );
+		this.put( json_keys.ID_NAME, sofar );
+		this.startTagClose( json_keys.ID );
+		this.pushPendingTag( json_keys.ID, '\0', Context.InAtom );
 	}
 	
 	void readIdentifier() {
 		final String identifier = readIdentiferText();
 		if ( this.isInObject() && ! this.extra_attributes.containsKey( json_keys.FIELD ) ) {
-			if ( ! this.tryReadString( FIELD_ATTRIBUTE_SUFFIX1 ) ) {
+			if ( ! this.tryReadChar( FIELD_ATTRIBUTE_SUFFIX1 ) ) {
 				this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
 			}
 			this.extra_attributes.put( json_keys.FIELD, identifier );
@@ -672,13 +715,13 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		this.pushTag( json_keys.OBJECT, '}', Context.InObject );
 	}
 	
-	void readClassTag() {
+	void readTypeTag() {
 		final boolean is_string = this.cucharin.isNextChar( '"' ) || this.cucharin.isNextChar( '\'' );
 		final String name = is_string ? this.readJSONStringText() : this.readName();
 		this.extra_attributes.put( json_keys.TYPE, name );
 		this.readWithoutPending();
 	}
-	
+
 	private void readWithoutPending() {
 		this.eatWhiteSpace();
 		if ( ! this.cucharin.hasNextChar() ) return;
@@ -711,8 +754,8 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				this.mustReadChar( '>' );
 				this.dropTag();
 			}
-		} else if ( this.tryReadString( CLASS_ATTRIBUTE_PREFIX ) ) {
-			this.readClassTag();
+		} else if ( this.TYPE_PREFIX_EXTENSION  && this.tryReadString( TYPE_ATTRIBUTE_PREFIX ) ) {
+			this.readTypeTag();
 		} else {
 			throw new Alert( "Unexpected character" ).hint( "At the start of an item" ).culprit( "Character", ch );
 		}		
@@ -728,12 +771,25 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		return parent.build();
 	}
 	
+	public MinXML readBindings() {
+		this.startTagOpen( json_keys.OBJECT );
+		this.startTagClose( json_keys.OBJECT );
+		this.pushTag( new Level( json_keys.OBJECT, '}', Context.InObject ).setNewlineTerminator( true ) );
+		
+		while ( this.read() ) {
+			//	Skip.
+		}
+		
+		this.endTag( json_keys.OBJECT );
+		return parent.build();
+	}
+	
 	public Iterator< MinXML > iterator() {
 		return new Iterator< MinXML >() {
 
 			@Override
 			public boolean hasNext() {
-				return MinXSONParser.this.hasNext();
+				return MinXSONParser.this.hasNextExpression();
 			}
 
 			@Override

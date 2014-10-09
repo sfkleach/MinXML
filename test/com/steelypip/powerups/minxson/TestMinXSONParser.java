@@ -158,8 +158,8 @@ public class TestMinXSONParser {
 		assertEquals( 3, n );
 	}
 	
-	private void equivalent( final String input, final String output ) {
-		MinXML e = new MinXSONParser( new StringReader( input ) ).readElement();
+	private void equivalent( final String input, final String output, final char... extensions ) {
+		MinXML e = new MinXSONParser( new StringReader( input ), extensions ).readElement();
 		assertEquals( output, "" + e ); 
 		
 	}
@@ -213,7 +213,7 @@ public class TestMinXSONParser {
 		equivalent( "[-12]", "<array><constant type=\"integer\" value=\"-12\"/></array>" );
 		equivalent( "[-12,<alpha/>]", "<array><constant type=\"integer\" value=\"-12\"/><alpha/></array>" );
 		equivalent( "[-12;<alpha/>]", "<array><constant type=\"integer\" value=\"-12\"/><alpha/></array>" );
-		equivalent( "[-12\n<alpha/>]", "<array><constant type=\"integer\" value=\"-12\"/><alpha/></array>" );
+		equivalent( "[-12\n<alpha/>]", "<array><constant type=\"integer\" value=\"-12\"/><alpha/></array>", 'N' );
 	}
 	
 	@Test
@@ -252,11 +252,13 @@ public class TestMinXSONParser {
 	public void MixedNotations__MinXSON() {
 		equivalent( 
 			"<alpha[value]/>", 
-			"<alpha><id name=\"value\"/></alpha>" 
+			"<alpha><id name=\"value\"/></alpha>",
+			'E'
 		);
 		equivalent( 
 			"<alpha{left:right}/>", 
-			"<alpha><id field=\"left\" name=\"right\"/></alpha>" 
+			"<alpha><id field=\"left\" name=\"right\"/></alpha>",
+			'E'
 		);
 	}
 	
@@ -264,11 +266,13 @@ public class TestMinXSONParser {
 	public void AttributesOnly__MinXSON() {
 		equivalent( 
 			"<alpha='beta'[value]/>", 
-			"<array alpha=\"beta\"><id name=\"value\"/></array>" 
+			"<array alpha=\"beta\"><id name=\"value\"/></array>",
+			'E'
 		);
 		equivalent( 
 			"<alpha='beta'{left:right}/>", 
-			"<object alpha=\"beta\"><id field=\"left\" name=\"right\"/></object>" 
+			"<object alpha=\"beta\"><id field=\"left\" name=\"right\"/></object>",
+			'E'
 		);
 	}
 	
@@ -276,15 +280,18 @@ public class TestMinXSONParser {
 	public void EmptyEmbedded__MinXSON() {
 		equivalent( 
 			"<[]/>", 
-			"<array/>" 
+			"<array/>",
+			'E'
 		);
 		equivalent( 
 			"<{}/>", 
-			"<object/>" 
+			"<object/>",
+			'E'
 		);
 		equivalent( 
 			"<(<x/>)/>",
-			"<x/>"
+			"<x/>",
+			'E'
 		);
 	}
 	
@@ -325,23 +332,28 @@ public class TestMinXSONParser {
 	public void testClassName() {
 		equivalent(
 			"@foo[]",
-			"<array type=\"foo\"/>"
+			"<array type=\"foo\"/>",
+			'T'
 		);
 		equivalent(
 			"@null[]",
-			"<array type=\"null\"/>"
+			"<array type=\"null\"/>",
+			'T'
 		);
 		equivalent(
 			"@\"abc\"[]",
-			"<array type=\"abc\"/>"
+			"<array type=\"abc\"/>",
+			'T'
 		);
 		equivalent(
 			"@\"***\"[]",
-			"<array type=\"***\"/>"
+			"<array type=\"***\"/>",
+			'T'
 		);
 		equivalent(
 			"@\'*!*\'[]",
-			"<array type=\"*!*\"/>"
+			"<array type=\"*!*\"/>",
+			'T'
 		);
 	}
 	
@@ -359,5 +371,39 @@ public class TestMinXSONParser {
 		);
 		assertEquals( "author", m.getName() );
 	}
+	
+	@Test
+	public void testReadBindings1() {
+		MinXML m = new MinXSONParser( new StringReader( "foo:1, bar:2" ) ).readBindings();
+		assertEquals( "<object><constant field=\"foo\" type=\"integer\" value=\"1\"/><constant field=\"bar\" type=\"integer\" value=\"2\"/></object>", m.toString() );
+	}
+	
+	@Test
+	public void testReadBindings2() {
+		MinXML m = new MinXSONParser( new StringReader( "foo:1\nbar:2" ) ).readBindings();
+		assertEquals( "<object><constant field=\"foo\" type=\"integer\" value=\"1\"/><constant field=\"bar\" type=\"integer\" value=\"2\"/></object>", m.toString() );
+	}
+	
+	@Test
+	public void testJSONEscapeInTag() {
+		equivalent(
+			"<foo bar='\\/'/>",
+			"<foo bar=\"\\/\"/>"
+		);	
+		equivalent(
+			"<foo bar:'\\/'/>",
+			"<foo bar=\"/\"/>"
+		);	
+	}
+	
+	@Test
+	public void testHTML5Entities() {
+		equivalent(
+			"<foo bar:'\\&copy;'/>",
+			"<foo bar=\"&#169;\"/>"
+		);	
+		
+	}
+
 	
 }

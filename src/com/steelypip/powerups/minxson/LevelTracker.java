@@ -72,7 +72,11 @@ class LevelTracker {
 	}
 
 	void pushTag( final String tag, final char expected, final Context context ) {
-		this.open_tags.addLast( new Level( tag, expected, context ) );
+		this.pushTag( new Level( tag, expected, context ) );
+	}
+
+	void pushTag( final Level level ) {
+		this.open_tags.addLast( level );
 		this.pending_end_tag = false;
 	}
 
@@ -90,6 +94,10 @@ class LevelTracker {
 
 	boolean isInEmbeddedContainer() {
 		return ! this.open_tags.isEmpty() && this.open_tags.getLast().isInEmbeddedContainer();
+	}
+	
+	boolean isNewlineTerminator() {
+		return ! this.open_tags.isEmpty() && this.open_tags.getLast().isNewlineTerminator();
 	}
 	
 }

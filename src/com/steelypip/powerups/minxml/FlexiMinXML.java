@@ -46,7 +46,7 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 	}
 	
 	@Override
-	public String getAttribute( String key ) {
+	public String getAttribute( final String key ) {
 		return this.attributes == null ? null : super.getAttribute( key );
 	}
 
@@ -56,12 +56,12 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 	}
 
 	@Override
-	public boolean hasAttribute( String key ) {
+	public boolean hasAttribute( final String key ) {
 		return this.attributes != null && super.hasAttribute( key );
 	}
 
 	@Override
-	public boolean hasAttribute( String key, String value ) {
+	public boolean hasAttribute( final String key, final String value ) {
 		return this.attributes == null ? value == null : super.hasAttribute( key, value );
 	}
 
@@ -108,17 +108,17 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 	}
 
 	@Override
-	public boolean contains( Object o ) {
+	public boolean contains( final Object o ) {
 		return this.children != null && super.contains( o );
 	}
 
 	@Override
-	public boolean containsAll( Collection< ? > c ) {
+	public boolean containsAll( final Collection< ? > c ) {
 		return this.children != null && super.containsAll( c );
 	}
 
 	@Override
-	public int indexOf( Object o ) {
+	public int indexOf( final Object o ) {
 		return this.children == null ? -1 : super.indexOf( o );
 	}
 
@@ -139,7 +139,7 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 	}
 
 	@Override
-	public int lastIndexOf( Object o ) {
+	public int lastIndexOf( final Object o ) {
 		return this.children == null ? -1 : super.lastIndexOf( o );
 	}
 

@@ -172,6 +172,12 @@ public abstract class AbsMinXML implements MinXML {
 	}
 
 	@Override
+	public String getAttribute( String key, String default_value ) {
+		final String value = this.getAttribute( key );
+		return value != null ? value : default_value;
+	}
+
+	@Override
 	public boolean hasAttribute() {
 		return ! this.getAttributes().isEmpty();
 	}

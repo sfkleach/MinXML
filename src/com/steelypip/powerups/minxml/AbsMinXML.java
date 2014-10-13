@@ -19,6 +19,7 @@
 package com.steelypip.powerups.minxml;
 
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -237,6 +238,16 @@ public abstract class AbsMinXML implements MinXML {
 	//	Printing
 	//////////////////////////////////////////////////////////////////////////////////
 
+	@Override
+	public void print( final Writer w ) {
+		new MinXMLWriter( new PrintWriter( w ), NullIndenter.FACTORY ).print( this );
+	}
+	
+	@Override
+	public void prettyPrint( final Writer w ) {
+		new MinXMLWriter( new PrintWriter( w ), new StdIndenter.Factory() ).print( this );
+	}
+	
 	@Override
 	public void print( final PrintWriter pw ) {
 		new MinXMLWriter( pw, NullIndenter.FACTORY ).print( this );

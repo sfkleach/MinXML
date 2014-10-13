@@ -19,6 +19,7 @@
 package com.steelypip.powerups.minxml;
 
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
@@ -204,6 +205,13 @@ public interface MinXML extends List< MinXML > {
 	void print( PrintWriter pw );
 	
 	/**
+	 * Renders the element to the supplied {@link java.io.Writer}.
+	 * 
+	 * @param w the {@link Writer} to use.
+	 */
+	void print( Writer w );
+	
+	/**
 	 * Renders the element using the supplied {@link PrintWriter} such that each start and 
 	 * end tag are on their own line and the children indented. The output always finishes
 	 * with a newline.
@@ -211,4 +219,13 @@ public interface MinXML extends List< MinXML > {
 	 * @param pw the {@link PrintWriter} to use.
 	 */
 	void prettyPrint( PrintWriter pw );
+	
+	/**
+	 * Renders the element using the supplied {@link java.io.Writer} such that each start and 
+	 * end tag are on their own line and the children indented. The output always finishes
+	 * with a newline.
+	 * 
+	 * @param pw the {@link Writer} to use.
+	 */
+	void prettyPrint( Writer w );
 }

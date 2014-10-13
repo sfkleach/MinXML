@@ -240,12 +240,12 @@ public abstract class AbsMinXML implements MinXML {
 
 	@Override
 	public void print( final Writer w ) {
-		new MinXMLWriter( new PrintWriter( w ), NullIndenter.FACTORY ).print( this );
+		new MinXMLWriter( new PrintWriter( w, true ), NullIndenter.FACTORY ).print( this );
 	}
 	
 	@Override
 	public void prettyPrint( final Writer w ) {
-		new MinXMLWriter( new PrintWriter( w ), new StdIndenter.Factory() ).print( this );
+		new MinXMLWriter( new PrintWriter( w, true ), new StdIndenter.Factory() ).print( this );
 	}
 	
 	@Override

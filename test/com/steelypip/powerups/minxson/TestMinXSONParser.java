@@ -42,7 +42,7 @@ public class TestMinXSONParser {
 	@Test
 	public void testEmptyAsIterable() {
 		int n = 0;
-		for ( MinXML m : new MinXSONParser( new StringReader( "" ) ) ) {
+		for ( @SuppressWarnings("unused") MinXML m : new MinXSONParser( new StringReader( "" ) ) ) {
 			n += 1;
 		}
 		assertEquals( 0, n );
@@ -152,7 +152,7 @@ public class TestMinXSONParser {
 	@Test
 	public void testAsIterable() {
 		int n = 0;
-		for ( MinXML m : new MinXSONParser( new StringReader( "<xxx/><yyy/><!-- woot --><zzz/>" ) ) ) {
+		for ( @SuppressWarnings("unused") MinXML m : new MinXSONParser( new StringReader( "<xxx/><yyy/><!-- woot --><zzz/>" ) ) ) {
 			n += 1;
 		}
 		assertEquals( 3, n );

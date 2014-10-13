@@ -251,11 +251,13 @@ public abstract class AbsMinXML implements MinXML {
 	@Override
 	public void print( final PrintWriter pw ) {
 		new MinXMLWriter( pw, NullIndenter.FACTORY ).print( this );
+		pw.flush();
 	}
 	
 	@Override
 	public void prettyPrint( final PrintWriter pw ) {
 		new MinXMLWriter( pw, new StdIndenter.Factory() ).print( this );
+		pw.flush();
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////

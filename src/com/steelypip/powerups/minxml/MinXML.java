@@ -228,4 +228,22 @@ public interface MinXML extends List< MinXML > {
 	 * @param pw the {@link Writer} to use.
 	 */
 	void prettyPrint( Writer w );
+	
+	/**
+	 * The search method is used to implement basic recursive scans over a tree
+	 * of elements. It is typically used to search a tree or to implement a series of
+	 * in-place updates.
+	 * 
+	 * @param searcher
+	 * @return true indicates the search was successful. 
+	 */
+	boolean search( MinXMLSearcher searcher );
+	
+	/**
+	 * The walk method is used to implement a recursive scan over a tree. It
+	 * is much the same as search but with no early exits.
+	 * 
+	 * @param visitor
+	 */
+	void walk( MinXMLWalker walker );
 }

@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import com.steelypip.powerups.common.EmptyIterator;
 import com.steelypip.powerups.common.NullIndenter;
 import com.steelypip.powerups.common.StdIndenter;
 import com.steelypip.powerups.io.StringPrintWriter;
@@ -270,4 +271,30 @@ public abstract class AbsMinXML implements MinXML {
 		this.print( pw );
 		return pw.toString();
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//	Tree Iterations
+	//////////////////////////////////////////////////////////////////////////////////
+
+	private static final Iterator< MinXML > empty = new EmptyIterator< MinXML >();
+	
+	@Override
+	public boolean search( final MinXMLSearcher visitor ) {
+		boolean found = visitor.startSearch( this );
+		final Iterator< MinXML > kids = found ? empty : this.iterator();
+		while ( ! found && kids.hasNext() ) {
+			found = kids.next().search( visitor );
+		}
+		return visitor.endSearch( this, found );
+	}
+	
+	@Override
+	public void walk( final MinXMLWalker walker ) {
+		walker.startWalk( this );
+		for ( MinXML kid : this ) {
+			kid.walk( walker );
+		}
+		walker.endWalk( this );
+	}
+	
 }

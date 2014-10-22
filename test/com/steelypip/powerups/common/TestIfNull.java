@@ -34,7 +34,7 @@ public class TestIfNull {
 		assertEquals( (Integer)0, IfNull.ifNull( 0, 1 ) );
 		assertEquals( (Integer)0, IfNull.ifNull( 0, null ) );
 		assertEquals( (Integer)0, IfNull.ifNull( null, 0 ) );
-		assertEquals( null, IfNull.ifNull( null, null ) );
+		assertEquals( (Object)null, IfNull.ifNull( null, null ) );
 	}
 
 }

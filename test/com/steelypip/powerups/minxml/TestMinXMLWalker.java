@@ -1,14 +1,9 @@
 package com.steelypip.powerups.minxml;
 
 import static org.junit.Assert.*;
-
 import java.io.StringReader;
-
-import org.junit.Before;
 import org.junit.Test;
 
-import com.steelypip.powerups.minxml.TestMinXMLSearcher.CountAttributes;
-import com.steelypip.powerups.minxml.TestMinXMLSearcher.EarlyExit;
 
 public class TestMinXMLWalker {
 

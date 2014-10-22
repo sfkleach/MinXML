@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.steelypip.powerups.common.EmptyIterator;
 import com.steelypip.powerups.common.NullIndenter;
@@ -222,7 +223,12 @@ public abstract class AbsMinXML implements MinXML {
 
 	@Override
 	public Iterable< String > keys() {
-		return this.quickGetAttributes().keySet();
+		return new TreeSet< String >( this.quickGetAttributes().keySet() );
+	}
+
+	@Override
+	public Iterable< String > asMapKeys() {
+		return this.asMap().keySet();
 	}
 
 	@Override

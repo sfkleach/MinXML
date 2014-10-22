@@ -125,11 +125,22 @@ public interface MinXML extends List< MinXML > {
 	int sizeAttributes();
 	
 	/**
-	 * Returns a iterator for the set of keys of the attributes of an element.
+	 * Returns a iterator for the set of keys of the attributes of an element, as if the
+	 * attributes were implemented as a {@link Map}, which shares updates
+	 * with the original element (when updates are allowed). If you want
+	 * updates to be shared use {@link asMapKeys}.
 	 *  
 	 * @return iterator over keys
 	 */
 	Iterable< String > keys();
+	
+	/**
+	 * Returns an iterator over the keys of an element that shares
+	 * updates with the original element. 
+	 */
+	Iterable< String > asMapKeys();
+	
+
 	
 	/**
 	 * Returns a iterator over the attributes of an element, as if the

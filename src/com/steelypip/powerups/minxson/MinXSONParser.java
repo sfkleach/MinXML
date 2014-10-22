@@ -1,3 +1,22 @@
+/**
+ * Copyright Stephen Leach, 2014
+ * This file is part of the MinXML for Java library.
+ * 
+ * MinXML for Java is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Foobar is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
+ *  
+ */
+
 package com.steelypip.powerups.minxson;
 
 import java.io.Reader;
@@ -16,7 +35,7 @@ import com.steelypip.powerups.minxml.MinXMLBuilder;
 
 public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	private static final String TYPE_ATTRIBUTE_PREFIX = "@";
-	private static final char FIELD_ATTRIBUTE_SUFFIX1 = '⸬';
+	//private static final char FIELD_ATTRIBUTE_SUFFIX1 = '⸬';
 	private static final char FIELD_ATTRIBUTE_SUFFIX2 = ':';
 
 	protected JSONKeywords json_keys = JSONKeywords.KEYS;
@@ -613,10 +632,8 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			this.isInObject() && 
 			( ! this.extra_attributes.containsKey( json_keys.FIELD ) )  
 		) {
-			if ( ! this.tryReadChar( FIELD_ATTRIBUTE_SUFFIX1 ) ) {
-				this.eatWhiteSpace();
-				this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
-			}
+			this.eatWhiteSpace();
+			this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
 			this.extra_attributes.put( json_keys.FIELD, s );
 			this.read();
 		} else {
@@ -673,9 +690,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	void readIdentifier() {
 		final String identifier = readIdentiferText();
 		if ( this.isInObject() && ! this.extra_attributes.containsKey( json_keys.FIELD ) ) {
-			if ( ! this.tryReadChar( FIELD_ATTRIBUTE_SUFFIX1 ) ) {
-				this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
-			}
+			this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
 			this.extra_attributes.put( json_keys.FIELD, identifier );
 			this.read();
 		} else if ( "true".equals( identifier ) || "false".equals( identifier ) ) {

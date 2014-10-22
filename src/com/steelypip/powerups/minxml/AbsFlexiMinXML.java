@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.steelypip.powerups.common.EmptyMap;
+
 public abstract class AbsFlexiMinXML extends AbsMinXML {
 
 	protected String name;
@@ -38,11 +40,18 @@ public abstract class AbsFlexiMinXML extends AbsMinXML {
 	}
 
 	@Override
-	public Map< String, String > getAttributes() {
+	public Map< String, String > asMap() {
 		if ( this.attributes == null ) {
 			this.attributes = new TreeMap< String, String >();
 		}
 		return this.attributes;
+	}
+		
+	static Map< String, String > empty_map = new EmptyMap< String, String >();
+
+	@Override
+	public Map< String, String > quickGetAttributes() {
+		return this.attributes == null ? empty_map : this.attributes;
 	}
 
 	@Override

@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.steelypip.powerups.common.EmptyIterator;
 import com.steelypip.powerups.common.NullIndenter;
@@ -45,7 +46,16 @@ public abstract class AbsMinXML implements MinXML {
 	public abstract void setName( String name ) throws UnsupportedOperationException;
 
 	@Override
-	public abstract Map< String, String > getAttributes();
+	public abstract Map< String, String > asMap();
+	
+	/**
+	 * This method will return a map representing the attributes of the
+	 * element that is safe to use until the first update of the original element.
+	 * Any update to the original element invalidates this object. 
+	 * 
+	 * @return map of attributes that is only safe until the next update
+	 */
+	public abstract Map< String, String > quickGetAttributes();
 		
 	public abstract List< MinXML > toList();
 	
@@ -53,6 +63,11 @@ public abstract class AbsMinXML implements MinXML {
 	//////////////////////////////////////////////////////////////////////////////////
 	//	Methods built on the essential foundations.
 	//////////////////////////////////////////////////////////////////////////////////
+	
+	@Override
+	public Map< String, String > getAttributes() {
+		return new TreeMap< String, String >( this.quickGetAttributes() );
+	}
 	
 	@Override
 	public void trimToSize() {
@@ -170,7 +185,7 @@ public abstract class AbsMinXML implements MinXML {
 
 	@Override
 	public String getAttribute( String key ) {
-		return this.getAttributes().get( key );
+		return this.quickGetAttributes().get( key );
 	}
 
 	@Override
@@ -181,33 +196,33 @@ public abstract class AbsMinXML implements MinXML {
 
 	@Override
 	public boolean hasAttribute() {
-		return ! this.getAttributes().isEmpty();
+		return ! this.quickGetAttributes().isEmpty();
 	}
 
 	@Override
 	public boolean hasAttribute( String key ) {
-		return this.getAttributes().containsKey( key );
+		return this.quickGetAttributes().containsKey( key );
 	}
 
 	@Override
 	public boolean hasAttribute( String key, String value ) {
-		String v = this.getAttributes().get( key );
+		String v = this.quickGetAttributes().get( key );
 		return v == null ? value == null : v.equals( value );
 	}
 
 	@Override
 	public boolean hasntAttribute() {
-		return this.getAttributes().isEmpty();
+		return this.quickGetAttributes().isEmpty();
 	}
 
 	@Override
 	public int sizeAttributes() {
-		return this.getAttributes().size();
+		return this.quickGetAttributes().size();
 	}
 
 	@Override
 	public Iterable< String > keys() {
-		return this.getAttributes().keySet();
+		return this.quickGetAttributes().keySet();
 	}
 
 	@Override
@@ -216,18 +231,23 @@ public abstract class AbsMinXML implements MinXML {
 	}
 
 	@Override
+	public Iterable< Map.Entry< String, String >> asMapEntries() {
+		return this.asMap().entrySet();
+	}
+
+	@Override
 	public void putAttribute( String key, String value ) throws UnsupportedOperationException {
-		this.getAttributes().put( key, value );
+		this.asMap().put( key, value );
 	}
 
 	@Override
 	public void putAllAttributes( Map< String, String > map ) throws UnsupportedOperationException {
-		this.getAttributes().putAll( map );
+		this.asMap().putAll( map );
 	}
 
 	@Override
 	public void clearAttributes() throws UnsupportedOperationException {
-		this.getAttributes().clear();
+		this.asMap().clear();
 	}
 
 	@Override
@@ -295,6 +315,20 @@ public abstract class AbsMinXML implements MinXML {
 			kid.walk( walker );
 		}
 		walker.endWalk( this );
+	}
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//	Copying
+	//////////////////////////////////////////////////////////////////////////////////
+
+	@Override
+	public MinXML shallowCopy() {
+		return FlexiMinXML.shallowCopy( this );
+	}
+
+	@Override
+	public MinXML deepCopy() {
+		return FlexiMinXML.deepCopy( this );
 	}
 	
 }

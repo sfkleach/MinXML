@@ -19,6 +19,7 @@
 package com.steelypip.powerups.common;
 
 import java.util.AbstractList;
+import java.util.Collection;
 
 public class EmptyList< T > extends AbstractList< T > {
 
@@ -32,4 +33,19 @@ public class EmptyList< T > extends AbstractList< T > {
 		return 0;
 	}
 
+	@Override
+	public boolean isEmpty() {
+		return true;
+	}
+
+	@Override
+	public boolean contains( Object o ) {
+		return false;
+	}
+
+	@Override
+	public boolean containsAll( Collection< ? > c ) {
+		return false;
+	}	
+	
 }

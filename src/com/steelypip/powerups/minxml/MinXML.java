@@ -133,20 +133,35 @@ public interface MinXML extends List< MinXML > {
 	
 	/**
 	 * Returns a iterator over the attributes of an element, as if the
-	 * attributes were implemented as a {@link Map}. 
+	 * attributes were implemented as a {@link Map}, which shares updates
+	 * with the original element (when updates are allowed). If you want
+	 * updates to be shared use {@link asMapEntries}.
 	 *  
 	 * @return iterator over entries
 	 */
 	Iterable< Map.Entry< String, String > > entries();
 	
 	/**
-	 * Returns a {@link Map} representing the attributes of an element. It is
-	 * guaranteed that the map is safe to read but not to update. Nor is it
-	 * guaranteed that the map shares updates with the originating element.
+	 * Returns a {@link Map} representing the attributes of an element that
+	 * does not share updates with the original element. If you want updates
+	 * to be shared use {@link asMap}.
 	 * 
 	 * @return map of attributes
 	 */
 	Map< String, String > getAttributes();
+	
+	/**
+	 * Returns a {@link Map} that represents the attributes of an element
+	 * that shares updates with the original element.
+	 */
+	Map< String, String > asMap();
+	
+	/**
+	 * Returns an iterator over the attributes of an element that shares
+	 * updates with the original element. 
+	 */
+	Iterable< Map.Entry< String, String > > asMapEntries();
+	
 	
 	/**
 	 * Puts an attribute key=value into the element. If no attribute of that 
@@ -246,4 +261,22 @@ public interface MinXML extends List< MinXML > {
 	 * @param visitor
 	 */
 	void walk( MinXMLWalker walker );
+	
+	/**
+	 * shallowCopy makes a copy of the topmost node but shares the children. The
+	 * implementation of the new node must be at least as general as the implementation
+	 * of this node i.e. implement all the methods that do not raise 
+	 * {@link java.lang.UnsupportedOperationException} 
+	 * 
+	 */
+	MinXML shallowCopy();
+	 
+	/**
+	 * deepCopy makes a copy of the topmost node and all the children. The
+	 * implementation of the new nodes must be at least as general as the implementation
+	 * of this node i.e. implement all the methods that do not raise 
+	 * {@link java.lang.UnsupportedOperationException} 
+	 * 
+	 */
+	MinXML deepCopy();
 }

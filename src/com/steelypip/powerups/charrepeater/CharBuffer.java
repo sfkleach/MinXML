@@ -33,7 +33,7 @@ class CharBuffer {
 		try {
 			data[ this.size ] = ch;
 			this.size += 1;
-		} catch ( ArrayIndexOutOfBoundsException _ ) {
+		} catch ( ArrayIndexOutOfBoundsException _e ) {
 			//	data is too small - expand and try again.
 			this.expandData();
 			data[ this.size ] = ch;

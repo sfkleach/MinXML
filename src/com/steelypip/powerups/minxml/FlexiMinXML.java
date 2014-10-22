@@ -29,11 +29,47 @@ import com.steelypip.powerups.common.EmptyList;
 
 public class FlexiMinXML extends AbsFlexiMinXML {
 	
+	//////////////////////////////////////////////////////////////////////////////////
+	//	Constructors
+	//////////////////////////////////////////////////////////////////////////////////
+	
+	/**
+	 * Constructs an element with a given name but no attributes or
+	 * children.
+	 * 
+	 * @param name
+	 */
 	public FlexiMinXML( final String name ) {
 		//	We intern the name purely to help save space. Unfortunately we
 		//	can't really take advantage of it in any other way.
 		this.name = name.intern();
 		//  Note that the attributes and children can be left as null. 
+	}
+	
+	private FlexiMinXML( final MinXML element ) {
+		this.name = element.getName();
+		this.putAllAttributes( element.asMap() );
+		this.addAll( element );
+	}
+	
+	/**
+	 * Creates a copy of the top-level node of the given element.
+	 * @param element
+	 * @return
+	 */
+	public static FlexiMinXML shallowCopy( MinXML element ) {
+		return new FlexiMinXML( element );
+	}
+		
+	public static FlexiMinXML deepCopy( MinXML element ) {
+		final FlexiMinXML result = new FlexiMinXML( element.getName() );
+		for ( Map.Entry< String, String > e : element.entries() ) {
+			result.putAttribute( e.getKey(), e.getValue() );
+		}
+		for ( MinXML kid : element ) {
+			result.add( deepCopy( kid ) );
+		}
+		return result;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////

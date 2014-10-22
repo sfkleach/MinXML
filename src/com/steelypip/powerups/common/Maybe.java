@@ -2,11 +2,14 @@ package com.steelypip.powerups.common;
 
 import java.util.Iterator;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.steelypip.powerups.alert.Alert;
 
-public class Maybe< T > implements Iterable< T > {
+public class Maybe< @Nullable T > implements Iterable< T > {
 
 	private boolean has_value;
+	
 	private T the_value;
 	
 	public static < T > Maybe< T > newMaybe() {

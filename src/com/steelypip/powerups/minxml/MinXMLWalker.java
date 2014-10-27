@@ -19,14 +19,14 @@
 
 package com.steelypip.powerups.minxml;
 
-public interface MinXMLWalker {
+public abstract class MinXMLWalker {
 	/**
 	 * startWalk is called at the start of the tree-walk of the subject and its children. 
 	 * It will be called once for each node in the tree.
 	 * 
 	 * @param subject the MinXML element to be visited
 	 */
-	void startWalk( MinXML subject );
+	public abstract void startWalk( MinXML subject );
 
 	
 	/**
@@ -35,5 +35,22 @@ public interface MinXMLWalker {
 	 * 
 	 * @param subject the MinXML element to be visited
 	 */
-	void endWalk( MinXML subject );
+	public abstract void endWalk( MinXML subject );
+	
+
+	
+	/**
+	 * The walk method is used to implement a depth-first, left-to-right recursive 
+	 * scan over a tree. The startWalk and endWalk methods are invoked on the way
+	 * down the tree and up the tree respectively. 
+	 * 
+	 * @param subject
+	 */
+	public void walk( final MinXML subject ) {
+		this.startWalk( subject );
+		for ( MinXML kid : subject ) {
+			this.walk(  kid );
+		}
+		this.endWalk( subject );
+	}
 }

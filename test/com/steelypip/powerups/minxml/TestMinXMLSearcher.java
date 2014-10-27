@@ -15,7 +15,7 @@ public class TestMinXMLSearcher {
 	public void setUp() throws Exception {
 	}
 	
-	static class CountAttributes implements MinXMLSearcher {
+	static class CountAttributes extends MinXMLSearcher {
 		
 		private int count = 0;
 
@@ -39,11 +39,11 @@ public class TestMinXMLSearcher {
 	@Test
 	public void testSource1() {
 		final CountAttributes c = new CountAttributes();
-		new MinXMLParser( new StringReader( source1 ) ).readElement().search( c );
+		c.search( new MinXMLParser( new StringReader( source1 ) ).readElement() );
 		assertEquals( 2, c.getCount() );
 	}
 	
-	static class EarlyExit implements MinXMLSearcher {
+	static class EarlyExit extends MinXMLSearcher {
 		int count_visited = 0;
 		
 		public int getCount() {
@@ -70,7 +70,7 @@ public class TestMinXMLSearcher {
 	@Test
 	public void testSource2() {
 		final EarlyExit e = new EarlyExit();
-		new MinXMLParser( new StringReader( source2 ) ).readElement().search( e );
+		e.search( new MinXMLParser( new StringReader( source2 ) ).readElement() );
 		assertEquals( 3, e.getCount() );
 	}
 

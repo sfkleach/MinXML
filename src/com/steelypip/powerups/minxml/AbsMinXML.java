@@ -298,30 +298,6 @@ public abstract class AbsMinXML implements MinXML {
 		return pw.toString();
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////
-	//	Tree Iterations
-	//////////////////////////////////////////////////////////////////////////////////
-
-	private static final Iterator< MinXML > empty = new EmptyIterator< MinXML >();
-	
-	@Override
-	public boolean search( final MinXMLSearcher visitor ) {
-		boolean found = visitor.startSearch( this );
-		final Iterator< MinXML > kids = found ? empty : this.iterator();
-		while ( ! found && kids.hasNext() ) {
-			found = kids.next().search( visitor );
-		}
-		return visitor.endSearch( this, found );
-	}
-	
-	@Override
-	public void walk( final MinXMLWalker walker ) {
-		walker.startWalk( this );
-		for ( MinXML kid : this ) {
-			kid.walk( walker );
-		}
-		walker.endWalk( this );
-	}
 
 	//////////////////////////////////////////////////////////////////////////////////
 	//	Copying

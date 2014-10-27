@@ -19,16 +19,20 @@
 
 package com.steelypip.powerups.minxml;
 
-public interface MinXMLSearcher {
+import java.util.Iterator;
+
+import com.steelypip.powerups.common.EmptyIterator;
+
+public abstract class MinXMLSearcher {
 
 	/**
 	 * startSearch is called at the start of the tree-walk of the subject and its children. 
 	 * Return false if you want the the child elements to be visited, true otherwise.
 	 * 
 	 * @param subject the MinXML element to be visited
-	 * @return flag saying if the goal was found
+	 * @return flag saying if the children were cutoff.
 	 */
-	boolean startSearch( MinXML subject );
+	public abstract boolean startSearch( MinXML subject );
 
 	
 	/**
@@ -38,10 +42,29 @@ public interface MinXMLSearcher {
 	 * any child search found the goal, it is the short-circuit OR of all the
 	 * flags returned by the children's endVisits.
 	 * 
-	 * @param subject the MinXML element to be visited
-	 * @param found flag indicating if the goal was found
-	 * @return flag saying if the goal was found
+	 * @param subject the MinXML element to be visited.
+	 * @param cutoff flag indicating if any child search was cutoff.
+	 * @return boolean a flag saying if sibling-search should be cutoff.
 	 */
-	boolean endSearch( MinXML subject, boolean found );
+	public abstract boolean endSearch( MinXML subject, boolean cutoff );
+	
+	private static final Iterator< MinXML > empty = new EmptyIterator< MinXML >();
+	
+	/**
+	 * The search method is used to implement basic recursive scans over a tree
+	 * of elements. It is typically used to search a tree or to implement a series of
+	 * in-place updates.
+	 * 
+	 * @param subject
+	 * @return true indicates the search was cutoff. 
+	 */
+	public boolean search( final MinXML subject ) {
+		boolean cutoff = this.startSearch( subject );
+		final Iterator< MinXML > kids = cutoff ? empty : subject.iterator();
+		while ( ! cutoff && kids.hasNext() ) {
+			cutoff = this.search( kids.next() );
+		}
+		return this.endSearch( subject, cutoff );
+	}
 	
 }

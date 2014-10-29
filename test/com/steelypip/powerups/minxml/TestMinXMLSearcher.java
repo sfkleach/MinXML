@@ -7,6 +7,8 @@ import java.io.StringReader;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.steelypip.powerups.minxml.TestMinXMLWalker.IdWalker;
+
 public class TestMinXMLSearcher {
 
 	private static final String source1 = "<outer><!-- this is a comment --><foo left='right' less=\"more\"></foo></outer>";
@@ -73,6 +75,119 @@ public class TestMinXMLSearcher {
 		e.search( new MinXMLParser( new StringReader( source2 ) ).readElement() );
 		assertEquals( 3, e.getCount() );
 	}
+	
+	static class IdSearcher extends MinXMLSearcher {
 
+		@Override
+		public boolean startSearch( MinXML subject ) {
+			return false;
+		}
 
+		@Override
+		public boolean endSearch( MinXML subject, boolean cutoff ) {
+			return false;
+		}
+		
+	}
+
+	@Test
+	public void testPreOrder() {
+		String tree = "<a><b><c/><d/></b><e><f/><g/></e></a>";
+		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		StringBuilder b = new StringBuilder();
+		for ( MinXML m : new IdWalker().preOrder( subject ) ) {
+			b.append( m.getName() );
+		}
+		assertEquals( "abcdefg", b.toString() );
+	}
+	
+	@Test
+	public void testPostOrder() {
+		String tree = "<a><b><c/><d/></b><e><f/><g/></e></a>";
+		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		StringBuilder b = new StringBuilder();
+		for ( MinXML m : new IdWalker().postOrder( subject ) ) {
+			b.append( m.getName() );
+		}
+		assertEquals( "cdbfgea", b.toString() );		
+	}
+	
+	
+	static class StopOnBSearcher extends MinXMLSearcher {
+
+		@Override
+		public boolean startSearch( MinXML subject ) {
+			return "b".equals( subject.getName() );
+		}
+
+		@Override
+		public boolean endSearch( MinXML subject, boolean cutoff ) {
+			return false;
+		}
+		
+	}
+
+	@Test
+	public void PreOrderStopOnB() {
+		String tree = "<a><b><c/><d/></b><e><f/><g/></e></a>";
+		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		StringBuilder b = new StringBuilder();
+		for ( MinXML m : new StopOnBSearcher().preOrder( subject ) ) {
+			b.append( m.getName() );
+		}
+		assertEquals( "abefg", b.toString() );
+	}
+	
+	@Test
+	public void postOrderStopOnB() {
+		String tree = "<a><b><c/><d/></b><e><f/><g/></e></a>";
+		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		StringBuilder b = new StringBuilder();
+		for ( MinXML m : new StopOnBSearcher().postOrder( subject ) ) {
+			b.append( m.getName() );
+		}
+		assertEquals( "bfgea", b.toString() );
+	}
+	
+	
+	
+	static class SkipGSearcher extends MinXMLSearcher {
+
+		@Override
+		public boolean startSearch( MinXML subject ) {
+			return false;
+		}
+
+		@Override
+		public boolean endSearch( MinXML subject, boolean cutoff ) {
+			return "f".equals( subject.getName() );
+		}
+		
+	}
+
+	@Test
+	public void preOrderSkipGSearcher() {
+		String tree = "<a><b><c/><d/></b><e><f/><g/></e></a>";
+		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		StringBuilder b = new StringBuilder();
+		for ( MinXML m : new SkipGSearcher().preOrder( subject ) ) {
+			b.append( m.getName() );
+		}
+		assertEquals( "abcdef", b.toString() );
+	}
+	
+	@Test
+	public void postOrderSkipGSearcher() {
+		String tree = "<a><b><c/><d/></b><e><f/><g/></e></a>";
+		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		StringBuilder b = new StringBuilder();
+		for ( MinXML m : new SkipGSearcher().postOrder( subject ) ) {
+			b.append( m.getName() );
+		}
+		assertEquals( "cdbfea", b.toString() );
+	}
+	
+	
+	
+	
 }

@@ -19,9 +19,13 @@
 
 package com.steelypip.powerups.minxml;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Iterator;
+import java.util.ListIterator;
 
 import com.steelypip.powerups.common.EmptyIterator;
+
 
 public abstract class MinXMLSearcher {
 
@@ -65,6 +69,144 @@ public abstract class MinXMLSearcher {
 			cutoff = this.search( kids.next() );
 		}
 		return this.endSearch( subject, cutoff );
+	}
+	
+	/**
+	 * This are a pair of markers value used to mark the element 'below' it (lower index)
+	 * in the queue. Marked items represent 'endWalk' tasks and unmarked items
+	 * represent 'startWalk + expand' tasks. The choice of marker is used to signal
+	 * true/false.
+	 */
+	private static final MinXML cutoff_true = new BadMinXML();
+	private static final MinXML cutoff_false = new BadMinXML();
+	
+	static abstract class CommonMethodsPreOrderIterator implements Iterator< MinXML > {
+		protected final MinXMLSearcher searcher;
+		protected final Deque< MinXML > queue = new ArrayDeque<>();
+		
+		public CommonMethodsPreOrderIterator( MinXMLSearcher searcher, MinXML subject ) {
+			this.searcher = searcher;
+			this.queue.add( subject );
+		}			
+
+		protected void cutAwaySiblings() {
+			//	We have to cut away the siblings.
+			while ( ! queue.isEmpty() ) {
+				final MinXML last = queue.removeLast();
+				if ( cutoff_false == last || cutoff_true == last ) break;
+			}
+			queue.addLast( cutoff_true );
+		}
+		
+		protected void expand( final MinXML x ) {
+			final boolean cutoff = this.searcher.startSearch( x );
+			queue.addLast( x );
+			queue.addLast( cutoff ? cutoff_true : cutoff_false );
+			if ( ! cutoff ) {
+				final ListIterator< MinXML > it = x.listIterator( x.size() );
+				while ( it.hasPrevious() ) {
+					queue.addLast( it.previous() );
+				}				
+			}
+		}
+	
+	}
+	
+	static class SearcherPreOrderIterator extends CommonMethodsPreOrderIterator {
+		
+		public SearcherPreOrderIterator( MinXMLSearcher searcher, MinXML subject ) {
+			super( searcher, subject );
+		}	
+
+		@Override
+		public boolean hasNext() {
+			while ( ! queue.isEmpty() ) {
+				final MinXML last = queue.getLast();
+				if ( cutoff_false != last && cutoff_true != last ) return true;
+				queue.removeLast();
+				final boolean cutoff = this.searcher.endSearch( queue.removeLast(), cutoff_true == last );
+				if ( cutoff ) {
+					this.cutAwaySiblings();
+				}
+			}
+			return false;
+		}
+
+		@Override
+		public MinXML next() {
+			final MinXML x = queue.removeLast();
+			if ( cutoff_false != x && cutoff_true != x ) {
+				this.expand( x );
+				return x;
+			} else {
+				queue.addLast( x );
+				this.hasNext();
+				return this.next();
+			}
+		}
+		
+	}
+	
+	public Iterable< MinXML > preOrder( final MinXML subject ) {
+		return new Iterable< MinXML >() {
+			@Override
+			public Iterator< MinXML > iterator() {
+				return new SearcherPreOrderIterator( MinXMLSearcher.this, subject );
+			}
+		};
+	}
+	
+	static class SearcherPostOrderIterator extends CommonMethodsPreOrderIterator {
+		
+		public SearcherPostOrderIterator( MinXMLSearcher searcher, MinXML subject ) {
+			super( searcher, subject );
+		}	
+		
+		/**
+		 * This not only returns if there is a next member but normalises
+		 * the queue. In the case of a post-order traversal, the queue is
+		 * normal we
+		 */
+		@Override
+		public boolean hasNext() {
+			while ( ! queue.isEmpty() ) {
+				final MinXML last = queue.getLast();
+				if ( cutoff_false == last || cutoff_true == last ) return true;
+				this.expand( queue.removeLast() );
+			}
+			return false;
+		}
+		
+		/**
+		 * After this method the queue is NOT normal. A call to
+		 * hasNext will sort it out.
+		 */
+		@Override
+		public MinXML next() {
+			final MinXML x = queue.removeLast();
+			if ( cutoff_false == x || cutoff_true == x ) {
+				final MinXML last = queue.removeLast();
+				final boolean cutoff = this.searcher.endSearch( last, cutoff_true == x );
+				if ( cutoff ) {
+					this.cutAwaySiblings();
+				}
+				return last;
+			} else {
+				queue.addLast( x );
+				this.hasNext();
+				return this.next();
+			}
+		}
+
+	}
+	
+	public Iterable< MinXML > postOrder( final MinXML subject ) {
+		return new Iterable< MinXML >() {
+			@Override
+			public Iterator< MinXML > iterator() {
+				return new SearcherPostOrderIterator( MinXMLSearcher.this, subject );
+			}
+		};
 	}
 	
 }

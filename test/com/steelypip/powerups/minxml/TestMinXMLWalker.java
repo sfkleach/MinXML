@@ -42,5 +42,39 @@ public class TestMinXMLWalker {
 		assertEquals( 2, c.getStartCount() );
 		assertEquals( 2, c.getEndCount() );
 	}
+	
+	static class IdWalker extends MinXMLWalker {
+
+		@Override
+		public void startWalk( MinXML subject ) {
+		}
+
+		@Override
+		public void endWalk( MinXML subject ) {
+		}
+		
+	}
+	
+	@Test
+	public void testPreOrder() {
+		String tree = "<a><b><c/><d/></b><e><f/><g/></e></a>";
+		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		StringBuilder b = new StringBuilder();
+		for ( MinXML m : new IdWalker().preOrder( subject ) ) {
+			b.append( m.getName() );
+		}
+		assertEquals( "abcdefg", b.toString() );
+	}
+
+	@Test
+	public void testPostOrder() {
+		String tree = "<a><b><c/><d/></b><e><f/><g/></e></a>";
+		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		StringBuilder b = new StringBuilder();
+		for ( MinXML m : new IdWalker().postOrder( subject ) ) {
+			b.append( m.getName() );
+		}
+		assertEquals( "cdbfgea", b.toString() );
+	}
 
 }

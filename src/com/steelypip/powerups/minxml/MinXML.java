@@ -23,6 +23,8 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 /**
  * MinXML is a cleaner, leaner, cut-down version of XML with only the
  * absolute essentials. An MinXML object is a single element that 
@@ -32,7 +34,7 @@ import java.util.Map;
  * 
  * @author Stephen Leach
  */
-public interface MinXML extends List< MinXML > {
+public interface MinXML extends List< @NonNull MinXML > {
 	/**
 	 * Returns the name of a MinXML element. It is not 
 	 * guaranteed that this is interned but it is guaranteed

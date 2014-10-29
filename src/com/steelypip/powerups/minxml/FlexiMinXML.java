@@ -23,6 +23,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.steelypip.powerups.common.EmptyIterable;
 import com.steelypip.powerups.common.EmptyIterator;
 import com.steelypip.powerups.common.EmptyList;
@@ -46,7 +48,7 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 		//  Note that the attributes and children can be left as null. 
 	}
 	
-	private FlexiMinXML( final MinXML element ) {
+	private FlexiMinXML( final @NonNull MinXML element ) {
 		this.name = element.getName();
 		this.putAllAttributes( element.asMap() );
 		this.addAll( element );
@@ -57,11 +59,11 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 	 * @param element
 	 * @return
 	 */
-	public static FlexiMinXML shallowCopy( MinXML element ) {
+	public static @NonNull FlexiMinXML shallowCopy( @NonNull MinXML element ) {
 		return new FlexiMinXML( element );
 	}
 		
-	public static FlexiMinXML deepCopy( MinXML element ) {
+	public static @NonNull FlexiMinXML deepCopy( @NonNull MinXML element ) {
 		final FlexiMinXML result = new FlexiMinXML( element.getName() );
 		for ( Map.Entry< String, String > e : element.entries() ) {
 			result.putAttribute( e.getKey(), e.getValue() );
@@ -163,10 +165,10 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 		return this.children == null || this.children.isEmpty();
 	}
 	
-	static Iterator< MinXML > empty_iterator = new EmptyIterator< MinXML >();
+	static Iterator< @NonNull MinXML > empty_iterator = new EmptyIterator< @NonNull MinXML >();
 
 	@Override
-	public Iterator< MinXML > iterator() {
+	public Iterator< @NonNull MinXML > iterator() {
 		if ( this.children == null ) {
 			return empty_iterator;
 		} else {

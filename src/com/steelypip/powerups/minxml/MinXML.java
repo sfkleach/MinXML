@@ -266,7 +266,7 @@ public interface MinXML extends List< @NonNull MinXML > {
 	 * {@link java.lang.UnsupportedOperationException} 
 	 * 
 	 */
-	MinXML shallowCopy();
+	@NonNull MinXML shallowCopy();
 	 
 	/**
 	 * deepCopy makes a copy of the topmost node and all the children. The
@@ -275,5 +275,5 @@ public interface MinXML extends List< @NonNull MinXML > {
 	 * {@link java.lang.UnsupportedOperationException} 
 	 * 
 	 */
-	MinXML deepCopy();
+	@NonNull MinXML deepCopy();
 }

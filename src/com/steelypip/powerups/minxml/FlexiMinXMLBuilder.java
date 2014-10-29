@@ -20,12 +20,14 @@ package com.steelypip.powerups.minxml;
 
 import java.util.LinkedList;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.steelypip.powerups.alert.Alert;
 
 public class FlexiMinXMLBuilder implements MinXMLBuilder {
 
-	FlexiMinXML current_element = new FlexiMinXML( "DUMMY_NODE" );
-	final LinkedList< FlexiMinXML > element_stack = new LinkedList< FlexiMinXML >();
+	@NonNull FlexiMinXML current_element = new FlexiMinXML( "DUMMY_NODE" );
+	final LinkedList< @NonNull FlexiMinXML > element_stack = new LinkedList<>();
 
 	@Override
 	public void startTagOpen( String name ) {

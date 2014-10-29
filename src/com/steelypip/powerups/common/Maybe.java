@@ -49,7 +49,7 @@ public class Maybe< @Nullable T > implements Iterable< T > {
 	
 	public void unsetValue() {
 		this.has_value = false;
-		this.the_value = (@Nullable T)null;	//	free up for garbage collection.
+		this.the_value = null;	//	free up for garbage collection.
 	}
 	
 	public T otherwise( T default_value ) {

@@ -23,13 +23,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.steelypip.powerups.common.EmptyMap;
 
 public abstract class AbsFlexiMinXML extends AbsMinXML {
 
 	protected String name;
 	protected TreeMap< String, String > attributes;
-	protected ArrayList< MinXML > children;
+	protected ArrayList< @NonNull MinXML > children;
 
 	public String getName() {
 		return name;
@@ -42,7 +44,7 @@ public abstract class AbsFlexiMinXML extends AbsMinXML {
 	@Override
 	public Map< String, String > asMap() {
 		if ( this.attributes == null ) {
-			this.attributes = new TreeMap< String, String >();
+			this.attributes = new TreeMap<>();
 		}
 		return this.attributes;
 	}
@@ -55,9 +57,9 @@ public abstract class AbsFlexiMinXML extends AbsMinXML {
 	}
 
 	@Override
-	public List< MinXML > toList() {
+	public List< @NonNull MinXML > toList() {
 		if ( this.children == null ) {
-			this.children = new ArrayList< MinXML >();
+			this.children = new ArrayList< @NonNull MinXML >();
 		}
 		return this.children;
 	}

@@ -24,6 +24,8 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 public abstract class MinXMLWalker {
 	/**
 	 * startWalk is called at the start of the tree-walk of the subject and its children. 
@@ -65,19 +67,38 @@ public abstract class MinXMLWalker {
 	 * in the queue. Marked items represent 'endWalk' tasks and unmarked items
 	 * represent 'startWalk + expand' tasks. 
 	 */
-	private static final MinXML marker = new BadMinXML();
+	private static final @NonNull MinXML marker = new BadMinXML();
 	
-	static class PreOrderIterator implements Iterator< MinXML > {
+	static abstract class CommonIterator implements Iterator< @NonNull MinXML > {
 		
-		final MinXMLWalker walker;
-		final Deque< MinXML > queue;
+		protected final @NonNull MinXMLWalker walker;
+		protected final Deque< @NonNull MinXML > queue = new ArrayDeque<>();
 		
-		public PreOrderIterator( MinXMLWalker walker, Deque< MinXML > queue ) {
+		public CommonIterator( @NonNull MinXMLWalker walker, @NonNull MinXML subject ) {
 			this.walker = walker;
-			this.queue = queue;
+			this.queue.add( subject );
+		}	
+
+		protected void expand( final @NonNull MinXML x ) {
+			this.walker.startWalk( x );
+			queue.addLast( x );
+			queue.addLast( marker );
+			final ListIterator< @NonNull MinXML > it = x.listIterator( x.size() );
+			while ( it.hasPrevious() ) {
+				queue.addLast( it.previous() );
+			}						
+		}
+		
+	}
+	
+	static class PreOrderIterator extends CommonIterator {
+		
+		public PreOrderIterator( @NonNull MinXMLWalker walker, @NonNull MinXML subject ) {
+			super( walker, subject );
 		}	
 		
-		private boolean advance() {
+		@Override
+		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
 				if ( marker != queue.getLast() ) return true;
 				queue.removeLast();
@@ -85,97 +106,49 @@ public abstract class MinXMLWalker {
 			}
 			return false;
 		}
-
-		@Override
-		public boolean hasNext() {
-			return this.advance();
-		}
 		
-		private void expand( final MinXML x ) {
-			this.walker.startWalk( x );
-			queue.addLast( x );
-			queue.addLast( marker );
-			final ListIterator< MinXML > it = x.listIterator( x.size() );
-			while ( it.hasPrevious() ) {
-				queue.addLast( it.previous() );
-			}						
-		}
-
 		@Override
-		public MinXML next() {
+		public @NonNull MinXML next() {
 			final MinXML x = queue.removeLast();
 			if ( x != marker ) {
 				this.expand( x );
 				return x;
 			}
 			this.walker.endWalk( queue.removeLast() );
-			this.advance();
+			this.hasNext();
 			return queue.removeLast();
 		}
 		
 	}
 	
-	static class PreOrderIterable implements Iterable< MinXML > {
-		
-		final MinXMLWalker walker;
-		final MinXML subject;
-		
-		public PreOrderIterable( MinXMLWalker walker, MinXML subject ) {
-			this.walker = walker;
-			this.subject = subject;
-		}
-
-		@Override
-		public Iterator< MinXML > iterator() {
-			final Deque< MinXML > queue = new ArrayDeque< MinXML >();
-			queue.add( this.subject );
-			return new PreOrderIterator( this.walker, queue );
-		}
-		
+	public Iterable< @NonNull MinXML > preOrder( final @NonNull MinXML subject ) {
+		return new Iterable< @NonNull MinXML >() {
+			@Override
+			public Iterator< @NonNull MinXML > iterator() {
+				return new PreOrderIterator( MinXMLWalker.this, subject );
+			}
+		};
 	}
 	
-	public Iterable< MinXML > preOrder( final MinXML subject ) {
-		return new PreOrderIterable( this, subject );
-	}
+	static class PostOrderIterator extends CommonIterator {
 	
-	static class PostOrderIterator implements Iterator< MinXML > {
-		
-		final MinXMLWalker walker;
-		final Deque< MinXML > queue;
-		
-		public PostOrderIterator( MinXMLWalker walker, Deque< MinXML > queue ) {
-			this.walker = walker;
-			this.queue = queue;
+		public PostOrderIterator( @NonNull MinXMLWalker walker, @NonNull MinXML subject) {
+			super( walker, subject );
 		}	
-		
-		
-		private void expand( final MinXML x ) {
-			this.walker.startWalk( x );
-			queue.addLast( x );
-			queue.addLast( marker );
-			final ListIterator< MinXML > it = x.listIterator( x.size() );
-			while ( it.hasPrevious() ) {
-				queue.addLast( it.previous() );
-			}						
-		}
 		
 		/**
 		 * Advances the queue so that the head is a sentinel value. We
 		 * call this the normal situation. 
 		 * @return the queue has items in it.
 		 */
-		private boolean advance() {
+		@Override
+		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
 				if ( marker == queue.getLast() ) return true;
 				MinXML e = queue.removeLast();
 				this.expand( e );
 			}
 			return false;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return this.advance();
 		}
 		
 
@@ -184,7 +157,7 @@ public abstract class MinXMLWalker {
 		 * hasNext would sort it out.
 		 */
 		@Override
-		public MinXML next() {
+		public @NonNull MinXML next() {
 			final MinXML x = queue.removeLast();
 			if ( x == marker ) {
 				//	The queue is normalised.
@@ -197,33 +170,20 @@ public abstract class MinXMLWalker {
 				//	head of the queue was not a request for an end-visit. We
 				//	Must process this element, normalise the queue and re-try.
 				this.expand( x );
-				this.advance();
+				this.hasNext();
 				return this.next();
 			}
 		}		
 	}
 
-	static class PostOrderIterable implements Iterable< MinXML > {
-		
-		final MinXMLWalker walker;
-		final MinXML subject;
-		
-		public PostOrderIterable( MinXMLWalker walker, MinXML subject ) {
-			this.walker = walker;
-			this.subject = subject;
-		}
-
-		@Override
-		public Iterator< MinXML > iterator() {
-			final Deque< MinXML > queue = new ArrayDeque< MinXML >();
-			queue.add( this.subject );
-			return new PostOrderIterator( this.walker, queue );
-		}
-		
-	}
 	
-	public Iterable< MinXML > postOrder( final MinXML subject ) {
-		return new PostOrderIterable( this, subject );
+	public Iterable< @NonNull MinXML > postOrder( final @NonNull MinXML subject ) {
+		return new Iterable< @NonNull MinXML >() {
+			@Override
+			public Iterator< @NonNull MinXML > iterator() {
+				return new PostOrderIterator( MinXMLWalker.this, subject );
+			}
+		};
 	}
 	
 }

@@ -28,7 +28,8 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
-import com.steelypip.powerups.common.EmptyIterator;
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.steelypip.powerups.common.NullIndenter;
 import com.steelypip.powerups.common.StdIndenter;
 import com.steelypip.powerups.io.StringPrintWriter;
@@ -58,7 +59,7 @@ public abstract class AbsMinXML implements MinXML {
 	 */
 	public abstract Map< String, String > quickGetAttributes();
 		
-	public abstract List< MinXML > toList();
+	public abstract List< @NonNull MinXML > toList();
 	
 
 	//////////////////////////////////////////////////////////////////////////////////
@@ -74,19 +75,19 @@ public abstract class AbsMinXML implements MinXML {
 	public void trimToSize() {
 	}
 
-	public void add( int index, MinXML element ) {
+	public void add( int index, @NonNull MinXML element ) {
 		toList().add( index, element );
 	}
 
-	public boolean add( MinXML e ) {
+	public boolean add( @NonNull MinXML e ) {
 		return toList().add( e );
 	}
 
-	public boolean addAll( Collection< ? extends MinXML > c ) {
+	public boolean addAll( Collection< @NonNull ? extends MinXML > c ) {
 		return toList().addAll( c );
 	}
 
-	public boolean addAll( int index, Collection< ? extends MinXML > c ) {
+	public boolean addAll( int index, Collection< @NonNull ? extends MinXML > c ) {
 		return toList().addAll( index, c );
 	}
 
@@ -106,7 +107,7 @@ public abstract class AbsMinXML implements MinXML {
 		return toList().equals( o );
 	}
 
-	public MinXML get( int index ) {
+	public @NonNull MinXML get( int index ) {
 		return toList().get( index );
 	}
 
@@ -122,7 +123,7 @@ public abstract class AbsMinXML implements MinXML {
 		return toList().isEmpty();
 	}
 
-	public Iterator< MinXML > iterator() {
+	public Iterator< @NonNull MinXML > iterator() {
 		return toList().iterator();
 	}
 
@@ -130,15 +131,15 @@ public abstract class AbsMinXML implements MinXML {
 		return toList().lastIndexOf( o );
 	}
 
-	public ListIterator< MinXML > listIterator() {
+	public ListIterator< @NonNull MinXML > listIterator() {
 		return toList().listIterator();
 	}
 
-	public ListIterator< MinXML > listIterator( int index ) {
+	public ListIterator< @NonNull MinXML > listIterator( int index ) {
 		return toList().listIterator( index );
 	}
 
-	public MinXML remove( int index ) {
+	public @NonNull MinXML remove( int index ) {
 		return toList().remove( index );
 	}
 
@@ -154,7 +155,7 @@ public abstract class AbsMinXML implements MinXML {
 		return toList().retainAll( c );
 	}
 
-	public MinXML set( int index, MinXML element ) {
+	public @NonNull MinXML set( int index, @NonNull MinXML element ) {
 		return toList().set( index, element );
 	}
 
@@ -162,7 +163,7 @@ public abstract class AbsMinXML implements MinXML {
 		return toList().size();
 	}
 
-	public List< MinXML > subList( int fromIndex, int toIndex ) {
+	public List< @NonNull MinXML > subList( int fromIndex, int toIndex ) {
 		return toList().subList( fromIndex, toIndex );
 	}
 
@@ -304,12 +305,12 @@ public abstract class AbsMinXML implements MinXML {
 	//////////////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public MinXML shallowCopy() {
+	public @NonNull MinXML shallowCopy() {
 		return FlexiMinXML.shallowCopy( this );
 	}
 
 	@Override
-	public MinXML deepCopy() {
+	public @NonNull MinXML deepCopy() {
 		return FlexiMinXML.deepCopy( this );
 	}
 	

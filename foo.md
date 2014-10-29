@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: modern
 title: Blogging Like a Hacker
 ---
 

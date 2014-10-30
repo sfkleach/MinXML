@@ -10,6 +10,32 @@ public class TestMinXMLWalker {
 
 	private static final String source1 = "<outer><!-- this is a comment --><foo left='right' less=\"more\"></foo></outer>";
 	
+	static class CountElements extends MinXMLWalker {
+		
+		int count = 0;
+		
+		public int getCount() {
+			return count;
+		}
+
+		@Override
+		public void startWalk( MinXML subject ) {
+			this.count += 1;
+		}
+
+		@Override
+		public void endWalk( MinXML subject ) {
+		}		
+		
+	}
+	
+	@Test
+	public void testCountElements() {
+		final CountElements c = new CountElements();
+		c.walk( new MinXMLParser( new StringReader( source1 ) ).readElement() );
+		assertEquals( 2, c.getCount() );
+	}
+	
 	static class CountAttributes extends MinXMLWalker {
 		
 		private int start_count = 0;

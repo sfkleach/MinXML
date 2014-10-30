@@ -44,21 +44,20 @@ public abstract class MinXMLWalker {
 	 */
 	public abstract void endWalk( MinXML subject );
 	
-
-	
 	/**
 	 * The walk method is used to implement a depth-first, left-to-right recursive 
 	 * scan over a tree. The startWalk and endWalk methods are invoked on the way
 	 * down the tree and up the tree respectively. 
 	 * 
 	 * @param subject
-	 */
-	public void walk( final MinXML subject ) {
+	 * @return the walker itself, used for chaining method calls.
+	 */	
+	public MinXMLWalker walk( final MinXML subject ) {
 		this.startWalk( subject );
 		for ( MinXML kid : subject ) {
 			this.walk(  kid );
 		}
-		this.endWalk( subject );
+		return this;
 	}
 	
 	

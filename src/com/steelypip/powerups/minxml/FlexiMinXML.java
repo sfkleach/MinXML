@@ -18,6 +18,7 @@
  */
 package com.steelypip.powerups.minxml;
 
+import java.io.StringReader;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
@@ -52,6 +53,10 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 		this.name = element.getName();
 		this.putAllAttributes( element.asMap() );
 		this.addAll( element );
+	}
+
+	public static MinXML fromString( final String input ) {
+		return new MinXMLParser( new StringReader( input ) ).readElement(  );
 	}
 	
 	/**

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.StringReader;
 
+import org.eclipse.jdt.annotation.Nullable;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -187,7 +188,37 @@ public class TestMinXMLSearcher {
 		assertEquals( "cdbfea", b.toString() );
 	}
 	
-	
+	static class FindB extends MinXMLSearcher {
+		
+        StringBuilder visited = new StringBuilder();
+
+		public String getVisited() {
+			return visited.toString();
+		}
+		
+		@Override
+		public boolean startSearch( MinXML subject ) {
+			visited.append( subject.getName() );
+			return "B".equals( subject.getName() );
+		}
+		
+		@Override
+		public boolean endSearch( MinXML subject, boolean found ) {
+			return found;
+		}		
+		
+	}
+
+	@Test
+	public void search() {
+		String tree = "<A><B><C/><D/></B><E><F/><G/></E></A>";
+		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		FindB f = new FindB();
+		@Nullable MinXML b = f.search( subject );
+		assertNotNull( b );
+		assertEquals( "B", b.getName() );
+		assertEquals( "AB", f.getVisited() );
+	}
 	
 	
 }

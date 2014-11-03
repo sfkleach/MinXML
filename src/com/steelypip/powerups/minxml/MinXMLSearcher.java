@@ -24,6 +24,8 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.ListIterator;
 
+import org.eclipse.jdt.annotation.Nullable;
+
 import com.steelypip.powerups.common.EmptyIterator;
 
 
@@ -60,15 +62,15 @@ public abstract class MinXMLSearcher {
 	 * in-place updates.
 	 * 
 	 * @param subject
-	 * @return true indicates the search was cutoff. 
+	 * @return a successful node, otherwise null.
 	 */
-	public boolean search( final MinXML subject ) {
-		boolean cutoff = this.startSearch( subject );
-		final Iterator< MinXML > kids = cutoff ? empty : subject.iterator();
-		while ( ! cutoff && kids.hasNext() ) {
+	public @Nullable MinXML search( final MinXML subject ) {
+		MinXML cutoff = this.startSearch( subject ) ? subject : null;
+		final Iterator< MinXML > kids = cutoff != null ? empty : subject.iterator();
+		while ( cutoff == null && kids.hasNext() ) {
 			cutoff = this.search( kids.next() );
 		}
-		return this.endSearch( subject, cutoff );
+		return this.endSearch( subject, cutoff != null ) ? ( cutoff != null ? cutoff : subject ) : null;
 	}
 	
 	/**

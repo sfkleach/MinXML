@@ -69,38 +69,40 @@
 
 <p>The first advantage of this format is that the internal representation is very neat; it is a tree of dictionaries, although the element name is only a single tag. Representing this in code is simple and the iteration idioms are simple. Here's the core of a naive implementation in Java.</p>
 
-<p>''' java
-class MinX implements Iterable&lt; MinX &gt; {
-    String name;
-    Map&lt; String, String &gt; attributes;
-    List&lt; MinX &gt; children;</p>
+<div class="highlight highlight-java"><pre><span class="kd">class</span> <span class="nc">MinX</span> <span class="kd">implements</span> <span class="n">Iterable</span><span class="o">&lt;</span> <span class="n">MinX</span> <span class="o">&gt;</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="n">Map</span><span class="o">&lt;</span> <span class="n">String</span><span class="o">,</span> <span class="n">String</span> <span class="o">&gt;</span> <span class="n">attributes</span><span class="o">;</span>
+    <span class="n">List</span><span class="o">&lt;</span> <span class="n">MinX</span> <span class="o">&gt;</span> <span class="n">children</span><span class="o">;</span>
 
-<pre><code>@Override
-public Iterator&lt; MinX &gt; iterator() {
-    return children.iterator();
-}
-</code></pre>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">Iterator</span><span class="o">&lt;</span> <span class="n">MinX</span> <span class="o">&gt;</span> <span class="n">iterator</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">children</span><span class="o">.</span><span class="na">iterator</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
 
-<p>}</p>
+<p>The second advantage is that a MinXML document is completely self-contained.</p>
 
-<pre><code>
-The second advantage is that a MinXML document is completely self-contained.
+<ol>
+<li>It can be correctly parsed without reference to a DTD.</li>
+<li>It has no constants to resolve.</li>
+<li>And can be completely parsed without any semantic analysis.</li>
+</ol>
 
-  1. It can be correctly parsed without reference to a DTD.
-  2. It has no constants to resolve.
-  3. And can be completely parsed without any semantic analysis.
+<p>And this simplicity leads to both simpler implementations and simpler processing code. In particular, and in contrast to JSON, it is suited to languages with inflexible static typing, such as C++ and Java.</p>
 
-And this simplicity leads to both simpler implementations and simpler processing code. In particular, and in contrast to JSON, it is suited to languages with inflexible static typing, such as C++ and Java.
+<h1>
+<a name="disadvantages" class="anchor" href="#disadvantages"><span class="octicon octicon-link"></span></a>Disadvantages</h1>
 
-# Disadvantages
+<p>The disadvantage is that it is very verbose and that basic types such as integers end up being encoded rather clumsily e.g.  <code>&lt;constant type="int" value="-3"/&gt;</code>. And, of course, it omits many XML features and the capabilities that they support.</p>
 
-The disadvantage is that it is very verbose and that basic types such as integers end up being encoded rather clumsily i.e. &lt;constant type="int" value="-3"/&gt;. And, of course, it omits many XML features and the capabilities that they support.
+<h1>
+<a name="see-also" class="anchor" href="#see-also"><span class="octicon octicon-link"></span></a>See Also</h1>
 
-# See Also
-
-* [Source code of reference implementation](https://github.com/sfkleach/MinXML)
-* [Javadocs for reference implementation](/MinXML/doc)
-</code></pre>
+<ul>
+<li><a href="https://github.com/sfkleach/MinXML">Source code of reference implementation</a></li>
+<li><a href="/MinXML/doc">Javadocs for reference implementation</a></li>
+</ul>
       </section>
     </div>
     <footer>

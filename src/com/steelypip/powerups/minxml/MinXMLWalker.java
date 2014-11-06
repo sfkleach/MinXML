@@ -57,6 +57,7 @@ public abstract class MinXMLWalker {
 		for ( MinXML kid : subject ) {
 			this.walk(  kid );
 		}
+		this.endWalk( subject );
 		return this;
 	}
 	

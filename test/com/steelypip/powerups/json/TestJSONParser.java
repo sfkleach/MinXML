@@ -2,12 +2,14 @@ package com.steelypip.powerups.json;
 
 import static org.junit.Assert.*;
 
+import com.steelypip.powerups.json.MinXMLJSONParser;
 import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.charrepeater.CharRepeater;
 import com.steelypip.powerups.charrepeater.ReaderCharRepeater;
 import com.steelypip.powerups.minxml.FlexiMinXMLBuilder;
 import com.steelypip.powerups.minxml.MinXML;
 
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 
 import org.junit.Before;
@@ -104,4 +106,9 @@ public class TestJSONParser {
 		equivalent( "{\"key\":99,}", null );
 	}
 	
+	/*@Test
+	public void testPrettyPrint() {
+		MinXML json_as_minxml = new MinXMLJSONParser( new StringReader( "[ 1, true ]" ) ).read();
+		json_as_minxml.prettyPrint( new OutputStreamWriter( System.out ) );
+	}*/
 }

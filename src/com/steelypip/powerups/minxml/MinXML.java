@@ -253,7 +253,7 @@ public interface MinXML extends List< @NonNull MinXML > {
 	 * end tag are on their own line and the children indented. The output always finishes
 	 * with a newline.
 	 * 
-	 * @param pw the {@link Writer} to use.
+	 * @param w the {@link Writer} to use.
 	 */
 	void prettyPrint( Writer w );
 	

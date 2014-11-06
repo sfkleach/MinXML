@@ -20,12 +20,17 @@ package com.steelypip.powerups.minxson;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.steelypip.powerups.alert.Alert;
+import com.steelypip.powerups.json.MinXMLJSONParser;
 import com.steelypip.powerups.minxml.MinXML;
 
 public class TestMinXSONParser {
@@ -36,7 +41,7 @@ public class TestMinXSONParser {
 
 	@Test
 	public void testEmpty() {
-		assertNull( new MinXSONParser( new StringReader( "" ) ).readElement() );
+		assertNull( new MinXSONParser( new StringReader( "" ) ).read() );
 	}
 
 	@Test
@@ -50,7 +55,7 @@ public class TestMinXSONParser {
 	
 	@Test
 	public void testNonEmpty() {
-		MinXML m = new MinXSONParser( new StringReader( "<foo/>" ) ).readElement();
+		MinXML m = new MinXSONParser( new StringReader( "<foo/>" ) ).read();
 		assertNotNull( m );
 		assertEquals( "foo", m.getName() );
 		assertTrue( m.getAttributes().isEmpty() );
@@ -59,7 +64,7 @@ public class TestMinXSONParser {
 	
 	@Test
 	public void testAttributesEitherQuote() {
-		MinXML m = new MinXSONParser( new StringReader( "<foo left='right' less=\"more\"/>" ) ).readElement();
+		MinXML m = new MinXSONParser( new StringReader( "<foo left='right' less=\"more\"/>" ) ).read();
 		assertNotNull( m );
 		assertEquals( "right", m.getAttribute( "left" ) );
 		assertEquals( "more", m.getAttribute( "less" ) );
@@ -68,7 +73,7 @@ public class TestMinXSONParser {
 	
 	@Test
 	public void testNested() {
-		MinXML m = new MinXSONParser( new StringReader( "<outer><foo left='right' less=\"more\"></foo></outer>" ) ).readElement();
+		MinXML m = new MinXSONParser( new StringReader( "<outer><foo left='right' less=\"more\"></foo></outer>" ) ).read();
 		assertNotNull( m );
 		assertEquals( 1, m.size() );
 		assertEquals( "foo", m.get( 0 ).getName() );
@@ -77,7 +82,7 @@ public class TestMinXSONParser {
 	
 	@Test
 	public void testComment() {
-		MinXML m = new MinXSONParser( new StringReader( "<outer><!-- this is a comment --><foo left='right' less=\"more\"></foo></outer>" ) ).readElement();
+		MinXML m = new MinXSONParser( new StringReader( "<outer><!-- this is a comment --><foo left='right' less=\"more\"></foo></outer>" ) ).read();
 		assertNotNull( m );
 		assertEquals( 1, m.size() );
 		assertEquals( "foo", m.get( 0 ).getName() );
@@ -86,7 +91,7 @@ public class TestMinXSONParser {
 	
 	@Test
 	public void testCommentWithEmbeddedSigns() {
-		MinXML m = new MinXSONParser( new StringReader( "<outer><!-- <- this -> is -> a <- comment <! --><foo left='right' less=\"more\"></foo></outer>" ) ).readElement();
+		MinXML m = new MinXSONParser( new StringReader( "<outer><!-- <- this -> is -> a <- comment <! --><foo left='right' less=\"more\"></foo></outer>" ) ).read();
 		assertNotNull( m );
 		assertEquals( 1, m.size() );
 		assertEquals( "foo", m.get( 0 ).getName() );
@@ -95,13 +100,13 @@ public class TestMinXSONParser {
 	
 	@Test( expected=Alert.class )
 	public void testBadComment() {
-		new MinXSONParser( new StringReader( "<outer><!-- <- this --> is -> a <- bad comment <! --><foo left='right' less=\"more\"></foo></outer>" ) ).readElement();
+		new MinXSONParser( new StringReader( "<outer><!-- <- this --> is -> a <- bad comment <! --><foo left='right' less=\"more\"></foo></outer>" ) ).read();
 	}
 	
 	
 	@Test
 	public void testPrologElison() {
-		MinXML m = new MinXSONParser( new StringReader( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><xxx/>" ) ).readElement();
+		MinXML m = new MinXSONParser( new StringReader( "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\"><xxx/>" ) ).read();
 		assertNotNull( m );
 		assertEquals( "xxx", m.getName() );
 		assertTrue( m.isEmpty() );
@@ -109,43 +114,43 @@ public class TestMinXSONParser {
 	
 	@Test( expected=Alert.class ) 
 	public void testForbiddenLessThan() {
-		new MinXSONParser( new StringReader( "<xxx a='<'/>" ) ).readElement();
+		new MinXSONParser( new StringReader( "<xxx a='<'/>" ) ).read();
 	}
 	
 	@Test( expected=Exception.class ) 
 	public void testForbiddenAmpersand() {
-		new MinXSONParser( new StringReader( "<xxx a='&'/>" ) ).readElement();
+		new MinXSONParser( new StringReader( "<xxx a='&'/>" ) ).read();
 	}
 	
 	@Test( expected=Exception.class ) 
 	public void testForbiddenDoubleInDouble() {
-		new MinXSONParser( new StringReader( "<xxx a=\"\"\"/>" ) ).readElement();
+		new MinXSONParser( new StringReader( "<xxx a=\"\"\"/>" ) ).read();
 	}
 	
 	@Test( expected=Exception.class ) 
 	public void testForbiddenSingleInSingle() {
-		new MinXSONParser( new StringReader( "<xxx a='\''/>" ) ).readElement();
+		new MinXSONParser( new StringReader( "<xxx a='\''/>" ) ).read();
 	}
 	
 	@Test
 	public void testAllowedGreaterThan() {
-		assertNotNull( new MinXSONParser( new StringReader( "<xxx a='>'/>" ) ).readElement() );
+		assertNotNull( new MinXSONParser( new StringReader( "<xxx a='>'/>" ) ).read() );
 	}
 	
 	@Test
 	public void testAllowedSingleInDouble() {
-		assertNotNull( new MinXSONParser( new StringReader( "<xxx a=\"'\"/>" ) ).readElement() );
+		assertNotNull( new MinXSONParser( new StringReader( "<xxx a=\"'\"/>" ) ).read() );
 	}
 	
 	@Test
 	public void testAllowedDoubleInSingle() {
-		assertNotNull( new MinXSONParser( new StringReader( "<xxx a='\"'/>" ) ).readElement() );		
+		assertNotNull( new MinXSONParser( new StringReader( "<xxx a='\"'/>" ) ).read() );		
 	}
 	
 	
 	@Test
 	public void testEscape() {
-		MinXML m = new MinXSONParser( new StringReader( "<foo bar='&lt;&gt;&amp;&quot;&apos;'/>" ) ).readElement();
+		MinXML m = new MinXSONParser( new StringReader( "<foo bar='&lt;&gt;&amp;&quot;&apos;'/>" ) ).read();
 		assertEquals( "<>&\"'", m.getAttribute( "bar" ) );
 	}
 	
@@ -159,7 +164,7 @@ public class TestMinXSONParser {
 	}
 	
 	private void equivalent( final String input, final String output, final char... extensions ) {
-		MinXML e = new MinXSONParser( new StringReader( input ), extensions ).readElement();
+		MinXML e = new MinXSONParser( new StringReader( input ), extensions ).read();
 		assertEquals( output, "" + e ); 
 		
 	}
@@ -297,18 +302,23 @@ public class TestMinXSONParser {
 	
 	@Test
 	public void testEscapeAttributes() {
-		MinXML m = new MinXSONParser( new StringReader( "<foo bar='&lt;&gt;&amp;&quot;&apos;'/>" ) ).readElement();
+		MinXML m = new MinXSONParser( new StringReader( "<foo bar='&lt;&gt;&amp;&quot;&apos;'/>" ) ).read();
 		assertEquals( "<>&\"'", m.getAttribute( "bar" ) );
 	}
 			
 	@Test( expected=Exception.class )
 	public void testUnfinished() {
-		new MinXSONParser( new StringReader( "<foo>" ) ).readElement();
+		new MinXSONParser( new StringReader( "<foo>" ) ).read();
+	}
+	
+	@Test( expected=Exception.class )
+	public void testMissingComma() {
+		new MinXSONParser( new StringReader( "<foo>1 2</foo>" ) ).read();
 	}
 	
 	@Test
 	public void testEscapeString() {
-		MinXML m = new MinXSONParser( new StringReader( "\"xxx\"" ) ).readElement();
+		MinXML m = new MinXSONParser( new StringReader( "\"xxx\"" ) ).read();
 		assertEquals( "xxx", m.getAttribute( "value" ) );
 	}
 	
@@ -367,7 +377,7 @@ public class TestMinXSONParser {
 				"  <!ENTITY js \"Jo Smith\">\n" +
 				"]>\n" +
 				"<author name='Jo Smith'></author>"
-			) ).readElement()
+			) ).read()
 		);
 		assertEquals( "author", m.getName() );
 	}
@@ -405,5 +415,28 @@ public class TestMinXSONParser {
 		
 	}
 
-	
+	@Test
+	public void testTerminator() {
+		equivalent(
+			"<foo>\n1,\n2\n</foo>",
+			"<foo><constant type=\"integer\" value=\"1\"/><constant type=\"integer\" value=\"2\"/></foo>"
+		);	
+		
+	}
+
+	@Test
+	public void testNesting() {
+		equivalent(
+			"<foo>[],<bar/></foo>",
+			"<foo><array/><bar/></foo>"
+		);	
+		
+	}
+
+	/*@Test
+	public void testPrettyPrint() throws FileNotFoundException {
+		MinXML minxml = new MinXSONParser( new FileReader( "data.minxson" ) ).read();
+		minxml.prettyPrint( new OutputStreamWriter( System.out ) );
+	}*/
+
 }

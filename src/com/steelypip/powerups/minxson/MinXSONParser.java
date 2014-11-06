@@ -318,7 +318,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		}
 	}
 	
-	private boolean read() {		
+	private boolean readOneTag() {		
 		if ( this.hasPendingTag() ) {
 			final boolean was_in_element = this.isInElement();
 			this.endTag( this.popTag() );
@@ -351,7 +351,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			if ( ch == ',' || ch == ';' || this.isNewlineTerminator() && ch == '\n' ) {
 				this.discardChar();
 				break;
-			} else if ( Character.isSpaceChar( ch ) ) {
+			} else if ( Character.isWhitespace( ch ) ) {
 				this.discardChar();
 				continue;
 			} else if ( ch == '<' ) {
@@ -539,7 +539,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		} else if ( ch == '!' || ch == '?' ) {
 			this.discardChar();
 			this.discardXMLComment( ch );
-			this.read();
+			this.readOneTag();
 			return;
 		} else {
 			this.readStartTag();
@@ -635,7 +635,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			this.eatWhiteSpace();
 			this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
 			this.extra_attributes.put( json_keys.FIELD, s );
-			this.read();
+			this.readOneTag();
 		} else {
 			this.parseConstant( s, json_keys.STRING );
 		}
@@ -692,7 +692,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		if ( this.isInObject() && ! this.extra_attributes.containsKey( json_keys.FIELD ) ) {
 			this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
 			this.extra_attributes.put( json_keys.FIELD, identifier );
-			this.read();
+			this.readOneTag();
 		} else if ( "true".equals( identifier ) || "false".equals( identifier ) ) {
 			this.parseConstant( identifier, json_keys.BOOLEAN );
 		} else if ( identifier.equals( "null" ) ) {
@@ -761,6 +761,9 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				this.mustReadChar( '>' );
 			}
 			this.endTag( this.popTag( ch ) );
+			if ( this.isntAtTopLevel() ) {
+				this.consumeOptionalTerminator( false );
+			}
 		} else if ( ch == ')'  ) {
 			if ( this.isInParentheses() ) {
 				this.discardChar();
@@ -768,6 +771,9 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				this.mustReadChar( '/' );
 				this.mustReadChar( '>' );
 				this.dropTag();
+				if ( this.isntAtTopLevel() ) {
+					this.consumeOptionalTerminator( false );
+				}
 			}
 		} else if ( this.TYPE_PREFIX_EXTENSION  && this.tryReadString( TYPE_ATTRIBUTE_PREFIX ) ) {
 			this.readTypeTag();
@@ -776,8 +782,8 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		}		
 	}
 	
-	public MinXML readElement() { 
-		while ( this.read() ) {
+	public MinXML read() { 
+		while ( this.readOneTag() ) {
 			if ( this.isAtTopLevel() ) break;
 		}
 		if ( ! this.isAtTopLevel() ) {
@@ -791,7 +797,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		this.startTagClose( json_keys.OBJECT );
 		this.pushTag( new Level( json_keys.OBJECT, '}', Context.InObject ).setNewlineTerminator( true ) );
 		
-		while ( this.read() ) {
+		while ( this.readOneTag() ) {
 			//	Skip.
 		}
 		
@@ -809,7 +815,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 
 			@Override
 			public MinXML next() {
-				return MinXSONParser.this.readElement();
+				return MinXSONParser.this.read();
 			}
 
 			@Override

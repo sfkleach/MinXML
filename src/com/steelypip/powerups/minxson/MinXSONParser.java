@@ -36,7 +36,7 @@ import com.steelypip.powerups.minxml.MinXMLBuilder;
 public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	private static final String TYPE_ATTRIBUTE_PREFIX = "@";
 	//private static final char FIELD_ATTRIBUTE_SUFFIX1 = '⸬';
-	private static final char FIELD_ATTRIBUTE_SUFFIX2 = ':';
+	private static final char FIELD_ATTRIBUTE_SUFFIX = ':';
 
 	protected JSONKeywords json_keys = JSONKeywords.KEYS;
 	private final CharRepeater cucharin;
@@ -44,14 +44,12 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	
 	private final TreeMap< String, String > extra_attributes = new TreeMap< String, String >();
 	private boolean EMBEDDED_EXTENSION = false;
-	private boolean NEWLINE_EXTENSION = false;
 	private boolean TYPE_PREFIX_EXTENSION = false;
 	
 	/**
 	 * These extensions toggle optional features.
 	 * 	Option 'A' switches on _A_ll extensions.
 	 *  Option 'E' switches on the _E_mbedded extension.
-	 *  Option 'N' switches on the _N_ewline extension.
 	 *  Option 'T' switches on the _T_ype-prefix extension.
 	 * @param extensions
 	 */
@@ -63,9 +61,6 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				all = true;
 			case 'E': 
 				EMBEDDED_EXTENSION = true; 
-				if ( !all ) break;
-			case 'N': 
-				NEWLINE_EXTENSION = true; 
 				if ( !all ) break;
 			case 'T': 
 				TYPE_PREFIX_EXTENSION = true; 
@@ -323,10 +318,12 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			final boolean was_in_element = this.isInElement();
 			this.endTag( this.popTag() );
 			if ( this.isntAtTopLevel() ) {
-				this.consumeOptionalTerminator( was_in_element );
+				this.setExpectingTerminator( was_in_element );
 			}
 			return true;
-		} 
+		} else if ( this.isExpectingTerminator() ) {
+			this.consumeOptionalTerminator();
+		}
 		this.eatWhiteSpace();
 		if ( this.cucharin.hasNextChar() ){
 			this.readWithoutPending();
@@ -336,11 +333,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		}
 	}
 	
-	boolean isNewlineTerminator() {
-		return this.NEWLINE_EXTENSION || super.isNewlineTerminator();
-	}
-	
-	void consumeOptionalTerminator( final boolean was_in_element ) {
+	void consumeOptionalTerminator() {
 		if ( this.isInParentheses() ) {
 			this.eatWhiteSpace();
 			this.mustPeekChar( ')' );
@@ -348,7 +341,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		// End of input is a valid terminator!
 		while ( this.cucharin.hasNextChar() ) {
 			final char ch  = this.peekChar();
-			if ( ch == ',' || ch == ';' || this.isNewlineTerminator() && ch == '\n' ) {
+			if ( ch == ',' || ch == ';' ) {
 				this.discardChar();
 				break;
 			} else if ( Character.isWhitespace( ch ) ) {
@@ -356,7 +349,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				continue;
 			} else if ( ch == '<' ) {
 				//	No need for terminators between tags.
-				if ( was_in_element ) break;
+				if ( this.wasInElement() ) break;
 				//	No need for a terminator if the next token is a end-tag.
 				// 	If it is a start-tag it is illegal. 
 				if ( this.tryPeekString( "</" ) || this.tryPeekString( "<?" ) || this.tryPeekString( "<!" ) ) {
@@ -370,6 +363,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				throw new Alert( "Unexpected character whilst looking for separator/terminator" ).culprit( "Character", ch );
 			}
 		}
+		this.unsetExpectingTerminator();
 	}
 
 	private void discardXMLComment( final char ch ) {
@@ -448,7 +442,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				this.endTag( end_tag );
 			}
 			if ( this.isntAtTopLevel() ) {
-				this.consumeOptionalTerminator( true );
+				this.setExpectingTerminator( true );
 			}
 			return;
 		} else {
@@ -633,7 +627,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			( ! this.extra_attributes.containsKey( json_keys.FIELD ) )  
 		) {
 			this.eatWhiteSpace();
-			this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
+			this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX );
 			this.extra_attributes.put( json_keys.FIELD, s );
 			this.readOneTag();
 		} else {
@@ -690,7 +684,8 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	void readIdentifier() {
 		final String identifier = readIdentiferText();
 		if ( this.isInObject() && ! this.extra_attributes.containsKey( json_keys.FIELD ) ) {
-			this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX2 );
+			this.eatWhiteSpace();
+			this.mustReadChar( FIELD_ATTRIBUTE_SUFFIX );
 			this.extra_attributes.put( json_keys.FIELD, identifier );
 			this.readOneTag();
 		} else if ( "true".equals( identifier ) || "false".equals( identifier ) ) {
@@ -755,24 +750,26 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			this.readObject();
 		} else if ( ch == '}' || ch == ']' ) {
 			this.discardChar();
-			if ( this.isInEmbeddedContainer() ) {
+			final boolean was_in_element = this.isInEmbeddedContainer();
+			if ( was_in_element ) {
 				this.eatWhiteSpace();
 				this.mustReadChar( '/' );
 				this.mustReadChar( '>' );
 			}
 			this.endTag( this.popTag( ch ) );
 			if ( this.isntAtTopLevel() ) {
-				this.consumeOptionalTerminator( false );
+				this.setExpectingTerminator( was_in_element );
 			}
 		} else if ( ch == ')'  ) {
-			if ( this.isInParentheses() ) {
+			final boolean was_in_element = this.isInParentheses();
+			if ( was_in_element ) {
 				this.discardChar();
 				this.eatWhiteSpace();
 				this.mustReadChar( '/' );
 				this.mustReadChar( '>' );
 				this.dropTag();
 				if ( this.isntAtTopLevel() ) {
-					this.consumeOptionalTerminator( false );
+					this.setExpectingTerminator( was_in_element );
 				}
 			}
 		} else if ( this.TYPE_PREFIX_EXTENSION  && this.tryReadString( TYPE_ATTRIBUTE_PREFIX ) ) {
@@ -791,14 +788,37 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		}
 		return parent.build();
 	}
+
+	/**
+	 * Consume all whitespace, noting if there are any newlines. If we cannot find a 
+	 * separator character then we accept a newline as a valid substitute by injecting
+	 * a separator.
+	 */
+	private void injectSeparatorIfNeeded() {
+		boolean seen_newline = false;
+		while ( this.cucharin.hasNextChar() ) {
+			final char ch = this.cucharin.nextChar();
+			if ( ch == '\n' ) {
+				seen_newline = true;
+			} else if ( ! Character.isWhitespace( ch ) ) {
+				this.cucharin.pushChar( ch );
+				if ( seen_newline && ( ch != ',' || ch != ';' ) ) {
+					this.cucharin.pushChar( ';' );
+				}
+				break;
+			}
+		}
+	}
 	
 	public MinXML readBindings() {
 		this.startTagOpen( json_keys.OBJECT );
 		this.startTagClose( json_keys.OBJECT );
-		this.pushTag( new Level( json_keys.OBJECT, '}', Context.InObject ).setNewlineTerminator( true ) );
+		this.pushTag( new Level( json_keys.OBJECT, '}', Context.InObject ) );
 		
 		while ( this.readOneTag() ) {
-			//	Skip.
+			if ( this.isAtLevel( 1 ) ) {
+				this.injectSeparatorIfNeeded();
+			}
 		}
 		
 		this.endTag( json_keys.OBJECT );

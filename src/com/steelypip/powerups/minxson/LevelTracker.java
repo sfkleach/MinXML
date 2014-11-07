@@ -25,8 +25,39 @@ import java.util.NoSuchElementException;
 import com.steelypip.powerups.alert.Alert;
 
 class LevelTracker {
-	boolean pending_end_tag = false;
-	ArrayDeque< Level > open_tags = new ArrayDeque< Level >();
+	/**
+	 * The expecting_terminator flag tells us whether or not we should be
+	 * checking for a separator/terminator character as our first activity.
+	 */
+	private boolean expecting_terminator = false;
+	/**
+	 * The was_in_element flag refines our expectation. If we are expecting
+	 * a separator/terminator character, we need to know whether or not
+	 * we're in the gap between two elements (i.e. between > and <). In that
+	 * specific context, we'll permit the separator/terminator to be omitted.
+	 */
+	private boolean was_in_element = false;
+	
+	private boolean pending_end_tag = false;
+	private ArrayDeque< Level > open_tags = new ArrayDeque< Level >();
+	
+	boolean isExpectingTerminator() {
+		return this.expecting_terminator;
+	}
+	
+	boolean wasInElement() {
+		return this.expecting_terminator && this.was_in_element;
+	}
+	
+	void setExpectingTerminator( final boolean was_in_element ) {
+		this.expecting_terminator = true;
+		this.was_in_element = was_in_element;
+	}
+	
+	void unsetExpectingTerminator() {
+		this.expecting_terminator = false;
+		this.was_in_element = false;	//	Defensive.
+	}
 	
 	boolean hasPendingTag() {
 		return this.pending_end_tag;
@@ -34,6 +65,10 @@ class LevelTracker {
 
 	boolean isAtTopLevel() {
 		return this.open_tags.isEmpty();
+	}
+	
+	boolean isAtLevel( final int n ) {
+		return this.open_tags.size() == n;
 	}
 
 	boolean isntAtTopLevel() {
@@ -113,10 +148,6 @@ class LevelTracker {
 
 	boolean isInEmbeddedContainer() {
 		return ! this.open_tags.isEmpty() && this.open_tags.getLast().isInEmbeddedContainer();
-	}
-	
-	boolean isNewlineTerminator() {
-		return ! this.open_tags.isEmpty() && this.open_tags.getLast().isNewlineTerminator();
 	}
 	
 }

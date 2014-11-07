@@ -218,7 +218,6 @@ public class TestMinXSONParser {
 		equivalent( "[-12]", "<array><constant type=\"integer\" value=\"-12\"/></array>" );
 		equivalent( "[-12,<alpha/>]", "<array><constant type=\"integer\" value=\"-12\"/><alpha/></array>" );
 		equivalent( "[-12;<alpha/>]", "<array><constant type=\"integer\" value=\"-12\"/><alpha/></array>" );
-		equivalent( "[-12\n<alpha/>]", "<array><constant type=\"integer\" value=\"-12\"/><alpha/></array>", 'N' );
 	}
 	
 	@Test
@@ -431,6 +430,14 @@ public class TestMinXSONParser {
 			"<foo><array/><bar/></foo>"
 		);	
 		
+	}
+
+	@Test
+	public void testWhiteSpaceAfterAttribute() {
+		equivalent(
+			"{ foo: <bar/> }",
+			"<object><bar field=\"foo\"/></object>"
+		);	
 	}
 
 	/*@Test

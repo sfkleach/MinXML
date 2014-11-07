@@ -106,6 +106,14 @@ public class TestJSONParser {
 		equivalent( "{\"key\":99,}", null );
 	}
 	
+	@Test
+	public void testWhiteSpaceAfterAttribute() {
+		equivalent(
+			"{ \"foo\" : null }",
+			"<object><constant field=\"foo\" type=\"null\" value=\"null\"/></object>"
+		);	
+	}
+	
 	/*@Test
 	public void testPrettyPrint() {
 		MinXML json_as_minxml = new MinXMLJSONParser( new StringReader( "[ 1, true ]" ) ).read();

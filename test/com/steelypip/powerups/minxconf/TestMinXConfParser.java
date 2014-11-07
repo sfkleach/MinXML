@@ -32,11 +32,12 @@ public class TestMinXConfParser {
 		assertEquals( "<object><constant field=\"foo\" type=\"integer\" value=\"1\"/><constant field=\"bar\" type=\"integer\" value=\"2\"/></object>", m.toString() );
 	}
 	
+	/* Added purely to check out the tutorial text.
 	@Test
 	public void fake() throws FileNotFoundException {
 		MinXML m = new MinXConfParser( new FileReader( new File( "data.minxconf" ) ) ).read();
 		m.prettyPrint( new PrintWriter( System.out ) );
 		//assertEquals( "<object><constant field=\"foo\" type=\"integer\" value=\"1\"/><constant field=\"bar\" type=\"integer\" value=\"2\"/></object>", m.toString() );
-	}
+	}*/
 	
 }

@@ -671,7 +671,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	}
 	
 	static boolean isIdentifierContinuation( final char ch ) {
-		return Character.isLetterOrDigit( ch ) || ch == '_';
+		return isNameChar( ch );
 	}
 
 	void parseId( final String sofar ) {

@@ -18,19 +18,17 @@
  */
 package com.steelypip.powerups.minxson;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.OutputStreamWriter;
 import java.io.StringReader;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.steelypip.powerups.alert.Alert;
-import com.steelypip.powerups.json.MinXMLJSONParser;
 import com.steelypip.powerups.minxml.MinXML;
 
 public class TestMinXSONParser {

@@ -1,11 +1,7 @@
 package com.steelypip.powerups.minxconf;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.PrintWriter;
 import java.io.StringReader;
 
 import org.junit.Test;

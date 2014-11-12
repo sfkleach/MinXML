@@ -21,27 +21,134 @@ package com.steelypip.powerups.json;
 
 import java.util.Map;
 
+/**
+ * This class acts as a dictionary of String constants that are used to
+ * translates JSON terminology into MinX structures. The KEYS variable
+ * provides our default mapping. However it is perfectly straightforward to 
+ * create custom translations if it is more convenient using the constructor.
+ * 
+ */
 public class JSONKeywords {
 
+	/**
+	 * A constant that is used as the attribute used to mark the type
+	 * of container ("array" or "object") for MinXSON parsing. If only
+	 * parsing JSON it can be ignored.
+	 */
 	public final String TYPE;
+	
+	/** 
+	 * A constant that is used as an attribute to mark the field name
+	 * of components of objects. e.g. { "foo": 99 } turns into
+	 * <object><constant FIELD="foo" type="integer" value="99"/></object>
+	 */
 	public final String FIELD;
+	
+	/**
+	 * A constant that turns into the element name used to denote 
+	 * all scalar values - numbers, booleans and null. e.g. true turns
+	 * into <CONSTANT type="boolean" value="true"/>.
+	 */
 	public final String CONSTANT;
+
+	/**
+	 * A constant that denotes the type attribute of  
+	 * all scalar values - numbers, booleans and null. e.g. true turns
+	 * into <constant CONSTANT_TYPE="boolean" value="true"/>.
+	 */
 	public final String CONSTANT_TYPE;
+
+	/**
+	 * A constant that denotes the value attribute of  
+	 * all scalar values - numbers, booleans and null. e.g. true turns
+	 * into <constant type="boolean" CONSTANT_VALUE="true"/>.
+	 */
 	public final String CONSTANT_VALUE;
+	
+	/**
+	 * A constant that denotes the value given to the type attribute   
+	 * for floating point number. e.g. 3.14159 turns
+	 * into <constant type=FLOAT value="3.14159"/>.
+	 */	
 	public final String FLOAT;
+	
+	/**
+	 * A constant that denotes the value given to the type attribute   
+	 * for whole numbers. e.g. -17 turns
+	 * into <constant type=INTEGER value="-17"/>.
+	 */	
 	public final String INTEGER;
+	
+	
+	/**
+	 * A constant that denotes the value given to the type attribute   
+	 * for strings. e.g. "foo" turns
+	 * into <constant type=STRING value="foo"/>.
+	 */	
 	public final String STRING;
+
+	/**
+	 * A constant that denotes the value given to the type attribute   
+	 * for booleans. e.g. false turns
+	 * into <constant type=BOOLEAN value="false"/>.
+	 */	
 	public final String BOOLEAN;
+	
+	/**
+	 * A constant that denotes the value given to the type attribute   
+	 * for null. e.g. null turns
+	 * into <constant type=NULLEAN value="null"/>.
+	 */	
 	public final String NULLEAN;
+	
+	/**
+	 * A constant that denotes the value given to the element name   
+	 * for arrays. e.g. [] turns
+	 * into <ARRAY/>
+	 */	
 	public final String ARRAY;
+
+	/**
+	 * A constant that denotes the value given to the element name   
+	 * for objects. e.g. {} turns
+	 * into <OBJECT/>
+	 */	
 	public final String OBJECT;
+	
+	/**
+	 * A constant that denotes the value given to the value attribute   
+	 * for null. e.g. null turns
+	 * into <constant type="null" value=NULLEAN_NULL/>.
+	 */	
 	public final String NULLEAN_NULL;
+	
+	/**
+	 * A constant that denotes the value given to the value attribute   
+	 * for true. e.g. true turns
+	 * into <constant type="boolean" value=BOOLEAN_TRUE/>.
+	 */	
 	public final String BOOLEAN_TRUE;
+
+	/**
+	 * A constant that denotes the value given to the value attribute   
+	 * for false. e.g. false turns
+	 * into <constant type="boolean" value=BOOLEAN_FALSE/>.
+	 */	
 	public final String BOOLEAN_FALSE;
+	
+	/**
+	 * A constant that denotes the value given to the element name   
+	 * for identifiers - only relevant for MinXSON. e.g. x turns
+	 * into <ID name="x"/>
+	 */	
 	public final String ID;
+
+	/**
+	 * A constant that denotes the value given to the name attribute   
+	 * for identifiers - only relevant for MinXSON. e.g. x turns
+	 * into <id ID_NAME="x"/>
+	 */	
 	public final String ID_NAME;
-	
-	
 	
 	private static String pick( Map< String, String > keys, String k, String otherwise ) {
 		if ( keys == null ) return otherwise;
@@ -49,6 +156,12 @@ public class JSONKeywords {
 		return first_choice != null ? first_choice : otherwise;
 	}
 	
+	/**
+	 * Constructs a JSONKeywords translation table by overriding the 
+	 * default values with values from the keys map. The valid keys of
+	 * the map have identical spelling to the public members.
+	 * @param keys
+	 */
 	public JSONKeywords( final Map< String, String > keys ) {
 		 TYPE = pick( keys, "TYPE", "type" );
 		 FIELD = pick( keys, "FIELD", "field" );

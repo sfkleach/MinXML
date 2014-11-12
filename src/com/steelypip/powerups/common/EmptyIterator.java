@@ -21,6 +21,11 @@ package com.steelypip.powerups.common;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+/**
+ * Implements the special case of an iterator that yields no 
+ * values.
+ * @param <T>
+ */
 public class EmptyIterator< T > implements Iterator< T > {
 
 	@Override

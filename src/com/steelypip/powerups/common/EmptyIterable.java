@@ -20,6 +20,12 @@ package com.steelypip.powerups.common;
 
 import java.util.Iterator;
 
+/**
+ * This implements the special case of an empty iterable for any
+ * type T. Empty iterables can share the same iterator, which simply
+ * never generates any values.
+ * @param <T> 
+ */
 public class EmptyIterable< T > implements Iterable< T > {
 
 	static Iterator< Object > empty_entries_iterator = new EmptyIterator< Object >();

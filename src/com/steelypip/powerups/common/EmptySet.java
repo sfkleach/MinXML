@@ -4,6 +4,11 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.AbstractSet;
 
+/**
+ * Implements the special case of an empty, immutable set 
+ * of values of any type T.
+ * @param <T>
+ */
 public class EmptySet< T > extends AbstractSet< T > {
 	
 	static Iterator< Object > empty_iterator = new EmptyIterator< Object >();

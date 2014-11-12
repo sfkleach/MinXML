@@ -1,19 +1,17 @@
 package com.steelypip.powerups.json;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import com.steelypip.powerups.json.MinXMLJSONParser;
+import java.io.StringReader;
+
+import org.junit.Before;
+import org.junit.Test;
+
 import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.charrepeater.CharRepeater;
 import com.steelypip.powerups.charrepeater.ReaderCharRepeater;
 import com.steelypip.powerups.minxml.FlexiMinXMLBuilder;
 import com.steelypip.powerups.minxml.MinXML;
-
-import java.io.OutputStreamWriter;
-import java.io.StringReader;
-
-import org.junit.Before;
-import org.junit.Test;
 
 public class TestJSONParser {
 

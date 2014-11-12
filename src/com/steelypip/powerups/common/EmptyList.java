@@ -21,6 +21,10 @@ package com.steelypip.powerups.common;
 import java.util.AbstractList;
 import java.util.Collection;
 
+/**
+ * Implements the special case of an empty immutable list. 
+ * @param <T>
+ */
 public class EmptyList< T > extends AbstractList< T > {
 
 	@Override

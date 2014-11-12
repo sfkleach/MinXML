@@ -18,6 +18,10 @@
  */
 package com.steelypip.powerups.charrepeater;
 
+/**
+ * This class implements a stack of char of arbitrary depth. The
+ * aim is for it to be compact and lightweight. 
+ */
 class CharBuffer {
 	
 	private int size = 0;						//	Always non-negative.

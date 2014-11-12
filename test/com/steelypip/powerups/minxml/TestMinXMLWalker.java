@@ -1,8 +1,12 @@
 package com.steelypip.powerups.minxml;
 
 import static org.junit.Assert.*;
+
 import java.io.StringReader;
+
 import org.junit.Test;
+
+import com.steelypip.powerups.alert.Alert;
 
 
 public class TestMinXMLWalker {
@@ -85,6 +89,7 @@ public class TestMinXMLWalker {
 	public void testPreOrder() {
 		String tree = "<a><b><c/><d/></b><e><f/><g/></e></a>";
 		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		if ( subject == null ) throw new Alert();
 		StringBuilder b = new StringBuilder();
 		for ( MinXML m : new IdWalker().preOrder( subject ) ) {
 			b.append( m.getName() );
@@ -96,6 +101,7 @@ public class TestMinXMLWalker {
 	public void testPostOrder() {
 		String tree = "<a><b><c/><d/></b><e><f/><g/></e></a>";
 		MinXML subject = new MinXMLParser( new StringReader( tree ) ).readElement();
+		if ( subject == null ) throw new Alert();
 		StringBuilder b = new StringBuilder();
 		for ( MinXML m : new IdWalker().postOrder( subject ) ) {
 			b.append( m.getName() );

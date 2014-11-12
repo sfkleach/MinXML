@@ -19,10 +19,12 @@
 
 package com.steelypip.powerups.json;
 
+import java.math.BigInteger;
+
 import com.steelypip.powerups.minxml.MinXML;
 import com.steelypip.powerups.minxml.MinXMLBuilder;
 
-public class MinXMLBuilderJSONBuilder implements JSONBuilder< MinXML > {
+public class MinXMLBuilderJSONBuilder extends JSONBuildCounter implements JSONBuilder< MinXML > {
 	
 	MinXMLBuilder builder;
 	boolean is_in_element = false;
@@ -47,12 +49,14 @@ public class MinXMLBuilderJSONBuilder implements JSONBuilder< MinXML > {
 	}
 	
 	private void emitConstant( final String type, final String value ) {
+		this.increment();
 		this.builder.startTagOpen( keywords.CONSTANT );
 		this.builder.put( keywords.CONSTANT_TYPE, type );
 		this.builder.put( keywords.CONSTANT_VALUE, value );
 		this.emitField();
 		this.builder.startTagClose( keywords.CONSTANT );
 		this.builder.endTag( keywords.CONSTANT );		
+		this.decrement();
 	}
 
 	@Override
@@ -71,6 +75,11 @@ public class MinXMLBuilderJSONBuilder implements JSONBuilder< MinXML > {
 	}
 
 	@Override
+	public void addInteger( final BigInteger value ) {
+		this.emitConstant( keywords.INTEGER, "" + value );
+	}
+
+	@Override
 	public void addFloat( double value ) {
 		this.emitConstant( keywords.FLOAT, "" + value );
 	}
@@ -82,6 +91,7 @@ public class MinXMLBuilderJSONBuilder implements JSONBuilder< MinXML > {
 
 	@Override
 	public void startArray() {
+		this.increment();
 		this.builder.startTagOpen( keywords.ARRAY );
 		this.emitField();
 		this.builder.startTagClose( keywords.ARRAY );
@@ -90,6 +100,7 @@ public class MinXMLBuilderJSONBuilder implements JSONBuilder< MinXML > {
 	@Override
 	public void endArray() {
 		this.builder.endTag( keywords.ARRAY );
+		this.decrement();
 	}
 
 	@Override
@@ -99,6 +110,7 @@ public class MinXMLBuilderJSONBuilder implements JSONBuilder< MinXML > {
 
 	@Override
 	public void startObject() {
+		this.increment();
 		this.builder.startTagOpen( keywords.OBJECT );
 		this.emitField();
 		this.builder.startTagClose( keywords.OBJECT );
@@ -108,10 +120,12 @@ public class MinXMLBuilderJSONBuilder implements JSONBuilder< MinXML > {
 	@Override
 	public void endObject() {
 		this.builder.endTag( keywords.OBJECT );
+		this.decrement();
 	}
 
 	@Override
 	public MinXML build() {
+		this.buildCheck();
 		return this.builder.build();
 	}
 

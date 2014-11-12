@@ -20,6 +20,8 @@ package com.steelypip.powerups.alert;
 
 import java.io.PrintWriter;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.steelypip.powerups.common.IfNull;
 import com.steelypip.powerups.io.StringPrintWriter;
 
@@ -29,12 +31,17 @@ import com.steelypip.powerups.io.StringPrintWriter;
  */
 public final class Culprit {
 	
-	private final String desc;
-	private final Object arg;
+	private final @NonNull String key;
+	private final Object value;
 
-	Culprit( final String desc1, final Object arg1 ) {
-		this.desc = IfNull.ifNull( desc1, "" );
-		this.arg = arg1;
+	/**
+	 * Programmers are not encouraged to build culprits, so the constructor is not public.
+	 * @param key A heading that will be included in the exception report.
+	 * @param value The value that will be reported on.
+	 */
+	Culprit( final @NonNull String key, final Object value ) {
+		this.key = IfNull.ifNull( key, "" );
+		this.value = value;
 	}
 	
 	private static String convertToString( final Object x ) {
@@ -65,13 +72,13 @@ public final class Culprit {
 	static final int min_pad_width = 8;
 	
 	void output( final PrintWriter pw ) {
-		final String d = this.desc.toUpperCase();
+		final String d = this.key.toUpperCase();
 		pw.print( d );
 		for ( int i = d.length(); i < min_pad_width; i++ ) {
 			pw.print( " " );
 		}
 		pw.print( " : " );
-		pw.println( this.keepShort( this.arg ) );
+		pw.println( this.keepShort( this.value ) );
 	}
 	
 	String asString() {
@@ -81,19 +88,19 @@ public final class Culprit {
 	}
 
 	public String getKey() {
-		return this.desc;
+		return this.key;
 	}
 
 	public boolean hasKey( final String interned ) {
-		return this.desc.equals( interned ); 
+		return this.key.equals( interned ); 
 	}
 
 	public Object getValue() {
-		return this.arg;
+		return this.value;
 	}
 
 	public String getValueString() {
-		return this.arg != null ? this.arg.toString() : "";
+		return this.value != null ? this.value.toString() : "";
 	}
 
 }

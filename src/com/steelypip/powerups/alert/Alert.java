@@ -22,8 +22,19 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.eclipse.jdt.annotation.NonNull;
+
 import com.steelypip.powerups.io.StringPrintWriter;
 
+/**
+ * Alerts are intended to act as generic application exceptions that can
+ * be decorated with contextual key-value information. The idiom for using them
+ * is: throw new Alert( message ).culprit( key1, value1 ).culprit( key2, value2 ); 
+ *
+ * As the exception propogates outward, it is appropriate for additional
+ * information to be tagged onto the exception and for it to be re-thrown.
+ * 
+ */
 public class Alert extends RuntimeException implements Iterable< Culprit > {
 
 	private static final long serialVersionUID = -7054658959511420366L;
@@ -33,6 +44,10 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 		super();
 	}
 
+	/**
+	 * This is the most general constructor, which simply invokes the super 
+	 * class constructor with the same arguments.
+	 */
 	public Alert( final String message, final Throwable cause ) {
 		super( message, cause );
 	}
@@ -49,6 +64,9 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 		this.culprit_list.add( culprit );
 	}
 
+	/**
+	 * This is a service method for reporting.
+	 */
 	public Iterator< Culprit > iterator() {
 		return this.culprit_list.iterator(); 
 	}
@@ -72,16 +90,16 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 		return this.get( k ) != null;
 	}
 
-	public Alert culprit( final String desc, final Object arg ) {
+	public Alert culprit( final @NonNull String desc, final Object arg ) {
 		this.add( new Culprit( desc, arg ) );
 		return this;
 	}
 
-	public Alert culprit( final String desc, final int arg ) {
+	public Alert culprit( final @NonNull String desc, final int arg ) {
 		return this.culprit( desc, new Integer( arg ) );
 	}
 
-	public Alert culprit( final String desc, final char ch ) {
+	public Alert culprit( final @NonNull String desc, final char ch ) {
 		return this.culprit( desc, new Character( ch ) );
 	}
 
@@ -114,15 +132,22 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 
 	//-- Special Keys -------------------------------------
 
-	public Alert hint( final String msg ) {
+	/**
+	 * This is a convenient method for adding a culprit with
+	 * the "hint" key. This should be used where there may be
+	 * a common root cause that has an easy fix e.g. "Missing semi-colon?".
+	 * @param msg The message hinting as to the fix.
+	 * @return the original object.
+	 */
+	public Alert hint( final @NonNull String msg ) {
 		return this.culprit( "hint", msg );
 	}
 	
-	public Alert code( final String string ) {
+	public Alert code( final @NonNull String string ) {
 		return this.culprit( "code", string );
 	}
 	
-	public Alert note( final String string ) {
+	public Alert note( final @NonNull String string ) {
 		return this.culprit( "note", string );
 	}
 	
@@ -134,7 +159,7 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 	//	---- This section just deals with the statics ----
 
 	public static Alert unreachable() {
-		return unreachable( (Throwable)null );
+		return unreachable( "Internal error", (Throwable)null );
 	}
 
 	public static Alert unreachable( final Throwable t ) {
@@ -145,24 +170,54 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 		return unreachable( msg, null );
 	}
 
+	/**
+	 * A convenience method for building an Alert that is suitable
+	 * for signalling code regions that the programmer intends should never arise.
+	 * It's a useful subset of internal-error.
+	 * @return the {@link Alert}
+	 */
 	public static Alert unreachable( final String msg, final Throwable t ) {
 		return new Alert( msg, t ).note( "A supposedly unreachable condition has been detected" );
 	}
 
+	/**
+	 * A convenience method for building an Alert that is suitable
+	 * to act as a placeholder for unfinished work. The message defaults
+	 * to "Unimplemented".
+	 * @return the {@link Alert}
+	 */
 	public static Alert unimplemented() {
 		return unimplemented( "Unimplemented" );
 	}
 
+	/**
+	 * A convenience method for building an Alert that is suitable
+	 * to act as a placeholder for unfinished work.
+	 * @return the {@link Alert}
+	 */
 	public static Alert unimplemented( final String msg ) {
 		final Alert alert = new Alert( msg ).note( "An unimplemented feature has been reached" );
 		alert.culprit( "message", msg );
 		return alert;
 	}
 
+	/**
+	 * A convenience method for building an Alert that is suitable
+	 * for signalling that some part of the object state has entered
+	 * a condition that the programmer intends to be impossible. The
+	 * message is "Internal error".
+	 * @return the {@link Alert}
+	 */
 	public static Alert internalError() {
 		return new Alert( "Internal Error" );
 	}
 
+	/**
+	 * A convenience method for building an Alert that is suitable
+	 * for signalling that some part of the object state has entered
+	 * a condition that the programmer intends to be impossible. 
+	 * @return the {@link Alert}
+	 */
 	public static Alert internalError( final String msg ) {
 		return new Alert( "Internal Error" ).note( "This is an internal error" );
 	}

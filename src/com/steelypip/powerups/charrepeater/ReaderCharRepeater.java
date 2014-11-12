@@ -22,13 +22,21 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.Reader;
 
+/**
+ * This class is used to convert a {@link java.lang.Reader} into
+ * character repeater that supports arbitrary pushback.
+ * 
+ */
 public class ReaderCharRepeater implements CharRepeater {
 
-	final Reader reader;
-	final CharBuffer buffer = new CharBuffer();
+	private final Reader reader;
+	private final CharBuffer buffer = new CharBuffer();
 	
-	public ReaderCharRepeater( Reader reader ) {
-		super();
+	/**
+	 * Constructs the character repeater from a {@link java.lang.Reader}.
+	 * @param reader
+	 */
+	public ReaderCharRepeater( final Reader reader ) {
 		this.reader = reader;
 	}
 
@@ -52,6 +60,11 @@ public class ReaderCharRepeater implements CharRepeater {
 		}
 	}
 	
+	/**
+	 * Checks whether or not the next character is the same as
+	 * wanted. If there's no next character it returns false.
+	 * It does not consume any characters.
+	 */
 	@Override
 	public boolean isNextChar( final char wanted ) {
 		return( 
@@ -60,6 +73,15 @@ public class ReaderCharRepeater implements CharRepeater {
 		);
 	}
 	
+	/**
+	 * Checks whether or not the sequence of characters in the string wanted
+	 * is waiting to be read off the input. The offset parameter allows this
+	 * check to be done after skipping characters in the input. No characters
+	 * are consumed by this method.
+	 * @param wanted The sequence of characters that we are looking for. 
+	 * @param offset How many characters to skip.
+	 * @return True if after offset characters the input matches wanted.
+	 */
 	private boolean isNextString( final String wanted, final int offset ) {
 		if ( offset >= wanted.length() ) {
 			return true;
@@ -75,11 +97,22 @@ public class ReaderCharRepeater implements CharRepeater {
 		}
 	}
 	
+	/**
+	 * Checks whether or not the sequence of characters in the string wanted
+	 * is waiting to be read off the input. This is the same as calling
+	 * isNextString( wanted, 0 ).
+	 * @param wanted The sequence of characters that we are looking for. 
+	 * @return True if the input matches wanted.
+	 */
 	@Override
 	public boolean isNextString( final String wanted ) {
 		return this.isNextString( wanted, 0 );	
 	}
 
+	/**
+	 * Returns the next character from the input, consuming it from the input. 
+	 * If there are no characters waiting to be read an exception is thrown. 
+	 */
 	@Override
 	public char nextChar() {
 		if ( ! buffer.isEmpty() || this.hasNextChar() ) {
@@ -89,6 +122,13 @@ public class ReaderCharRepeater implements CharRepeater {
 		}
 	}
 
+	/**
+	 * Returns the next character from the input, consuming it from the input. 
+	 * If there are no characters waiting to be read the default value_if_neeeded
+	 * is returned.
+	 * @param value_if_needed default returned if the input is exhausted.
+	 * @return the next character from the input
+	 */
 	@Override
 	public char nextChar( char value_if_needed ) {
 		if ( ! this.buffer.isEmpty() || this.hasNextChar() ) {
@@ -98,11 +138,21 @@ public class ReaderCharRepeater implements CharRepeater {
 		}
 	}
 
+	/**
+	 * Pushes a character onto the front of the input. It does not have to
+	 * be the same as the previous character that was read from the input.
+	 * There is no hard limit to how many characters are pushed.
+	 */
 	@Override
 	public void pushChar( char value ) {
 		this.buffer.pushChar( value );
 	}
 
+	/**
+	 * Returns the next character from the input, but does not consume it. 
+	 * If there are no characters waiting to be read an exception is thrown.
+	 * @return the next character from the input
+	 */
 	@Override
 	public char peekChar() {
 		if ( ! this.buffer.isEmpty() || this.hasNextChar() ) {
@@ -112,6 +162,13 @@ public class ReaderCharRepeater implements CharRepeater {
 		}
 	}
 
+	/**
+	 * Returns the next character from the input, but does not consume it. 
+	 * If there are no characters waiting to be read the default value_if_neeeded
+	 * is returned.
+	 * @param value_if_needed default returned if the input is exhausted.
+	 * @return the next character from the input
+	 */
 	@Override
 	public char peekChar( char value_if_needed ) {
 		if ( ! this.buffer.isEmpty() || this.hasNextChar() ) {
@@ -121,6 +178,10 @@ public class ReaderCharRepeater implements CharRepeater {
 		}
 	}
 
+	/**
+	 * Discards the next character from the input. If the input is
+	 * exhausted then this method has no effect.
+	 */
 	@Override
 	public void skipChar() {
 		if ( ! this.buffer.isEmpty() || this.hasNextChar() ) {

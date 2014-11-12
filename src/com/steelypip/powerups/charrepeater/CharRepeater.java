@@ -18,14 +18,81 @@
  */
 package com.steelypip.powerups.charrepeater;
 
+/**
+ * This is an interface for a char based stream that
+ * supports unlimited pushback. With Java 8 streams this
+ * might be a bit superfluous - I haven't quite got the
+ * full sense of what Streams are meant to be. 
+ * 
+ */
 public interface CharRepeater {
+	/**
+	 * Returns true if it there are characters available to be consumed
+	 * from the input, otherwise false.
+	 * @return true if there are more characters, else false
+	 */
 	boolean hasNextChar();
+		
+	/**
+	 * Returns true if it the next character is the same as wanted,
+	 * otherwise false. If the input is exhausted then this method
+	 * returns false.
+	 * @return the next character is equal to wanted
+	 */
 	boolean isNextChar( char wanted );
+	
+	/**
+	 * Returns true if it the next sequence of characters matches the string wanted,
+	 * otherwise false. If the input is exhausted then this method
+	 * returns false.
+	 * @param wanted
+	 * @return wanted is waiting to be read
+	 */
 	boolean isNextString( String wanted );
+	
+	/**
+	 * Returns the next character from the input, consuming it from the input. 
+	 * If there are no characters waiting to be read an exception is thrown. 
+	 * @return the next character.
+	 */
     char nextChar();
+    
+	/**
+	 * Returns the next character from the input, consuming it from the input. 
+	 * If there are no characters waiting to be read the default value_if_neeeded
+	 * is returned.
+	 * @param value_if_needed default returned if the input is exhausted.
+	 * @return the next character from the input
+	 */
     char nextChar( char value_if_needed );
+
+    /**
+	 * Pushes a character onto the front of the input. It does not have to
+	 * be the same as the previous character that was read from the input.
+	 * There is no hard limit to how many characters are pushed.
+	 */
     void pushChar( char value );
+    
+	/**
+	 * Returns the next character from the input, but does not consume it. 
+	 * If there are no characters waiting to be read an exception is thrown.
+	 * @return the next character from the input
+	 */
     char peekChar();
+    
+	/**
+	 * Returns the next character from the input, but does not consume it. 
+	 * If there are no characters waiting to be read the default value_if_neeeded
+	 * is returned.
+	 * @param value_if_needed default returned if the input is exhausted.
+	 * @return the next character from the input
+	 */
     char peekChar( char value_if_needed );
+ 
+
+	/**
+	 * Discards the next character from the input. If the input is
+	 * exhausted then this method has no effect.
+	 */
     void skipChar();
 }

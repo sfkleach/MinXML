@@ -20,8 +20,15 @@ package com.steelypip.powerups.common;
 
 public class IfNull {
 
+	/**
+	 * A utility method that implements the idiom x != null ? x : y (i.e. not-null-OR)
+	 * @param x the first value
+	 * @param y the second value
+	 * @return the first non-null value or null if all values are null.
+	 */
 	public static <T> T ifNull( final T x, final T y ) {
 		return x == null ? y : x;
 	}
+	
 	
 }

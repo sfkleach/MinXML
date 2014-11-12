@@ -19,16 +19,105 @@
 
 package com.steelypip.powerups.json;
 
+import java.math.BigInteger;
+
+/**
+ * JSONBuilder provides an builder pattern interface for JSON 
+ * parsers to drive as they consume a JSON expression. Once the
+ * entire expression is consumed the build method is invoked to
+ * return a result. The type of the result depends entirely on
+ * the implementation, which allows different parsers to construct
+ * different results. 
+ * @param <T>
+ */
 public interface JSONBuilder< T > {
+	
+	/**
+	 * This method should be invoked when the parser consumes a
+	 * JSON expression 'null'.
+	 */
 	void addNull();
+	
+	/**
+	 * This method should be invoked when the parser consumes a
+	 * JSON expression 'true' or 'false'.
+	 * @param value true if the expression was 'true', else false.
+	 */
 	void addBoolean( boolean value );
+	
+	
+	/**
+	 * This method should be invoked when the parser consumes a
+	 * JSON integer value. JSON does not impose a limit on the
+	 * size of integers, so arguably this should not take a long
+	 * but a BigInteger. However, the difference in performance 
+	 * and compactness between longs and BigIntegers is so great
+	 * and the use-cases where BigIntegers are needed are so rare,
+	 * we separate the two.
+	 * @param value the integer value as a signed 64-bit integer.
+	 */
 	void addInteger( long value );
+	
+	/**
+	 * This method should preferably be invoked when the parser consumes
+	 * a JSON integer value that is too large to fit in a long.
+	 * @param value
+	 */
+	void addInteger( BigInteger num );
+	
+	/** 
+	 * This method should be invoked when the parser consumes a
+	 * JSON floating point value.  
+	 * @param value the floating point value
+	 */
 	void addFloat( double value );
+	
+	/**
+	 * This method should be invoked when the parser consumes a
+	 * JSON string.  
+	 * @param value the string
+	 */
 	void addString( String value );
+	
+	/**
+	 * This method should be invoked when the parser consumes the
+	 * start of an array i.e. '['.
+	 */
 	void startArray();
+
+	/**
+	 * This method should be invoked when the parser consumes the
+	 * end of an array i.e. ']'.
+	 */
 	void endArray();
+	
+	/**
+	 * This method should be invoked when the parser consumes the
+	 * field name of an object ahead of a ':'.
+	 * @param field name of the field
+	 */
 	void field( String field );
+	
+	/**
+	 * This method should be invoked when the parser consumes the
+	 * start of an object i.e. '{'.
+	 */
 	void startObject();
+
+	/**
+	 * This method should be invoked when the parser consumes the
+	 * end of an object i.e. '}'.
+	 */
 	void endObject();
-	T build();
+	
+	/**
+	 * This method will return a value representing the JSON tree
+	 * consumed so far by the parser. If it is called prematurely,
+	 * before an entire balanced tree is consumed, the implementation
+	 * must throw an exception. It must also throw an exception if
+	 * more than one tree is consumed. The exception should preferably
+	 * inherit from {@link JSONBuildFailedException}.
+	 * @return a value representing the tree
+	 */
+	T build() throws JSONBuildFailedException;
 }

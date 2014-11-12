@@ -27,8 +27,8 @@ public class JSONParser< T > {
 	private static final char NON_NUMERIC_CHAR = ' ';
 	private static final char NON_WHITESPACE_CHAR = '_';
 	
-	final JSONBuilder< T > builder;
-	final CharRepeater cucharin; 
+	private final JSONBuilder< T > builder;
+	private final CharRepeater cucharin; 
 
 	public JSONParser( final CharRepeater rep, JSONBuilder< T > builder ) {
 		this.builder = builder;

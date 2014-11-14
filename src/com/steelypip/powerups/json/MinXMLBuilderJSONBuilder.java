@@ -21,21 +21,46 @@ package com.steelypip.powerups.json;
 
 import java.math.BigInteger;
 
+import com.steelypip.powerups.minxml.FlexiMinXMLBuilder;
 import com.steelypip.powerups.minxml.MinXML;
 import com.steelypip.powerups.minxml.MinXMLBuilder;
 
+/**
+ * This class implements the JSONBuilder interface and constructs MinXML
+ * objects. The grammar of the constructed MinXML has a modest degree of 
+ * customisation as the string constants are encapsulated in the JSONKeywords
+ * translation table. 
+ */
 public class MinXMLBuilderJSONBuilder extends JSONBuildCounter implements JSONBuilder< MinXML > {
 	
-	MinXMLBuilder builder;
-	boolean is_in_element = false;
-	String field_name = null;
-	final JSONKeywords keywords;
+	protected MinXMLBuilder builder;
+	protected String field_name = null;
+	protected final JSONKeywords keywords;
 	
+	/**
+	 * A convenience constructor that specialises the translation table to a
+	 * standard set of keywords and the MinXML builder to a FlexiMinXML builder.
+	 * @param builder
+	 */
+	public MinXMLBuilderJSONBuilder() {
+		this( new FlexiMinXMLBuilder(), JSONKeywords.KEYS );
+	}
 	
+	/**
+	 * A convenience constructor that specialises the translation table to a
+	 * standard set of keywords.
+	 * @param builder
+	 */
 	public MinXMLBuilderJSONBuilder( final MinXMLBuilder builder ) {
 		this( builder, JSONKeywords.KEYS );
 	}
 	
+	/**
+	 * Creates a JSONBuilder<MinXML> from a MinXML builder and a translation
+	 * table. 
+	 * @param builder
+	 * @param keys
+	 */
 	public MinXMLBuilderJSONBuilder( final MinXMLBuilder builder, final JSONKeywords keys ) {
 		this.builder = builder;
 		this.keywords = keys;

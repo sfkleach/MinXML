@@ -34,14 +34,19 @@ import com.steelypip.powerups.common.EmptyMap;
  */
 public abstract class AbsFlexiMinXML extends AbsMinXML {
 
-	protected String name;
+	protected @NonNull String name;
 	protected TreeMap< String, String > attributes;
 	protected ArrayList< @NonNull MinXML > children;
-
-	public @NonNull String getName() {
-		return name;
+	
+	public AbsFlexiMinXML( @NonNull String name ) {
+		this.name = name;
 	}
 
+	public @NonNull String getName() {
+		return this.name;
+	}
+
+	@SuppressWarnings("null")
 	public void setName( final @NonNull String name ) {
 		this.name = name.intern();
 	}

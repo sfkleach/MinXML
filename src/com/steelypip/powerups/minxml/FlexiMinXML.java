@@ -53,15 +53,15 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 	 * 
 	 * @param name
 	 */
+	@SuppressWarnings("null")
 	public FlexiMinXML( final @NonNull String name ) {
 		//	We intern the name purely to help save space. Unfortunately we
 		//	can't really take advantage of it in any other way.
-		this.name = name.intern();
-		//  Note that the attributes and children can be left as null. 
+		super( name.intern() ); 
 	}
 	
 	private FlexiMinXML( final @NonNull MinXML element ) {
-		this.name = element.getName();
+		super( element.getName() );
 		this.putAllAttributes( element.asMap() );
 		this.addAll( element );
 	}

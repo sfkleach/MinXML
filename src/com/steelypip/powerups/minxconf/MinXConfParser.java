@@ -7,6 +7,12 @@ import com.steelypip.powerups.minxml.MinXML;
 import com.steelypip.powerups.minxml.MinXMLBuilder;
 import com.steelypip.powerups.minxson.MinXSONParser;
 
+/**
+ * This class implements a parser that consumes MinXConf expressions, 
+ * which are designed to be suitable for writing simple settings files. 
+ * It is a very thin layer on top of MinXSONParser, effectively translating
+ * a MinXConfParser#read() into a MinXSONParser#readBindings().
+ */
 public class MinXConfParser {
 	
 	private MinXSONParser parser;

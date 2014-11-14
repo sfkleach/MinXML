@@ -33,9 +33,18 @@ import com.steelypip.powerups.minxml.FlexiMinXMLBuilder;
 import com.steelypip.powerups.minxml.MinXML;
 import com.steelypip.powerups.minxml.MinXMLBuilder;
 
+/*
+ * This class implements a parser for the MinXSON grammar, which is 
+ * a hybrid of minimal XML and JSON. It has a number of non-standard
+ * extensions that can be enabled.
+ * 
+ * This parser utilizes a MinXMLBuilder to generate MinXML objects. 
+ * It can either be used to read individual expressions one by one off the input 
+ * or it can be turned into an iterator and used in a loop. 
+ */
 public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
+	
 	private static final String TYPE_ATTRIBUTE_PREFIX = "@";
-	//private static final char FIELD_ATTRIBUTE_SUFFIX1 = '⸬';
 	private static final char FIELD_ATTRIBUTE_SUFFIX = ':';
 
 	protected JSONKeywords json_keys = JSONKeywords.KEYS;
@@ -475,7 +484,6 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		//	This section is a normal start/standalone tag.
 		this.startTagOpen( name );
 		
-		//std::map< String, String > attributes;
 		this.processAttributes();
 		this.startTagClose( name );
 		
@@ -779,6 +787,11 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		}		
 	}
 	
+	/**
+	 * Reads a MinXSON expression off the input and returns a MinXML object.
+	 * 
+	 * @return a MinXML object or null if the end of input has been reached.
+	 */
 	public MinXML read() { 
 		while ( this.readOneTag() ) {
 			if ( this.isAtTopLevel() ) break;
@@ -825,6 +838,10 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 		return parent.build();
 	}
 	
+	/**
+	 * This method returns an iterator which consumes the input
+	 * stream and yields MinXML trees.
+	 */
 	public Iterator< MinXML > iterator() {
 		return new Iterator< MinXML >() {
 

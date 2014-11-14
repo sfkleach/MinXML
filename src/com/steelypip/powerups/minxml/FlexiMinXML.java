@@ -30,6 +30,17 @@ import com.steelypip.powerups.common.EmptyIterable;
 import com.steelypip.powerups.common.EmptyIterator;
 import com.steelypip.powerups.common.EmptyList;
 
+/**
+ * This implementation provides a full implementation of all the
+ * mandatory and optional methods of the MinXML interface. It aims
+ * to strike a balance between fast access, update and reasonable
+ * compactness in the most important cases. A TreeMap is used to
+ * track attributes and an ArrayList to track children; these provide
+ * good performance at the expense of space. However, when there
+ * are no attributes the TreeMap is not allocated and when there are
+ * no children the ArrayList is not allocated; these two cases are
+ * so common that the reduction in space is (typically) significant. 
+ */
 public class FlexiMinXML extends AbsFlexiMinXML {
 	
 	//////////////////////////////////////////////////////////////////////////////////
@@ -42,7 +53,7 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 	 * 
 	 * @param name
 	 */
-	public FlexiMinXML( final String name ) {
+	public FlexiMinXML( final @NonNull String name ) {
 		//	We intern the name purely to help save space. Unfortunately we
 		//	can't really take advantage of it in any other way.
 		this.name = name.intern();

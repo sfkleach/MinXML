@@ -42,7 +42,7 @@ public interface MinXML extends List< @NonNull MinXML > {
 	 * 
 	 * @return the element name
 	 */
-	String getName();
+	@NonNull String getName();
 	
 	/**
 	 * Returns true if the name of the element is the same as
@@ -62,7 +62,7 @@ public interface MinXML extends List< @NonNull MinXML > {
 	 * @param name the name we are setting
 	 * @throws UnsupportedOperationException
 	 */
-	void setName( String name ) throws UnsupportedOperationException;
+	void setName( @NonNull String name ) throws UnsupportedOperationException;
 		
 	/**
 	 * Gets the attribute value associated with a given key. If the

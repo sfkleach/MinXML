@@ -25,6 +25,16 @@ import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.charrepeater.CharRepeater;
 import com.steelypip.powerups.charrepeater.ReaderCharRepeater;
 
+/**
+ * This class wraps various types of input stream to
+ * create a MinXML parser. An optional MinXMLBuilder can
+ * be supplied, which gives control over the MinXML
+ * implementation that is actually constructed.
+ * 
+ * MinXML elements are read off the stream using
+ * readElement. Alternatively you can simply iterate 
+ * over the parser.
+ */
 public class MinXMLParser implements Iterable< MinXML > {
 	
 	private int level = 0;
@@ -39,9 +49,15 @@ public class MinXMLParser implements Iterable< MinXML > {
 		this.cucharin = rep;
 	}
 
-	public MinXMLParser( Reader rep, MinXMLBuilder parent ) {
-		this.parent = parent;
-		this.cucharin = new ReaderCharRepeater( rep );
+	/**
+	 * Constructs a parser from a {@link java.io.Reader} and a
+	 * MinXMLBuilder. 
+	 * @param reader the input source
+	 * @param builder used to construct the MinXML objects
+	 */
+	public MinXMLParser( Reader reader, MinXMLBuilder builder ) {
+		this.parent = builder;
+		this.cucharin = new ReaderCharRepeater( reader );
 	}
 
 	public MinXMLParser( final Reader rep ) {
@@ -57,7 +73,12 @@ public class MinXMLParser implements Iterable< MinXML > {
 		return this.cucharin.peekChar();
 	}
 	
-	private boolean hasNext() {
+	/**
+	 * Reads ahead on the input stream to determine if there are more 
+	 * MinXML expressions.
+	 * @return true if there are, else false
+	 */
+	public boolean hasNext() {
 		this.eatWhiteSpace();
 		return this.cucharin.peekChar( '\0' ) == '<';
 	}
@@ -277,6 +298,11 @@ public class MinXMLParser implements Iterable< MinXML > {
 				
 	}
 	
+	/**
+	 * Read an element off the input stream or null if the stream is
+	 * exhausted.
+	 * @return the next element
+	 */
 	public MinXML readElement() {
 		while ( this.read() ) {
 			this.read();
@@ -288,6 +314,10 @@ public class MinXMLParser implements Iterable< MinXML > {
 		return parent.build();
 	}
 	
+	/**
+	 * Returns an iterator that reads elements off sequentially
+	 * from this parser.
+	 */
 	public Iterator< MinXML > iterator() {
 		return new Iterator< MinXML >() {
 

@@ -19,7 +19,7 @@ import org.eclipse.jdt.annotation.NonNull;
 class BadMinXML extends AbstractList< @NonNull MinXML > implements MinXML {
 
 	@Override
-	public String getName() {
+	public @NonNull String getName() {
 		throw new IllegalStateException();
 	}
 
@@ -29,7 +29,7 @@ class BadMinXML extends AbstractList< @NonNull MinXML > implements MinXML {
 	}
 
 	@Override
-	public void setName( String name ) throws UnsupportedOperationException {
+	public void setName( @NonNull String name ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 

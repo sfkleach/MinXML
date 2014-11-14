@@ -34,6 +34,12 @@ import com.steelypip.powerups.common.NullIndenter;
 import com.steelypip.powerups.common.StdIndenter;
 import com.steelypip.powerups.io.StringPrintWriter;
 
+/**
+ * This is a abstract class for simplifying writing MinXML implementations.
+ * To utilize it, the implementation has to implement the element name (via 
+ * getName/setName), the attributes as a Map< String, String >, and the 
+ * children as a List< String >.  
+ */
 public abstract class AbsMinXML implements MinXML {
 	
 	
@@ -42,10 +48,10 @@ public abstract class AbsMinXML implements MinXML {
 	//////////////////////////////////////////////////////////////////////////////////
 
 	@Override
-	public abstract String getName();
+	public abstract @NonNull String getName();
 	
 	@Override
-	public abstract void setName( String name ) throws UnsupportedOperationException;
+	public abstract void setName( @NonNull String name ) throws UnsupportedOperationException;
 
 	@Override
 	public abstract Map< String, String > asMap();

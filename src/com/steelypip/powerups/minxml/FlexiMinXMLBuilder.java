@@ -24,36 +24,50 @@ import org.eclipse.jdt.annotation.NonNull;
 
 import com.steelypip.powerups.alert.Alert;
 
+/**
+ * This implementation of MinXMLBuilder is maximally flexible:
+ *	<li>It accepts null element names in startTagOpen, startTagClose and endTag.
+ *	<li>The startTagClose method may be omitted in the build sequence.
+ *	<li>After build is called, the builder can be reused.
+ */
 public class FlexiMinXMLBuilder implements MinXMLBuilder {
 
-	@NonNull FlexiMinXML current_element = new FlexiMinXML( "DUMMY_NODE" );
-	final LinkedList< @NonNull FlexiMinXML > element_stack = new LinkedList<>();
+	private @NonNull FlexiMinXML current_element = new FlexiMinXML( "DUMMY_NODE" );
+	private final LinkedList< @NonNull FlexiMinXML > element_stack = new LinkedList<>();
 
 	@Override
 	public void startTagOpen( String name ) {
 		element_stack.addLast( current_element );
-		this.current_element = new FlexiMinXML( name );
+		this.current_element = new FlexiMinXML( name != null ? name : "" );
 	}
 
 	@Override
 	public void put( String key, String value ) {
 		this.current_element.putAttribute( key, value );
 	}
+	
+	private void bindName( final String name ) {
+		if ( name != null ) {
+			if ( this.current_element.hasName( "" ) ) {
+				this.current_element.setName( name );
+			} else if ( ! this.current_element.hasName( name ) ) {
+				throw new Alert( "Mismatched tags" ).culprit( "Expected", this.current_element.getName() ).culprit( "Actual", name );				
+			}
+		}		
+	}
 
 	@Override
-	public void startTagClose( final String _unused ) {
+	public void startTagClose( final String name ) {
+		this.bindName( name );
 	}
 
 	@Override
 	public void endTag( String name ) {
+		this.bindName( name );
 		this.current_element.trimToSize();
-		if ( name == null || this.current_element.hasName( name ) ) {
-			final FlexiMinXML b2 = element_stack.removeLast();
-			b2.add( this.current_element );
-			this.current_element = b2;
-		} else {
-			throw new Alert( "Mismatched tags" ).culprit( "Expected", this.current_element.getName() ).culprit( "Actual", name );
-		}
+		final FlexiMinXML b2 = element_stack.removeLast();
+		b2.add( this.current_element );
+		this.current_element = b2;
 	}
 
 	@Override

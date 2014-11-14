@@ -38,11 +38,11 @@ public abstract class AbsFlexiMinXML extends AbsMinXML {
 	protected TreeMap< String, String > attributes;
 	protected ArrayList< @NonNull MinXML > children;
 
-	public String getName() {
+	public @NonNull String getName() {
 		return name;
 	}
 
-	public void setName( final String name ) {
+	public void setName( final @NonNull String name ) {
 		this.name = name.intern();
 	}
 

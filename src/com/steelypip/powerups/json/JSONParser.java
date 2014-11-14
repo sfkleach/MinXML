@@ -21,7 +21,13 @@ package com.steelypip.powerups.json;
 
 import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.charrepeater.CharRepeater;
-
+/**
+ * This class implements a JSON parser on top of a JSONBuilder<T> driver.
+ * As the parser consumes JSON expressions it makes appropriate calls on
+ * the driver to incrementally construct a result.
+ * 
+ * @param <T> the result type returned by the underlying builder
+ */
 public class JSONParser< T > {
 	
 	private static final char NON_NUMERIC_CHAR = ' ';
@@ -261,6 +267,10 @@ public class JSONParser< T > {
 		}
 	}
 	
+	/**
+	 * Consumes a single JSON expression.
+	 * @return the object built by the underlying builder.
+	 */
 	public T read() {
 		this.readExpression();
 		return this.builder.build();

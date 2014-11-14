@@ -27,6 +27,11 @@ import org.eclipse.jdt.annotation.NonNull;
 
 import com.steelypip.powerups.common.EmptyMap;
 
+/**
+ * This is a support class for FlexiMinXML that provides a 
+ * layer for managing the allocation of the TreeMap and the
+ * ArrayList.
+ */
 public abstract class AbsFlexiMinXML extends AbsMinXML {
 
 	protected String name;

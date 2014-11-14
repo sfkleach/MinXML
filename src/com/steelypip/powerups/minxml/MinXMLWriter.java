@@ -26,6 +26,11 @@ import com.steelypip.powerups.common.Indenter;
 import com.steelypip.powerups.common.IndenterFactory;
 import com.steelypip.powerups.common.NullIndenter;
 
+/**
+ * Prints out a MinXML object to a {@link java.io.PrintWriter}. It can
+ * be a simple-all-on-one-line or an elaborate pretty-printer depending
+ * on the Indenter that is supplied.
+ */
 public class MinXMLWriter {
 
 	final PrintWriter pw;

@@ -26,6 +26,10 @@ import java.util.ListIterator;
 
 import org.eclipse.jdt.annotation.NonNull;
 
+/**
+ *	A convenience class that implements a recursive
+ * 	walk over a MinXML tree. 
+ */
 public abstract class MinXMLWalker {
 	/**
 	 * startWalk is called at the start of the tree-walk of the subject and its children. 

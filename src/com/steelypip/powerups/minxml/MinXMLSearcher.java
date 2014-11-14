@@ -28,7 +28,10 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.EmptyIterator;
 
-
+/**
+ * A convenience class for implementing a recursive walk of a tree
+ * with some control over the branches explored.
+ */
 public abstract class MinXMLSearcher {
 
 	/**

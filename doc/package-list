@@ -3,5 +3,6 @@ com.steelypip.powerups.charrepeater
 com.steelypip.powerups.common
 com.steelypip.powerups.io
 com.steelypip.powerups.json
+com.steelypip.powerups.minxconf
 com.steelypip.powerups.minxml
 com.steelypip.powerups.minxson

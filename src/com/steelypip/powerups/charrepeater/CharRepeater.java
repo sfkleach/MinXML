@@ -38,6 +38,7 @@ public interface CharRepeater {
 	 * otherwise false. If the input is exhausted then this method
 	 * returns false.
 	 * @return the next character is equal to wanted
+	 * @param wanted the character that we are looking for
 	 */
 	boolean isNextChar( char wanted );
 	
@@ -45,8 +46,8 @@ public interface CharRepeater {
 	 * Returns true if it the next sequence of characters matches the string wanted,
 	 * otherwise false. If the input is exhausted then this method
 	 * returns false.
-	 * @param wanted
-	 * @return wanted is waiting to be read
+	 * @param wanted the sequence of characters that we are looking for
+	 * @return if true then the wanted string is waiting to be read
 	 */
 	boolean isNextString( String wanted );
 	
@@ -70,6 +71,8 @@ public interface CharRepeater {
 	 * Pushes a character onto the front of the input. It does not have to
 	 * be the same as the previous character that was read from the input.
 	 * There is no hard limit to how many characters are pushed.
+	 * 
+	 * @param value the character to be pushed back
 	 */
     void pushChar( char value );
     

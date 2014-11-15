@@ -11,8 +11,8 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * Implements the special case of an empty, immutable map from 
  * any type T to any type U.
- * @param <T>
- * @param <U>
+ * @param <T> the type of the domain
+ * @param <U> the type of the codomain
  */
 public class EmptyMap< T, @Nullable U > extends AbstractMap< T, U > {
 	

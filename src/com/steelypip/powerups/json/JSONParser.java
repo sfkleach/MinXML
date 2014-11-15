@@ -22,7 +22,7 @@ package com.steelypip.powerups.json;
 import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.charrepeater.CharRepeater;
 /**
- * This class implements a JSON parser on top of a JSONBuilder<T> driver.
+ * This class implements a JSON parser on top of a JSONBuilder driver.
  * As the parser consumes JSON expressions it makes appropriate calls on
  * the driver to incrementally construct a result.
  * 

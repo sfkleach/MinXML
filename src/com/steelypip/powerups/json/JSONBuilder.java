@@ -28,7 +28,7 @@ import java.math.BigInteger;
  * return a result. The type of the result depends entirely on
  * the implementation, which allows different parsers to construct
  * different results. 
- * @param <T>
+ * @param <T> the type that is yielded by the parser 
  */
 public interface JSONBuilder< T > {
 	
@@ -61,7 +61,7 @@ public interface JSONBuilder< T > {
 	/**
 	 * This method should preferably be invoked when the parser consumes
 	 * a JSON integer value that is too large to fit in a long.
-	 * @param value
+	 * @param num the value as a big-integer
 	 */
 	void addInteger( BigInteger num );
 	

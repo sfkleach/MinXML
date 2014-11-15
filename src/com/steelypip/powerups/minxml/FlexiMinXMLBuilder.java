@@ -26,9 +26,11 @@ import com.steelypip.powerups.alert.Alert;
 
 /**
  * This implementation of MinXMLBuilder is maximally flexible:
+ * <ul>
  *	<li>It accepts null element names in startTagOpen, startTagClose and endTag.
  *	<li>The startTagClose method may be omitted in the build sequence.
  *	<li>After build is called, the builder can be reused.
+ * </ul>
  */
 public class FlexiMinXMLBuilder implements MinXMLBuilder {
 

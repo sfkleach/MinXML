@@ -47,6 +47,8 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 	/**
 	 * This is the most general constructor, which simply invokes the super 
 	 * class constructor with the same arguments.
+	 * @param message the main message
+	 * @param cause the originating throwable
 	 */
 	public Alert( final String message, final Throwable cause ) {
 		super( message, cause );
@@ -175,6 +177,9 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 	 * for signalling code regions that the programmer intends should never arise.
 	 * It's a useful subset of internal-error.
 	 * @return the {@link Alert}
+	 * 
+	 * @param msg The main message
+	 * @param t A wrapped throwable
 	 */
 	public static Alert unreachable( final String msg, final Throwable t ) {
 		return new Alert( msg, t ).note( "A supposedly unreachable condition has been detected" );
@@ -193,7 +198,9 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 	/**
 	 * A convenience method for building an Alert that is suitable
 	 * to act as a placeholder for unfinished work.
+	 * 
 	 * @return the {@link Alert}
+	 * @param msg the main message
 	 */
 	public static Alert unimplemented( final String msg ) {
 		final Alert alert = new Alert( msg ).note( "An unimplemented feature has been reached" );
@@ -206,6 +213,7 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 	 * for signalling that some part of the object state has entered
 	 * a condition that the programmer intends to be impossible. The
 	 * message is "Internal error".
+	 * 
 	 * @return the {@link Alert}
 	 */
 	public static Alert internalError() {
@@ -216,7 +224,9 @@ public class Alert extends RuntimeException implements Iterable< Culprit > {
 	 * A convenience method for building an Alert that is suitable
 	 * for signalling that some part of the object state has entered
 	 * a condition that the programmer intends to be impossible. 
+	 * 
 	 * @return the {@link Alert}
+	 * @param msg the main message
 	 */
 	public static Alert internalError( final String msg ) {
 		return new Alert( "Internal Error" ).note( "This is an internal error" );

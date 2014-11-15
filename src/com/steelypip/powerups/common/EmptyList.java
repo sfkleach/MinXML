@@ -23,7 +23,7 @@ import java.util.Collection;
 
 /**
  * Implements the special case of an empty immutable list. 
- * @param <T>
+ * @param <T> the type yielded by the iterator (if it ever yielded any)
  */
 public class EmptyList< T > extends AbstractList< T > {
 

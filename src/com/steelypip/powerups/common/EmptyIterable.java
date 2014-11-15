@@ -24,7 +24,7 @@ import java.util.Iterator;
  * This implements the special case of an empty iterable for any
  * type T. Empty iterables can share the same iterator, which simply
  * never generates any values.
- * @param <T> 
+ * @param <T> the type yielded by the iterator
  */
 public class EmptyIterable< T > implements Iterable< T > {
 

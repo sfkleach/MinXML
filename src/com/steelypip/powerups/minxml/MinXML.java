@@ -60,7 +60,7 @@ public interface MinXML extends List< @NonNull MinXML > {
 	 * null, otherwise a {link RuntimeException} is thrown.
 	 *  
 	 * @param name the name we are setting
-	 * @throws UnsupportedOperationException
+	 * @throws UnsupportedOperationException if the implementing class cannot support this method
 	 */
 	void setName( @NonNull String name ) throws UnsupportedOperationException;
 		
@@ -139,6 +139,7 @@ public interface MinXML extends List< @NonNull MinXML > {
 	/**
 	 * Returns an iterator over the keys of an element that shares
 	 * updates with the original element. 
+	 * @return the iterator.
 	 */
 	Iterable< String > asMapKeys();
 	
@@ -166,12 +167,14 @@ public interface MinXML extends List< @NonNull MinXML > {
 	/**
 	 * Returns a {@link Map} that represents the attributes of an element
 	 * that shares updates with the original element.
+	 * @return the sharing map
 	 */
 	Map< String, String > asMap();
 	
 	/**
 	 * Returns an iterator over the attributes of an element that shares
 	 * updates with the original element. 
+	 * @return the sharing iterator
 	 */
 	Iterable< Map.Entry< String, String > > asMapEntries();
 	
@@ -202,7 +205,7 @@ public interface MinXML extends List< @NonNull MinXML > {
 	 * Removes all the attributes of the element. A class implementing MinXML is
 	 * not obliged to implement clearAttributes and may throw an {@link UnsupportedOperationException}.
 	 * 
-	 * @throws UnsupportedOperationException
+	 * @throws UnsupportedOperationException if the implementing class cannot support this method
 	 */
 	void clearAttributes() throws UnsupportedOperationException;
 
@@ -264,7 +267,7 @@ public interface MinXML extends List< @NonNull MinXML > {
 	 * implementation of the new node must be at least as general as the implementation
 	 * of this node i.e. implement all the methods that do not raise 
 	 * {@link java.lang.UnsupportedOperationException} 
-	 * 
+	 * @return a shallow copy
 	 */
 	@NonNull MinXML shallowCopy();
 	 
@@ -273,7 +276,7 @@ public interface MinXML extends List< @NonNull MinXML > {
 	 * implementation of the new nodes must be at least as general as the implementation
 	 * of this node i.e. implement all the methods that do not raise 
 	 * {@link java.lang.UnsupportedOperationException} 
-	 * 
+	 * @return a deep copy
 	 */
 	@NonNull MinXML deepCopy();
 }

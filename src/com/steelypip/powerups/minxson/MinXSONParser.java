@@ -60,7 +60,8 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	 * 	Option 'A' switches on _A_ll extensions.
 	 *  Option 'E' switches on the _E_mbedded extension.
 	 *  Option 'T' switches on the _T_ype-prefix extension.
-	 * @param extensions
+	 * @param extensions a character array encoding the set of extensions needed.
+	 * @return the parser, used for method chaining 
 	 */
 	public MinXSONParser enableExtensions( char[] extensions ) {
 		for ( char ch : extensions ) {

@@ -64,7 +64,7 @@ public abstract class MinXMLSearcher {
 	 * of elements. It is typically used to search a tree or to implement a series of
 	 * in-place updates.
 	 * 
-	 * @param subject
+	 * @param subject the element tree to be searched
 	 * @return a successful node, otherwise null.
 	 */
 	public @Nullable MinXML search( final MinXML subject ) {

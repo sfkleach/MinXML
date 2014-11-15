@@ -25,6 +25,7 @@ public class IfNull {
 	 * @param x the first value
 	 * @param y the second value
 	 * @return the first non-null value or null if all values are null.
+	 * @param <T> the return type
 	 */
 	public static <T> T ifNull( final T x, final T y ) {
 		return x == null ? y : x;

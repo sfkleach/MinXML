@@ -37,8 +37,8 @@ import com.steelypip.powerups.io.StringPrintWriter;
 /**
  * This is a abstract class for simplifying writing MinXML implementations.
  * To utilize it, the implementation has to implement the element name (via 
- * getName/setName), the attributes as a Map< String, String >, and the 
- * children as a List< String >.  
+ * getName/setName), the attributes as a {{Javadoc:SE|class=Map&lt;String,String&gt;|java/util|Map}}, and the 
+ * children as a {{Javadoc:SE|class=List&lt;String&gt;|java/util|List}}.  
  */
 public abstract class AbsMinXML implements MinXML {
 	

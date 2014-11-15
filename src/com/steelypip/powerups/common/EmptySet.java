@@ -7,7 +7,7 @@ import java.util.AbstractSet;
 /**
  * Implements the special case of an empty, immutable set 
  * of values of any type T.
- * @param <T>
+ * @param <T> the type of members (if there were any)
  */
 public class EmptySet< T > extends AbstractSet< T > {
 	

@@ -71,7 +71,7 @@ public class StringPrintWriter extends PrintWriter {
 	/**
 	 * Sends the characters printed so far to another Writer.
 	 * @param out the destination writer
-	 * @throws IOException
+	 * @throws IOException If an I/O error occurs.
 	 */
 	public void writeTo( Writer out ) throws IOException {
 		getCharArrayWriter().writeTo( out );

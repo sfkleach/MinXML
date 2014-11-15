@@ -71,7 +71,7 @@ public interface MinXMLBuilder {
 	 * An implementation may choose to make startTagClose optional,
 	 * implicitly closing it when the next startTagOpen is invoked.
 	 * 
-	 * @param value the name of the element to be constructed (or null)
+	 * @param name the name of the element to be constructed (or null)
 	 */
 	void startTagClose( String name );
 	

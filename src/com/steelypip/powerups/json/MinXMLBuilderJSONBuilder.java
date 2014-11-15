@@ -40,7 +40,6 @@ public class MinXMLBuilderJSONBuilder extends JSONBuildCounter implements JSONBu
 	/**
 	 * A convenience constructor that specialises the translation table to a
 	 * standard set of keywords and the MinXML builder to a FlexiMinXML builder.
-	 * @param builder
 	 */
 	public MinXMLBuilderJSONBuilder() {
 		this( new FlexiMinXMLBuilder(), JSONKeywords.KEYS );
@@ -49,17 +48,17 @@ public class MinXMLBuilderJSONBuilder extends JSONBuildCounter implements JSONBu
 	/**
 	 * A convenience constructor that specialises the translation table to a
 	 * standard set of keywords.
-	 * @param builder
+	 * @param builder the MinXML builder used to construct the internal tree
 	 */
 	public MinXMLBuilderJSONBuilder( final MinXMLBuilder builder ) {
 		this( builder, JSONKeywords.KEYS );
 	}
 	
 	/**
-	 * Creates a JSONBuilder<MinXML> from a MinXML builder and a translation
+	 * Creates a JSONBuilder from a MinXML builder and a translation
 	 * table. 
-	 * @param builder
-	 * @param keys
+	 * @param builder the MinXML builder used to construct the internal tree
+	 * @param keys the set of strings to embed in the final MinXML
 	 */
 	public MinXMLBuilderJSONBuilder( final MinXMLBuilder builder, final JSONKeywords keys ) {
 		this.builder = builder;

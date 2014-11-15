@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 /**
- * This class is used to convert a {@link java.lang.Reader} into
+ * This class is used to convert a java.lang.Reader into
  * character repeater that supports arbitrary pushback.
  * 
  */
@@ -33,8 +33,8 @@ public class ReaderCharRepeater implements CharRepeater {
 	private final CharBuffer buffer = new CharBuffer();
 	
 	/**
-	 * Constructs the character repeater from a {@link java.lang.Reader}.
-	 * @param reader
+	 * Constructs the character repeater from a java.lang.Reader
+	 * @param reader the input stream
 	 */
 	public ReaderCharRepeater( final Reader reader ) {
 		this.reader = reader;

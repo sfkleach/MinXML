@@ -53,7 +53,7 @@ public abstract class MinXMLWalker {
 	 * scan over a tree. The startWalk and endWalk methods are invoked on the way
 	 * down the tree and up the tree respectively. 
 	 * 
-	 * @param subject
+	 * @param subject the element tree to be walked
 	 * @return the walker itself, used for chaining method calls.
 	 */	
 	public MinXMLWalker walk( final MinXML subject ) {

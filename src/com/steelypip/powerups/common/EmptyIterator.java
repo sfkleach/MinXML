@@ -24,7 +24,7 @@ import java.util.NoSuchElementException;
 /**
  * Implements the special case of an iterator that yields no 
  * values.
- * @param <T>
+ * @param <T> the type yielded by the iterator (if it ever yielded any)
  */
 public class EmptyIterator< T > implements Iterator< T > {
 

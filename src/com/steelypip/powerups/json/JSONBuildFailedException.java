@@ -3,7 +3,7 @@ package com.steelypip.powerups.json;
 import com.steelypip.powerups.alert.Alert;
 
 /**
- * This exception should be thrown when there a JSONBuilder<T> 
+ * This exception should be thrown when there a JSONBuilder
  * runs into a problem building a tree. It should definitely be
  * thrown if there is an attempt to parse multiple expressions
  * or there is an attempt to build a tree before a complete expression

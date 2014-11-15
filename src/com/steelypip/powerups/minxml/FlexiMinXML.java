@@ -51,7 +51,7 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 	 * Constructs an element with a given name but no attributes or
 	 * children.
 	 * 
-	 * @param name
+	 * @param name the name of the element
 	 */
 	@SuppressWarnings("null")
 	public FlexiMinXML( final @NonNull String name ) {
@@ -67,13 +67,13 @@ public class FlexiMinXML extends AbsFlexiMinXML {
 	}
 
 	public static MinXML fromString( final String input ) {
-		return new MinXMLParser( new StringReader( input ) ).readElement(  );
+		return new MinXMLParser( new StringReader( input ) ).readElement();
 	}
 	
 	/**
 	 * Creates a copy of the top-level node of the given element.
-	 * @param element
-	 * @return
+	 * @param element the element to copy
+	 * @return the copy
 	 */
 	public static @NonNull FlexiMinXML shallowCopy( @NonNull MinXML element ) {
 		return new FlexiMinXML( element );

@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.EmptyMap;
 
@@ -59,7 +60,7 @@ public abstract class AbsFlexiMinXML extends AbsMinXML {
 		return this.attributes;
 	}
 		
-	static Map< String, String > empty_map = new EmptyMap< String, String >();
+	static Map< String, String > empty_map = new EmptyMap< String, @Nullable String >();
 
 	@Override
 	public Map< String, String > quickGetAttributes() {

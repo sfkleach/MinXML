@@ -54,12 +54,14 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 	private final TreeMap< String, String > extra_attributes = new TreeMap< String, String >();
 	private boolean EMBEDDED_EXTENSION = false;
 	private boolean TYPE_PREFIX_EXTENSION = false;
+	private boolean TUPLE_EXTENSION = false;
 	
 	/**
 	 * These extensions toggle optional features.
 	 * 	Option 'A' switches on _A_ll extensions.
 	 *  Option 'E' switches on the _E_mbedded extension.
 	 *  Option 'T' switches on the _T_ype-prefix extension.
+	 *  Option 'U' switches on the t_U_ple extension.
 	 * @param extensions a character array encoding the set of extensions needed.
 	 * @return the parser, used for method chaining 
 	 */
@@ -74,6 +76,9 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				if ( !all ) break;
 			case 'T': 
 				TYPE_PREFIX_EXTENSION = true; 
+				if ( !all ) break;
+			case 'U':
+				TUPLE_EXTENSION = true;
 				break;
 			default:
 				throw new Alert( "Unrecognised extension" ).culprit( "Extension flag", ch );
@@ -749,7 +754,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 			this.readTag();
 		} else if ( isStartOfNumber( ch ) ) {
 			this.readNumber();
-		} else if ( ch == '"' || ch == '\'') {
+		} else if ( ch == '"' || ch == '\'' ) {
 			this.readJSONString();
 		} else if ( isIdentifierStart( ch ) ) {
 			this.readIdentifier();
@@ -816,7 +821,7 @@ public class MinXSONParser extends LevelTracker implements Iterable< MinXML > {
 				seen_newline = true;
 			} else if ( ! Character.isWhitespace( ch ) ) {
 				this.cucharin.pushChar( ch );
-				if ( seen_newline && ( ch != ',' || ch != ';' ) ) {
+				if ( seen_newline && ( ch != ',' && ch != ';' ) ) {
 					this.cucharin.pushChar( ';' );
 				}
 				break;

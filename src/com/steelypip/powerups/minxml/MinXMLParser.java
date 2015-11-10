@@ -269,8 +269,7 @@ public class MinXMLParser implements Iterable< MinXML > {
 			return true;
 		} else if ( ch == '!' || ch == '?' ) {
 			this.eatComment( ch  );
-			this.read();
-			return true;
+			return this.read();
 		} else {
 			this.cucharin.pushChar( ch );
 		}
@@ -305,11 +304,10 @@ public class MinXMLParser implements Iterable< MinXML > {
 	 */
 	public MinXML readElement() {
 		while ( this.read() ) {
-			this.read();
 			if ( this.level == 0 ) break;
 		}
 		if ( this.level != 0 ) {
-			throw new Alert( "Unexpected end of input" );
+			throw new Alert( "Unmatched tags due to encountering end of input" );
 		}
 		return parent.build();
 	}

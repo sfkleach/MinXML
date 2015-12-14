@@ -2,12 +2,10 @@ package com.steelypip.powerups.minxmlstar;
 
 import java.io.PrintWriter;
 
-import com.steelypip.powerups.minxmlstar.ElementTheme.Selector;
-
 /**
  * 		<		doStartElement( String name, boolean hasAttributes, boolean hasLinks )
  *		NAME	doName( String name )
- *				doStartAttributes( boolean hasAttributes )
+ *				doStartAttributes( boolean hasAttributes, boolean hasLinks )
  *				doStartAttributeGroup( String key )
  *				doStartAttribute( String key, String Value )
  *		KEY		doKey( String key )
@@ -17,8 +15,8 @@ import com.steelypip.powerups.minxmlstar.ElementTheme.Selector;
  *				doEndAttribute( String key, String value )
  *				doEndAttributeGroup( String key )
  *		...		// repeat
- *		>		doEndAttributes( boolean hasAttributes )
- *				doStartLinks( boolean hasLinks )
+ *		>		doEndAttributes( boolean hasAttributes, boolean hasLinks )
+ *				doStartLinks( boolean hasAttributes, boolean hasLinks )
  *				doStartLinkGroup( String field )
  *		FIELD	doField( String field )
  *		:		doLinkBinding( boolean first_in_group, boolean last_in_group )
@@ -26,7 +24,7 @@ import com.steelypip.powerups.minxmlstar.ElementTheme.Selector;
  *		...		//	 repeat previous 3 steps
  *				doEndLinkGroup( String field )
  *		...		// repeat
- *				doEndLinks( boolean hasLinks )
+ *				doEndLinks( boolean hasAttributes, boolean hasLinks )
  *		</NAME>	doEndElement( String name, boolean hasAttributes, boolean hasLinks )
  *
  */
@@ -73,7 +71,7 @@ public class XmlElementTheme extends ElementTheme {
 	}
 
 	@Override
-	public void doStartAttributes( boolean hasAttributes ) {
+	public void doStartAttributes( boolean hasAttributes, boolean hasLinks ) {
 		if ( hasAttributes ) {
 			this.pw.print( ' ' );
 		}
@@ -84,27 +82,12 @@ public class XmlElementTheme extends ElementTheme {
 	}
 
 	@Override
-	public void doStartAttribute( String key, String Value ) {
-	}
-
-	@Override
-	public void doKey( String key ) {
+	public void doAttribute( String key, String value, boolean first_in_group, boolean last_in_group ) {
 		this.pw.print( key );
-	}
-
-	@Override
-	public void doAttributeBinding( boolean first_in_group, boolean last_in_group ) {
 		this.pw.print( first_in_group ? "=" : "+=" );
-	}
-
-	@Override
-	public void doValue( String value ) {
-		//	TODO - this is incorrect! Will need to properly escape it.
-		this.pw.print( value );
-	}
-
-	@Override
-	public void doEndAttribute( String key, String value ) {
+		this.pw.print( '"' );
+		this.starw.renderString( value );
+		this.pw.print( '"' );
 	}
 
 	@Override
@@ -112,12 +95,16 @@ public class XmlElementTheme extends ElementTheme {
 	}
 
 	@Override
-	public void doEndAttributes( boolean hasAttributes ) {
-		this.pw.print( '>' );
+	public void doEndAttributes( boolean hasAttributes, boolean hasLinks ) {
+		if ( hasLinks ) {
+			this.pw.print( '>' );
+		} else {
+			this.pw.print( "/>" );
+		}
 	}
 
 	@Override
-	public void doStartLinks( boolean hasLinks ) {
+	public void doStartLinks( boolean hasAttributes, boolean hasLinks ) {
 	}
 
 	@Override
@@ -125,28 +112,19 @@ public class XmlElementTheme extends ElementTheme {
 	}
 
 	@Override
-	public void doField( String field ) {
-		// TODO not correct
+	public void doLink( String field, MinXMLStar child, boolean first_in_group, boolean last_in_group ) {
 		this.pw.print( field );
-	}
-
-	@Override
-	public void doLinkBinding( boolean first_in_group, boolean last_in_group ) {
 		this.pw.print( first_in_group ? ":" : "+:" );
-	}
-
-	@Override
-	public void doChild( MinXMLStar child ) {
-		// TODO Auto-generated method stub
 		this.starw.print( child );
 	}
+
 
 	@Override
 	public void doEndLinkGroup( String field ) {
 	}
 
 	@Override
-	public void doEndLinks( boolean hasLinks ) {
+	public void doEndLinks( boolean hasAttributes, boolean hasLinks ) {
 	}
 
 	@Override
@@ -155,11 +133,7 @@ public class XmlElementTheme extends ElementTheme {
 			this.pw.print( "</" );
 			this.pw.print( name );
 			this.pw.print( ">" );
-		} else {
-			this.pw.print( "/>" );
 		}
 	}
-
-	
 
 }

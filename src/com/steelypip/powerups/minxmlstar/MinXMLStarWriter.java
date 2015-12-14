@@ -21,7 +21,6 @@ package com.steelypip.powerups.minxmlstar;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 
@@ -111,35 +110,31 @@ public class MinXMLStarWriter {
 		theme.doStartElement( name, has_any_attributes, has_any_links );
 		theme.doName( name );
 		
-		theme.doStartAttributes( has_any_attributes );
+		theme.doStartAttributes( has_any_attributes, has_any_links );
 		for ( @NonNull String key : x.keysToSet() ) {
 			theme.doStartAttributeGroup( key );
 			final List< @NonNull String > values = x.valuesToList( key );
 			int n = 0;
 			for ( @NonNull String value : values ) {
 				n += 1;
-				theme.doKey( key );
-				theme.doAttributeBinding( n == 1, n == values.size() );
-				theme.doValue( value );
+				theme.doAttribute( key, value,  n == 1, n == values.size() );
 			}
 			theme.doEndAttributeGroup( key );
 		}
-		theme.doEndAttributes( has_any_attributes );
+		theme.doEndAttributes( has_any_attributes, has_any_links );
 		
-		theme.doStartLinks( has_any_links );
+		theme.doStartLinks( has_any_attributes, has_any_links );
 		for ( @NonNull String field : x.fieldsToSet() ) {
 			final @NonNull List< @NonNull MinXMLStar > children = x.childrenToList( field );
 			theme.doStartLinkGroup( field );
 			int n = 0;
 			for ( @NonNull MinXMLStar child : children) {
 				n += 1;
-				theme.doField( field );
-				theme.doLinkBinding( n == 1, n == children.size() );
-				theme.doChild( child );
+				theme.doLink( field, child, n == 1, n == children.size() );
 			}
 			theme.doEndLinkGroup( field );
 		}
-		theme.doEndLinks( has_any_links ); 
+		theme.doEndLinks( has_any_attributes, has_any_links ); 
 		
 		theme.doEndElement( name, has_any_attributes, has_any_links );
 	}

@@ -8,7 +8,7 @@ package com.steelypip.powerups.minxmlstar;
  * 
  * 		<		doStartElement( String name, boolean hasAttributes, boolean hasLinks )
  *		NAME	doName( String name )
- *				doStartAttributes( boolean hasAttributes )
+ *				doStartAttributes( boolean hasAttributes, boolean hasLinks )
  *				doStartAttributeGroup( String key )
  *				doStartAttribute( String key, String Value )
  *		KEY		doKey( String key )
@@ -18,8 +18,8 @@ package com.steelypip.powerups.minxmlstar;
  *				doEndAttribute( String key, String value )
  *				doEndAttributeGroup( String key )
  *		...		// repeat
- *		>		doEndAttributes( boolean hasAttributes )
- *				doStartLinks( boolean hasLinks )
+ *		>		doEndAttributes( boolean hasAttributes, boolean hasLinks )
+ *				doStartLinks( boolean hasAttributes, boolean hasLinks )
  *				doStartLinkGroup( String field )
  *		FIELD	doField( String field )
  *		:		doLinkBinding( boolean first_in_group, boolean last_in_group )
@@ -27,7 +27,7 @@ package com.steelypip.powerups.minxmlstar;
  *		...		//	 repeat previous 3 steps
  *				doEndLinkGroup( String field )
  *		...		// repeat
- *				doEndLinks( boolean hasLinks )
+ *				doEndLinks( boolean hasAttributes, boolean hasLinks )
  *		</NAME>	doEndElement( String name, boolean hasAttributes, boolean hasLinks )
  */
 
@@ -42,22 +42,16 @@ public abstract class ElementTheme {
 		
 	public abstract void doStartElement( String name, boolean hasAttributes, boolean hasLinks );
 	public abstract void doName( String name );
-	public abstract void doStartAttributes( boolean hasAttributes );
+	public abstract void doStartAttributes( boolean hasAttributes, boolean hasLinks );
 	public abstract void doStartAttributeGroup( String key );
-	public abstract void doStartAttribute( String key, String Value );
-	public abstract void doKey( String key );
-	public abstract void doAttributeBinding( boolean first_in_group, boolean last_in_group );
-	public abstract void doValue( String value );
-	public abstract void doEndAttribute( String key, String value );
+	public abstract void doAttribute( String key, String value, boolean first_in_group, boolean last_in_group );
 	public abstract void doEndAttributeGroup( String key );
-	public abstract void doEndAttributes( boolean hasAttributes );
-	public abstract void doStartLinks( boolean hasLinks );
+	public abstract void doEndAttributes( boolean hasAttributes, boolean hasLinks );
+	public abstract void doStartLinks( boolean hasAttributes, boolean hasLinks );
 	public abstract void doStartLinkGroup( String field );
-	public abstract void doField( String field );
-	public abstract void doLinkBinding( boolean first_in_group, boolean last_in_group );
-	public abstract void doChild( MinXMLStar child );
+	public abstract void doLink( String field, MinXMLStar child, boolean first_in_group, boolean last_in_group );
 	public abstract void doEndLinkGroup( String field );
-	public abstract void doEndLinks( boolean hasLinks );
+	public abstract void doEndLinks( boolean hasAttributes, boolean hasLinks );
 	public abstract void doEndElement( String name, boolean hasAttributes, boolean hasLinks );
 
 	public abstract static class Selector {

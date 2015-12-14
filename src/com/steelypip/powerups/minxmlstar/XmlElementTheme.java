@@ -110,9 +110,10 @@ public class XmlElementTheme extends ElementTheme {
 
 	@Override
 	public void doLink( String field, MinXMLStar child, boolean first_in_group, boolean last_in_group ) {
-		this.pw.print( ' ' );
-		this.pw.print( field );
-		this.pw.print( first_in_group ? ":" : "+:" );
+		if ( ! field.isEmpty() ) {
+			this.pw.print( field );
+			this.pw.print( first_in_group ? ":" : "+:" );
+		}
 		this.starw.print( child );
 	}
 

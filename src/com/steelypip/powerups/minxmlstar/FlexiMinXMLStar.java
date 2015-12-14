@@ -1014,26 +1014,24 @@ public class FlexiMinXMLStar implements MinXMLStar {
 
 	@Override
 	public void print( PrintWriter pw ) {
-		// TODO Auto-generated method stub
-		
+		new MinXMLStarWriter( pw ).print( this );
 	}
 
 	@Override
 	public void print( Writer w ) {
-		// TODO Auto-generated method stub
-		
+		new MinXMLStarWriter( w ).print( this );
 	}
 
 	@Override
 	public void prettyPrint( PrintWriter pw ) {
 		// TODO Auto-generated method stub
-		
+		throw new RuntimeException( "TO BE DONE" );
 	}
 
 	@Override
 	public void prettyPrint( Writer w ) {
 		// TODO Auto-generated method stub
-		
+		throw new RuntimeException( "TO BE DONE" );		
 	}
 
 	@Override

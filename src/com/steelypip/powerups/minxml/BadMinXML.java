@@ -11,7 +11,7 @@ import org.eclipse.jdt.annotation.NonNull;
 /**
  * BadMinXML objects are used to fill the role of sentinels.
  * They can't do anything except stand-in for a MinXML object
- * to satisfy the type-checkig criteria.
+ * to satisfy the type-checking criteria.
  * 
  * @author steve
  *

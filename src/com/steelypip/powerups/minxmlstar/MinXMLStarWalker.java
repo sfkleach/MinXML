@@ -17,27 +17,32 @@
  *  
  */
 
-package com.steelypip.powerups.minxml;
+package com.steelypip.powerups.minxmlstar;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 
 import org.eclipse.jdt.annotation.NonNull;
 
 /**
  *	A convenience class that implements a recursive
- * 	walk over a MinXML tree. 
+ * 	walk over a MinXMLStar tree. 
  */
-public abstract class MinXMLWalker {
+public abstract class MinXMLStarWalker {
 	/**
 	 * startWalk is called at the start of the tree-walk of the subject and its children. 
 	 * It will be called once for each node in the tree.
 	 * 
 	 * @param subject the MinXML element to be visited
 	 */
-	public abstract void startWalk( MinXML subject );
+	public abstract void startWalk( @NonNull String field, int index, MinXMLStar subject );
+	
+	private void startWalk( MinXMLStar.Link link ) {
+		this.startWalk( link.getField(), link.getFieldIndex(), link.getChild() );
+	}
 
 	
 	/**
@@ -46,7 +51,13 @@ public abstract class MinXMLWalker {
 	 * 
 	 * @param subject the MinXML element to be visited
 	 */
-	public abstract void endWalk( MinXML subject );
+	public abstract void endWalk( @NonNull String field, int index, MinXMLStar subject );
+
+	private void endWalk( MinXMLStar.Link link ) {
+		this.endWalk( link.getField(), link.getFieldIndex(), link.getChild() );
+	}
+
+
 	
 	/**
 	 * The walk method is used to implement a depth-first, left-to-right recursive 
@@ -56,13 +67,17 @@ public abstract class MinXMLWalker {
 	 * @param subject the element tree to be walked
 	 * @return the walker itself, used for chaining method calls.
 	 */	
-	public MinXMLWalker walk( final MinXML subject ) {
-		this.startWalk( subject );
-		for ( MinXML kid : subject ) {
-			this.walk(  kid );
+	private MinXMLStarWalker walk( @NonNull String field, int index, final MinXMLStar subject ) {
+		this.startWalk( field, index, subject );
+		for ( MinXMLStar.Link link : subject ) {
+			this.walk( link.getField(), link.getFieldIndex(), link.getChild() );
 		}
-		this.endWalk( subject );
+		this.endWalk( field, index, subject );
 		return this;
+	}
+	
+	public MinXMLStarWalker walk( final MinXMLStar subject ) {
+		return this.walk( "", 0, subject );
 	}
 	
 	
@@ -71,23 +86,24 @@ public abstract class MinXMLWalker {
 	 * in the queue. Marked items represent 'endWalk' tasks and unmarked items
 	 * represent 'startWalk + expand' tasks. 
 	 */
-	private static final @NonNull MinXML end_walk_marker = new BadMinXML();
+	private static final MinXMLStar.Link end_walk_marker = new FlexiMinXMLStar.Link( "", 0, new BadMinXMLStar() );
 	
-	static abstract class CommonIterator implements Iterator< @NonNull MinXML > {
+	static abstract class CommonIterator implements Iterator< @NonNull MinXMLStar > {
 		
-		protected final @NonNull MinXMLWalker walker;
-		protected final Deque< @NonNull MinXML > queue = new ArrayDeque<>();
+		protected final @NonNull MinXMLStarWalker walker;
+		protected final Deque< MinXMLStar.Link > queue = new ArrayDeque<>();
 		
-		public CommonIterator( @NonNull MinXMLWalker walker, @NonNull MinXML subject ) {
+		public CommonIterator( @NonNull MinXMLStarWalker walker, @NonNull MinXMLStar subject ) {
 			this.walker = walker;
-			this.queue.add( subject );
+			this.queue.add( new FlexiMinXMLStar.Link( "", 0, subject ) );
 		}	
 
-		protected void expand( final @NonNull MinXML x ) {
+		protected void expand( final MinXMLStar.Link x ) {
 			this.walker.startWalk( x );
 			queue.addLast( x );
 			queue.addLast( end_walk_marker );
-			final ListIterator< @NonNull MinXML > it = x.listIterator( x.size() );
+			List< MinXMLStar.Link > link_list = x.getChild().linksToList();
+			final ListIterator< MinXMLStar.Link > it = link_list.listIterator( link_list.size() );
 			while ( it.hasPrevious() ) {
 				queue.addLast( it.previous() );
 			}						
@@ -97,7 +113,7 @@ public abstract class MinXMLWalker {
 	
 	static class PreOrderIterator extends CommonIterator {
 		
-		public PreOrderIterator( @NonNull MinXMLWalker walker, @NonNull MinXML subject ) {
+		public PreOrderIterator( @NonNull MinXMLStarWalker walker, @NonNull MinXMLStar subject ) {
 			super( walker, subject );
 		}	
 		
@@ -112,31 +128,31 @@ public abstract class MinXMLWalker {
 		}
 		
 		@Override
-		public @NonNull MinXML next() {
-			final MinXML x = queue.removeLast();
+		public @NonNull MinXMLStar next() {
+			final MinXMLStar.Link x = queue.removeLast();
 			if ( x != end_walk_marker ) {
 				this.expand( x );
-				return x;
+				return x.getChild();
 			}
 			this.walker.endWalk( queue.removeLast() );
 			this.hasNext();
-			return queue.removeLast();
+			return queue.removeLast().getChild();
 		}
 		
 	}
 	
-	public Iterable< @NonNull MinXML > preOrder( final @NonNull MinXML subject ) {
-		return new Iterable< @NonNull MinXML >() {
+	public Iterable< @NonNull MinXMLStar > preOrder( final @NonNull MinXMLStar subject ) {
+		return new Iterable< @NonNull MinXMLStar >() {
 			@Override
-			public Iterator< @NonNull MinXML > iterator() {
-				return new PreOrderIterator( MinXMLWalker.this, subject );
+			public Iterator< @NonNull MinXMLStar > iterator() {
+				return new PreOrderIterator( MinXMLStarWalker.this, subject );
 			}
 		};
 	}
 	
 	static class PostOrderIterator extends CommonIterator {
 	
-		public PostOrderIterator( @NonNull MinXMLWalker walker, @NonNull MinXML subject) {
+		public PostOrderIterator( @NonNull MinXMLStarWalker walker, @NonNull MinXMLStar subject) {
 			super( walker, subject );
 		}	
 		
@@ -149,7 +165,7 @@ public abstract class MinXMLWalker {
 		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
 				if ( end_walk_marker == queue.getLast() ) return true;
-				MinXML e = queue.removeLast();
+				MinXMLStar.Link e = queue.removeLast();
 				this.expand( e );
 			}
 			return false;
@@ -161,14 +177,14 @@ public abstract class MinXMLWalker {
 		 * hasNext would sort it out.
 		 */
 		@Override
-		public @NonNull MinXML next() {
-			final MinXML x = queue.removeLast();
+		public @NonNull MinXMLStar next() {
+			final MinXMLStar.Link x = queue.removeLast();
 			if ( x == end_walk_marker ) {
 				//	The queue is normalised.
 				//	This is the overwhelmingly common case - so we special case it.
-				final MinXML e = queue.removeLast();
+				final MinXMLStar.Link e = queue.removeLast();
 				this.walker.endWalk( e );
-				return e;
+				return e.getChild();
 			} else {
 				//	The queue was not normalised by a call to hasNext and the
 				//	head of the queue was not a request for an end-visit. We
@@ -181,11 +197,11 @@ public abstract class MinXMLWalker {
 	}
 
 	
-	public Iterable< @NonNull MinXML > postOrder( final @NonNull MinXML subject ) {
-		return new Iterable< @NonNull MinXML >() {
+	public Iterable< @NonNull MinXMLStar > postOrder( final @NonNull MinXMLStar subject ) {
+		return new Iterable< @NonNull MinXMLStar >() {
 			@Override
-			public Iterator< @NonNull MinXML > iterator() {
-				return new PostOrderIterator( MinXMLWalker.this, subject );
+			public Iterator< @NonNull MinXMLStar > iterator() {
+				return new PostOrderIterator( MinXMLStarWalker.this, subject );
 			}
 		};
 	}

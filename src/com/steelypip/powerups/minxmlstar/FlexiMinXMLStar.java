@@ -724,6 +724,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 		ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
 		if ( flinks == null ) {
 			flinks = new ArrayList<>();
+			this.links.put( field, flinks );
 		}
 		final @NonNull FlexiMinXMLStar fv = toFlexiMinXMLStar( value );
 		flinks.add( fv );
@@ -1051,6 +1052,11 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	@Override
 	public @NonNull Set< @NonNull String > fieldsToSet() {
 		return new TreeSet<>( this.links.keySet() );
+	}
+
+	@Override
+	public void addChild( @NonNull MinXMLStar value ) throws UnsupportedOperationException {
+		this.addChild( "", value );
 	}
 
 	

@@ -54,7 +54,6 @@ public class XmlElementTheme extends ElementTheme {
 
 		@Override
 		public ElementTheme select( MinXMLStar element ) {
-			// TODO Auto-generated method stub
 			return new XmlElementTheme( writer );
 		}
 		
@@ -72,9 +71,6 @@ public class XmlElementTheme extends ElementTheme {
 
 	@Override
 	public void doStartAttributes( boolean hasAttributes, boolean hasLinks ) {
-		if ( hasAttributes ) {
-			this.pw.print( ' ' );
-		}
 	}
 
 	@Override
@@ -83,6 +79,7 @@ public class XmlElementTheme extends ElementTheme {
 
 	@Override
 	public void doAttribute( String key, String value, boolean first_in_group, boolean last_in_group ) {
+		this.pw.print( ' ' );
 		this.pw.print( key );
 		this.pw.print( first_in_group ? "=" : "+=" );
 		this.pw.print( '"' );
@@ -113,6 +110,7 @@ public class XmlElementTheme extends ElementTheme {
 
 	@Override
 	public void doLink( String field, MinXMLStar child, boolean first_in_group, boolean last_in_group ) {
+		this.pw.print( ' ' );
 		this.pw.print( field );
 		this.pw.print( first_in_group ? ":" : "+:" );
 		this.starw.print( child );

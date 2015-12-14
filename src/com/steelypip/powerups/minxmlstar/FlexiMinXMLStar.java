@@ -545,11 +545,10 @@ public class FlexiMinXMLStar implements MinXMLStar {
 
 	@Override
 	public @NonNull List< @NonNull String > valuesToList( @NonNull String key ) {
-		final List< @NonNull String > list = new ArrayList< @NonNull String >();
-		if ( this.attributes != null ) {
-			for ( Map.Entry< String, ArrayList< @NonNull String > > e : this.attributes.entrySet() ) {
-				list.addAll( e.getValue() );
-			}
+		final List< @NonNull String > values = this.attributes.get( key );
+		final @NonNull List< @NonNull String > list = new ArrayList< @NonNull String >();
+		if ( values != null ) {
+			list.addAll( values );
 		}
 		return list;	
 	}

@@ -330,7 +330,7 @@ public class TestFlexiMinXMLStar {
 		assertTrue( blist.isEmpty() );
 		final List< @NonNull String > elist = this.example.valuesToList( "a1" );
 		assertFalse( elist.isEmpty() );
-		assertSame( 3, elist.size() );
+		assertSame( 1, elist.size() );
 	}
 
 	@Test
@@ -364,6 +364,13 @@ public class TestFlexiMinXMLStar {
 	@Test
 	public void testGetChild() {
 //		this.example.getChild( )
+	}
+	
+	@Test
+	public void testHasAnyLinks() {
+		assertFalse( this.base.hasAnyLinks() );
+		this.example.addChild( this.base );
+		assertTrue( this.example.hasAnyLinks() );
 	}
 	
 }

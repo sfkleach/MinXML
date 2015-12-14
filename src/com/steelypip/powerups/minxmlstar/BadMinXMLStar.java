@@ -429,4 +429,9 @@ public class BadMinXMLStar implements MinXMLStar {
 		throw new IllegalStateException();
 	}
 
+	@Override
+	public void addChild( @NonNull MinXMLStar value ) throws UnsupportedOperationException {
+		throw new IllegalStateException();
+	}
+
 }

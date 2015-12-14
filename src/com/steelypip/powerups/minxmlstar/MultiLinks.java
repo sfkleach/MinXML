@@ -34,6 +34,7 @@ public interface MultiLinks {
 	void setAllChildren( @NonNull String field, Iterable< @NonNull MinXMLStar > values ) throws UnsupportedOperationException;
 	
 	void addChild( @NonNull String field, @NonNull MinXMLStar value ) throws UnsupportedOperationException;
+	void addChild( @NonNull MinXMLStar value ) throws UnsupportedOperationException;
 	
 	void removeChild( @NonNull String key ) throws UnsupportedOperationException, IndexOutOfBoundsException;
 	void removeChild( @NonNull String key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException;

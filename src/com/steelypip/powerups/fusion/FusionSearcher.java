@@ -17,7 +17,7 @@
  *  
  */
 
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -34,7 +34,7 @@ import com.steelypip.powerups.common.EmptyIterator;
  * A convenience class for implementing a recursive walk of a tree
  * with some control over the branches explored.
  */
-public abstract class MinXMLStarSearcher {
+public abstract class FusionSearcher {
 
 	/**
 	 * startSearch is called at the start of the tree-walk of the subject and its children. 
@@ -43,9 +43,9 @@ public abstract class MinXMLStarSearcher {
 	 * @param subject the MinXML element to be visited
 	 * @return flag saying if the children were cutoff.
 	 */
-	public abstract boolean startSearch( @NonNull String field, int index, MinXMLStar subject );
+	public abstract boolean startSearch( @NonNull String field, int index, Fusion subject );
 	
-	public boolean startSearch( final MinXMLStar.Link link ) {
+	public boolean startSearch( final Fusion.Link link ) {
 		return this.startSearch( link.getField(), link.getFieldIndex(), link.getChild() );
 	}
 
@@ -61,15 +61,15 @@ public abstract class MinXMLStarSearcher {
 	 * @param cutoff flag indicating if any child search was cutoff.
 	 * @return boolean a flag saying if sibling-search should be cutoff.
 	 */
-	public abstract boolean endSearch( @NonNull String field, int index, MinXMLStar subject, boolean cutoff );
+	public abstract boolean endSearch( @NonNull String field, int index, Fusion subject, boolean cutoff );
 
-	public boolean endSearch( final MinXMLStar.Link link, boolean cutoff ) {
+	public boolean endSearch( final Fusion.Link link, boolean cutoff ) {
 		return this.endSearch( link.getField(), link.getFieldIndex(), link.getChild(), cutoff );
 	}
 
 
 	
-	private static final Iterator< MinXMLStar.Link > empty = new EmptyIterator<>();
+	private static final Iterator< Fusion.Link > empty = new EmptyIterator<>();
 	
 	/**
 	 * The search method is used to implement basic recursive scans over a tree
@@ -79,21 +79,21 @@ public abstract class MinXMLStarSearcher {
 	 * @param subject the element tree to be searched
 	 * @return a successful node, otherwise null.
 	 */
-	public @Nullable MinXMLStar search( @NonNull String field, int index, final MinXMLStar subject ) {
-		MinXMLStar cutoff = this.startSearch( field, index, subject ) ? subject : null;
-		final Iterator< MinXMLStar.Link > kids = cutoff != null ? empty : subject.iterator();
+	public @Nullable Fusion search( @NonNull String field, int index, final Fusion subject ) {
+		Fusion cutoff = this.startSearch( field, index, subject ) ? subject : null;
+		final Iterator< Fusion.Link > kids = cutoff != null ? empty : subject.iterator();
 		while ( cutoff == null && kids.hasNext() ) {
 			cutoff = this.search( kids.next() );
 		}
 		return this.endSearch( field, index, subject, cutoff != null ) ? ( cutoff != null ? cutoff : subject ) : null;
 	}
 	
-	public @Nullable MinXMLStar search( final MinXMLStar.Link link ) {
+	public @Nullable Fusion search( final Fusion.Link link ) {
 		return this.search( link.getField(), link.getFieldIndex(), link.getChild() );
 	}
 
 	
-	public @Nullable MinXMLStar search( final MinXMLStar subject ) {
+	public @Nullable Fusion search( final Fusion subject ) {
 		return this.search(  "", 0, subject );
 	}
 	
@@ -103,35 +103,35 @@ public abstract class MinXMLStarSearcher {
 	 * represent 'startWalk + expand' tasks. The choice of marker is used to signal
 	 * true/false.
 	 */
-	private static final MinXMLStar.Link cutoff_true = new FlexiMinXMLStar.Link( "", 0, new BadMinXMLStar() );
-	private static final MinXMLStar.Link cutoff_false = new FlexiMinXMLStar.Link( "", 0, new BadMinXMLStar() );
+	private static final Fusion.Link cutoff_true = new FlexiFusion.Link( "", 0, new BadMinXMLStar() );
+	private static final Fusion.Link cutoff_false = new FlexiFusion.Link( "", 0, new BadMinXMLStar() );
 	
-	static abstract class CommonMethodsPreOrderIterator implements Iterator< MinXMLStar > {
+	static abstract class CommonMethodsPreOrderIterator implements Iterator< Fusion > {
 		
-		protected final MinXMLStarSearcher searcher;
-		protected final Deque< MinXMLStar.Link > queue = new ArrayDeque<>();
+		protected final FusionSearcher searcher;
+		protected final Deque< Fusion.Link > queue = new ArrayDeque<>();
 		
-		public CommonMethodsPreOrderIterator( MinXMLStarSearcher searcher, @NonNull MinXMLStar subject ) {
+		public CommonMethodsPreOrderIterator( FusionSearcher searcher, @NonNull Fusion subject ) {
 			this.searcher = searcher;
-			this.queue.add( new FlexiMinXMLStar.Link( "", 0, subject ) );
+			this.queue.add( new FlexiFusion.Link( "", 0, subject ) );
 		}			
 
 		protected void cutAwaySiblings() {
 			//	We have to cut away the siblings.
 			while ( ! queue.isEmpty() ) {
-				final MinXMLStar.Link last = queue.removeLast();
+				final Fusion.Link last = queue.removeLast();
 				if ( cutoff_false == last || cutoff_true == last ) break;
 			}
 			queue.addLast( cutoff_true );
 		}
 		
-		protected void expand( final MinXMLStar.Link x ) {
+		protected void expand( final Fusion.Link x ) {
 			final boolean cutoff = this.searcher.startSearch( x );
 			queue.addLast( x );
 			queue.addLast( cutoff ? cutoff_true : cutoff_false );
 			if ( ! cutoff ) {
-				final List< MinXMLStar.Link > link_list = x.getChild().linksToList();
-				final ListIterator< MinXMLStar.Link > it = link_list.listIterator( link_list.size() );
+				final List< Fusion.Link > link_list = x.getChild().linksToList();
+				final ListIterator< Fusion.Link > it = link_list.listIterator( link_list.size() );
 				while ( it.hasPrevious() ) {
 					queue.addLast( it.previous() );
 				}				
@@ -142,14 +142,14 @@ public abstract class MinXMLStarSearcher {
 	
 	static class SearcherPreOrderIterator extends CommonMethodsPreOrderIterator {
 		
-		public SearcherPreOrderIterator( MinXMLStarSearcher searcher, @NonNull MinXMLStar subject ) {
+		public SearcherPreOrderIterator( FusionSearcher searcher, @NonNull Fusion subject ) {
 			super( searcher, subject );
 		}	
 
 		@Override
 		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
-				final MinXMLStar.Link last = queue.getLast();
+				final Fusion.Link last = queue.getLast();
 				if ( cutoff_false != last && cutoff_true != last ) return true;
 				queue.removeLast();
 				final boolean cutoff = this.searcher.endSearch( queue.removeLast(), cutoff_true == last );
@@ -161,8 +161,8 @@ public abstract class MinXMLStarSearcher {
 		}
 
 		@Override
-		public MinXMLStar next() {
-			final MinXMLStar.Link x = queue.removeLast();
+		public Fusion next() {
+			final Fusion.Link x = queue.removeLast();
 			if ( cutoff_false != x && cutoff_true != x ) {
 				this.expand( x );
 				return x.getChild();
@@ -175,18 +175,18 @@ public abstract class MinXMLStarSearcher {
 		
 	}
 	
-	public Iterable< MinXMLStar > preOrder( final @NonNull MinXMLStar subject ) {
-		return new Iterable< MinXMLStar >() {
+	public Iterable< Fusion > preOrder( final @NonNull Fusion subject ) {
+		return new Iterable< Fusion >() {
 			@Override
-			public Iterator< MinXMLStar > iterator() {
-				return new SearcherPreOrderIterator( MinXMLStarSearcher.this, subject );
+			public Iterator< Fusion > iterator() {
+				return new SearcherPreOrderIterator( FusionSearcher.this, subject );
 			}
 		};
 	}
 	
 	static class SearcherPostOrderIterator extends CommonMethodsPreOrderIterator {
 		
-		public SearcherPostOrderIterator( MinXMLStarSearcher searcher, @NonNull MinXMLStar subject ) {
+		public SearcherPostOrderIterator( FusionSearcher searcher, @NonNull Fusion subject ) {
 			super( searcher, subject );
 		}	
 		
@@ -198,7 +198,7 @@ public abstract class MinXMLStarSearcher {
 		@Override
 		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
-				final MinXMLStar.Link last = queue.getLast();
+				final Fusion.Link last = queue.getLast();
 				if ( cutoff_false == last || cutoff_true == last ) return true;
 				this.expand( queue.removeLast() );
 			}
@@ -210,10 +210,10 @@ public abstract class MinXMLStarSearcher {
 		 * hasNext will sort it out.
 		 */
 		@Override
-		public MinXMLStar next() {
-			final MinXMLStar.Link x = queue.removeLast();
+		public Fusion next() {
+			final Fusion.Link x = queue.removeLast();
 			if ( cutoff_false == x || cutoff_true == x ) {
-				final MinXMLStar.Link last = queue.removeLast();
+				final Fusion.Link last = queue.removeLast();
 				final boolean cutoff = this.searcher.endSearch( last, cutoff_true == x );
 				if ( cutoff ) {
 					this.cutAwaySiblings();
@@ -228,11 +228,11 @@ public abstract class MinXMLStarSearcher {
 
 	}
 	
-	public Iterable< MinXMLStar > postOrder( final @NonNull MinXMLStar subject ) {
-		return new Iterable< MinXMLStar >() {
+	public Iterable< Fusion > postOrder( final @NonNull Fusion subject ) {
+		return new Iterable< Fusion >() {
 			@Override
-			public Iterator< MinXMLStar > iterator() {
-				return new SearcherPostOrderIterator( MinXMLStarSearcher.this, subject );
+			public Iterator< Fusion > iterator() {
+				return new SearcherPostOrderIterator( FusionSearcher.this, subject );
 			}
 		};
 	}

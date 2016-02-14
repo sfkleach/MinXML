@@ -16,11 +16,13 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.alert.Alert;
 
@@ -32,16 +34,18 @@ import com.steelypip.powerups.alert.Alert;
  *	<li>After build is called, the builder can be reused.
  * </ul>
  */
-public class FlexiMinXMLStarBuilder implements MinXMLStarBuilder {
+public abstract class AbsFusionBuilder implements FusionBuilder {
 	
+	public abstract @NonNull FusionImplementation implementation();
+		
 	static class Link {
 		
 		private String field;
-		private @NonNull FlexiMinXMLStar current;
+		private @NonNull Fusion current;
 		
-		public Link( String field, String name ) {
+		public Link( @NonNull FusionImplementation impl, String field, String name ) {
 			this.field = field;
-			this.current = new FlexiMinXMLStar( name != null ? name : "" );
+			this.current = impl.newMutableFusion( name != null ? name : "" );
 		}
 
 		public String getField() {
@@ -52,7 +56,7 @@ public class FlexiMinXMLStarBuilder implements MinXMLStarBuilder {
 			this.field = field;
 		}
 
-		public @NonNull FlexiMinXMLStar getCurrent() {
+		public @NonNull Fusion getCurrent() {
 			return current;
 		}
 		
@@ -62,23 +66,24 @@ public class FlexiMinXMLStarBuilder implements MinXMLStarBuilder {
 		}
 		
 	}
-
-	private @NonNull Link current_link = new Link( "DUMMY FIELD", "DUMMY_NODE" );
-	private final LinkedList< @NonNull Link > link_stack = new LinkedList<>();
 	
-	private @NonNull FlexiMinXMLStar current() {
+	private @NonNull Link current_link = new Link( this.implementation(), "DUMMY FIELD", "DUMMY_NODE" );
+	private final LinkedList< @NonNull Link > link_stack = new LinkedList<>();
+	//private final Conventions litf = new StdConventions();
+	
+	private @NonNull Fusion current() {
 		return this.current_link.getCurrent();
 	}
 
 	@Override
 	public void startTagOpen( final String field, final String name ) {
 		link_stack.addLast( current_link );
-		this.current_link = new Link( field, name );
+		this.current_link = new Link( this.implementation(), field, name );
 	}
 
 	@Override
 	public void startTagOpen( final String name ) {
-		this.startTagOpen( name, null );
+		this.startTagOpen( "", name );
 	}
 
 	@Override
@@ -91,7 +96,59 @@ public class FlexiMinXMLStarBuilder implements MinXMLStarBuilder {
 		this.current().addValue( key, value );
 	}
 	
-	private void bindName( final String name ) {
+//	private void addLiteral( final @NonNull String type_value, final @NonNull String value ) {
+//		this.startTagOpen( StdLiterals.INSTANCE.getConstant() );
+//		this.add( StdLiterals.INSTANCE.getType(), type_value );
+//		this.add( StdLiterals.INSTANCE.getValue(), value );
+//		this.endTag();		
+//	}
+	
+//	@SuppressWarnings("null")
+	@Override
+	public void addChild( final long number ) {
+		this.addChild( this.implementation().newIntegerFusion( number ) );
+//		this.addLiteral( StdLiterals.INSTANCE.getInteger(), Objects.requireNonNull( Long.toString( number, 10 ) ) );
+	}
+	
+//	@SuppressWarnings("null")
+	@Override
+	public void addChild( final double number ) {
+		this.addChild( this.implementation().newFloatFusion( number ) );
+//		this.addLiteral( StdLiterals.INSTANCE.getFloat(), Objects.requireNonNull( Double.toString( number ) ) );
+	}
+	
+	@Override
+	public void addChild( final @Nullable String string ) {
+		this.addChild( this.implementation().newStringFusion( string ) );
+//		if ( string != null ) {
+//			this.addLiteral( StdLiterals.INSTANCE.getString(), string );
+//		} else {
+//			this.addLiteral( StdLiterals.INSTANCE.getNull(), StdLiterals.INSTANCE.getNull() );
+//		}
+	}
+	
+//	@SuppressWarnings("null")
+	@Override
+	public void addChild( final boolean bool ) {
+		this.addChild( this.implementation().newBooleanFusion( bool ) );
+//		this.addLiteral( StdLiterals.INSTANCE.getBoolean(), Objects.requireNonNull( Boolean.toString( bool ) ) );
+	}
+	
+	@Override 
+	public void addChild( final @Nullable Fusion x ) {
+		if ( x == null ) {
+			this.addNull();
+		} else {
+			this.current_link.getCurrent().addChild( x );
+		}
+	}
+	
+	@Override
+	public void addNull() {
+		this.current_link.getCurrent().addChild( this.implementation().newNullFusion() );
+	}
+	
+	private void bindName( final @Nullable String name ) {
 		if ( name != null ) {
 			if ( this.current().hasName( "" ) ) {
 				this.current().setName( name );
@@ -101,7 +158,7 @@ public class FlexiMinXMLStarBuilder implements MinXMLStarBuilder {
 		}		
 	}
 	
-	private void bindField( final String field ) {
+	private void bindField( final @Nullable String field ) {
 		if ( field != null ) {
 			if ( this.current_link.getField() == null ) {
 				this.current_link.setField( field );
@@ -141,18 +198,17 @@ public class FlexiMinXMLStarBuilder implements MinXMLStarBuilder {
 
 	@Override
 	public void endTag() {
-		this.current().trimToSize();
 		final Link b2 = link_stack.removeLast();
 		b2.getCurrent().addChild( this.current_link.getNonNullField(), this.current_link.getCurrent() );
 		this.current_link = b2;
 	}
 
 	@Override
-	public MinXMLStar build() {
+	public Fusion build() {
 		if ( this.current().hasNoFields() ) {
 			return null;
 		} else {
-			MinXMLStar result = this.current().getChild();
+			Fusion result = this.current().getChild();
 			this.current().clearAllLinks();
 			return result;
 		}

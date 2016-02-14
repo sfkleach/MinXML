@@ -16,9 +16,11 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,7 +36,7 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.CmpPair;
 import com.steelypip.powerups.common.Pair;
-import com.steelypip.powerups.common.StdPair;
+import com.steelypip.powerups.common.StdIndenter;
 import com.steelypip.powerups.util.StarMap;
 import com.steelypip.powerups.util.StdStarMap;
 
@@ -42,18 +44,20 @@ import com.steelypip.powerups.util.StdStarMap;
  * This implementation provides a full implementation of all the
  * mandatory and optional methods of the MinXML interface. It aims
  * to strike a balance between fast access, update and reasonable
- * compactness in the most important cases. A TreeMap is used to
- * track attributes and an ArrayList to track children; these provide
- * good performance at the expense of space. However, when there
- * are no attributes the TreeMap is not allocated and when there are
- * no children the ArrayList is not allocated; these two cases are
- * so common that the reduction in space is (typically) significant. 
+ * compactness in the most important cases. 
+ * 
+ * 
+ * A TreeMap is used to track attributes/links and an ArrayList to track 
+ * values/children; these provide good performance at the expense of space. 
+ * However, when there are no attributes/children the TreeMap is not allocated 
+ * and when there are no values/children the ArrayList is not allocated; these 
+ * two cases are so common that the reduction in space is (typically) significant. 
  */
-public class FlexiMinXMLStar implements MinXMLStar {
+public class FlexiFusion extends LiteralConstantsFusion implements MutableFusion {
 	
 	protected @NonNull String name;
-	protected @NonNull TreeMap< @NonNull String, ArrayList< @NonNull String > > attributes = new TreeMap<>();
-	protected @NonNull TreeMap< @NonNull String, ArrayList< @NonNull FlexiMinXMLStar > > links = new TreeMap<>();
+	protected TreeMap< @NonNull String, ArrayList< @NonNull String > > attributes = null;
+	protected TreeMap< @NonNull String, ArrayList< @NonNull Fusion > > links = null;
 	
 	//////////////////////////////////////////////////////////////////////////////////
 	//	Constructors
@@ -66,74 +70,41 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	 * @param name the name of the element
 	 */
 	@SuppressWarnings("null")
-	public FlexiMinXMLStar( final @NonNull String name ) {
+	public FlexiFusion( final @NonNull String name ) {
 		this.name = name.intern(); 
 	}
 	
-	public FlexiMinXMLStar( final @NonNull MinXMLStar element ) {
-		this.name = element.getInternedName();
-		assignAttributes( element, this );
-		assignLinks( element, this );
+//	public AbsFlexiFusion( final @NonNull Fusion element ) {
+//		this.name = element.getInternedName();
+//		assignAttributes( element, this );
+//		assignLinks( element, this );
+//	}
+	
+//	public @NonNull AbsFlexiFusion toFlexiMinXMLStar( @NonNull Fusion that ) {
+//		if ( that instanceof AbsFlexiFusion ) {
+//			return (AbsFlexiFusion)that;
+//		} else {
+//			return new AbsFlexiFusion( that );
+//		}
+//	}
+	
+	@SuppressWarnings("null")
+	public @NonNull TreeMap< @NonNull String, ArrayList< @NonNull String > > getNonNullAttributes() {
+		if ( this.attributes == null ) {
+			this.attributes = new TreeMap<>();
+		}
+		return this.attributes;
+	}
+
+	@SuppressWarnings("null")
+	public @NonNull TreeMap< @NonNull String, ArrayList< @NonNull Fusion > > getNonNullLinks() {
+		if ( this.links == null ) {
+			this.links = new TreeMap<>();
+		}
+		return this.links;
 	}
 	
-	public @NonNull FlexiMinXMLStar toFlexiMinXMLStar( @NonNull MinXMLStar that ) {
-		if ( that instanceof FlexiMinXMLStar ) {
-			return (FlexiMinXMLStar)that;
-		} else {
-			return new FlexiMinXMLStar( that );
-		}
-	}
 
-	//TODO implement parser
-	/*public static MinXML fromString( final String input ) {
-		return new MinXMLParser( new StringReader( input ) ).readElement();
-	}*/
-	
-	/**
-	 * Creates a copy of the top-level node of the given element.
-	 * @param element the element to copy
-	 * @return the copy
-	 */
-	public static @NonNull FlexiMinXMLStar shallowCopy( @NonNull MinXMLStar element ) {
-		return new FlexiMinXMLStar( element );
-	}
-		
-	public static @NonNull FlexiMinXMLStar deepCopy( @NonNull MinXMLStar element ) {
-		final FlexiMinXMLStar result = new FlexiMinXMLStar( element.getName() );
-		assignAttributes( element, result );
-		assignLinks( element, result );
-		return result;
-	}
-
-	private static void assignLinks( MinXMLStar element, final FlexiMinXMLStar result ) {
-		for ( MinXMLStar.Link key_value : element.linksToList() ) {
-			@NonNull String key = key_value.getField();
-			@NonNull FlexiMinXMLStar value = deepCopy( key_value.getChild() );
-			TreeMap< String, ArrayList< FlexiMinXMLStar > > attrs = result.links;
-			if ( attrs.containsKey( key ) ) {
-				attrs.get( key ).add( value );
-			} else {
-				ArrayList< FlexiMinXMLStar > values = new ArrayList<>();
-				values.add( value );
-				attrs.put( key, values );
-			}
-		}
-	}
-
-	private static void assignAttributes( MinXMLStar element, final FlexiMinXMLStar result ) {
-		for ( MinXMLStar.Attr key_value : element.attributesToList() ) {
-			@NonNull String key = key_value.getKey();
-			@NonNull String value = key_value.getValue();
-			TreeMap< String, ArrayList< @NonNull String > > attrs = result.attributes;
-			if ( attrs.containsKey( key ) ) {
-				attrs.get( key ).add( value );
-			} else {
-				ArrayList< @NonNull String > values = new ArrayList<>();
-				values.add( value );
-				attrs.put( key, values );
-			}
-		}
-	}
 
 	//////////////////////////////////////////////////////////////////////////////////
 	//	Overrides that avoid allocating the TreeMap
@@ -147,7 +118,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 			}
 		}
 		if ( this.links != null ) {
-			for ( ArrayList< FlexiMinXMLStar > children : this.links.values() ) {
+			for ( ArrayList< Fusion > children : this.links.values() ) {
 				children.trimToSize();
 			}
 		}
@@ -175,55 +146,59 @@ public class FlexiMinXMLStar implements MinXMLStar {
 
 	@Override
 	public String getValue( @NonNull String key ) throws IllegalArgumentException {
-		final ArrayList< String > values = this.attributes.get( key );
-		if ( values != null ) {
-			return values.get( 0 );
-		} else {
-			throw new IllegalArgumentException( String.format(  "No attributes with this key (%s)", key ) );
+		if ( this.attributes != null ) {
+			final ArrayList< String > values = this.attributes.get( key );
+			if ( values != null ) {
+				return values.get( 0 );
+			}
 		}
+		throw new IllegalArgumentException( String.format(  "No attributes with this key (%s)", key ) );			
+		
 	}
 
 	@Override
 	public String getValue( @NonNull String key, int index ) throws IllegalArgumentException {
-		final ArrayList< String > values = this.attributes.get( key );
-		if ( values != null ) {
-			try {
-				return values.get( index );
-			} catch ( IndexOutOfBoundsException _e ) {
-				throw new IllegalArgumentException( String.format( "No attribute this key (%s) at this position (%d)", key, index ) );				
+		if ( this.attributes != null ) {
+			final ArrayList< String > values = this.attributes.get( key );
+			if ( values != null ) {
+				try {
+					return values.get( index );
+				} catch ( IndexOutOfBoundsException _e ) {
+				}
 			}
-		} else {
-			throw new IllegalArgumentException( String.format(  "No attribute with this key (%s)", key ) );
 		}
+		throw new IllegalArgumentException( String.format( "No attribute with this key (%s)", key ) );			
 	}
 
 	@Override
 	public @Nullable String getValue( @NonNull String key, @Nullable String otherwise ) {
-		final ArrayList< String > values = this.attributes.get( key );
-		if ( values != null ) {
-			return values.get( 0 );
-		} else {
-			return otherwise;
+		if ( this.attributes != null ) {
+			final ArrayList< String > values = this.attributes.get( key );
+			if ( values != null ) {
+				return values.get( 0 );
+			}
 		}
+		return otherwise;
 	}
 
 	@Override
 	public @Nullable String getValue( @NonNull String key, int index, @Nullable String otherwise ) {
-		final ArrayList< String > values = this.attributes.get( key );
-		if ( values != null ) {
-			try {
-				return values.get( index );
-			} catch ( IndexOutOfBoundsException _e ) {
-				return otherwise;				
+		if ( this.attributes != null ) {
+			final ArrayList< String > values = this.attributes.get( key );
+			if ( values != null ) {
+				try {
+					return values.get( index );
+				} catch ( IndexOutOfBoundsException _e ) {
+				}
 			}
-		} else {
-			return otherwise;				
 		}
+		return otherwise;				
+		
 	}
 
 	@Override
 	public void setValue( @NonNull String key, @NonNull String value ) throws UnsupportedOperationException {
-		ArrayList< @NonNull String > values = this.attributes.get( key );
+		ArrayList< @NonNull String > values = this.getNonNullAttributes().get( key );
 		if ( values == null ) {
 			values = new ArrayList<>();
 			values.add( value );
@@ -235,7 +210,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 
 	@Override
 	public void setValue( @NonNull String key, int index, @NonNull String value ) throws IllegalArgumentException, UnsupportedOperationException {
-		ArrayList< @NonNull String > values = this.attributes.get( key );
+		ArrayList< @NonNull String > values = this.getNonNullAttributes().get( key );
 		if ( values == null ) {
 			if ( index == 0 ) {
 				values = new ArrayList<>();
@@ -265,15 +240,17 @@ public class FlexiMinXMLStar implements MinXMLStar {
 			new_values.add( x );
 		}
 		if ( new_values.isEmpty() ) {
-			this.attributes.remove( key );
-		} else {		
-			this.attributes.put( key, new_values );
+			if ( this.attributes != null ) {
+				this.attributes.remove( key );
+			}
+		} else {
+			this.getNonNullAttributes().put( key, new_values );
 		}
 	}
 
 	@Override
 	public void addValue( @NonNull String key, @NonNull String value ) throws UnsupportedOperationException {
-		ArrayList< @NonNull String > values = this.attributes.get( key );
+		ArrayList< @NonNull String > values = this.getNonNullAttributes().get( key );
 		if ( values == null ) {
 			values = new ArrayList<>();
 			this.attributes.put( key, values );
@@ -283,33 +260,41 @@ public class FlexiMinXMLStar implements MinXMLStar {
 
 	@Override
 	public void removeValue( @NonNull String key ) throws UnsupportedOperationException, IndexOutOfBoundsException {
-		final ArrayList< @NonNull String > values = this.attributes.get( key );
-		if ( values == null ) {
-			throw new IndexOutOfBoundsException( String.format( "No values for this key (%s)", key ) );
-		}
-		try {
-			values.remove( 0 );
-			if ( values.isEmpty() ) {
-				this.attributes.remove( key );
+		if ( this.attributes != null ) {
+			final ArrayList< @NonNull String > values = this.attributes.get( key );
+			if ( values == null ) {
+				throw new IndexOutOfBoundsException( String.format( "No values for this key (%s)", key ) );
 			}
-		} catch ( IndexOutOfBoundsException e ) {
-			//	Should never happen because 0-length values should be eliminated.
-			throw new IndexOutOfBoundsException( String.format( "No values for this key (%s)", key ) );
+			try {
+				values.remove( 0 );
+				if ( values.isEmpty() ) {
+					this.attributes.remove( key );
+				}
+			} catch ( IndexOutOfBoundsException e ) {
+				//	Should never happen because 0-length values should be eliminated.
+				throw new IndexOutOfBoundsException( String.format( "No values for this key (%s)", key ) );
+			}
+		} else {
+			throw new IndexOutOfBoundsException( String.format( "No values for this key (%s)", key ) );			
 		}
 	}
 
 	@Override
 	public void removeValue( @NonNull String key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException {
-		final ArrayList< @NonNull String > values = this.attributes.get( key );
-		if ( values == null ) {
-			throw new IndexOutOfBoundsException( String.format( "No values for this key (%s)", key ) );
-		}
-		try {
-			values.remove( index );
-			if ( values.isEmpty() ) {
-				this.attributes.remove( key );
+		if ( this.attributes != null ) {
+			final ArrayList< @NonNull String > values = this.attributes.get( key );
+			if ( values == null ) {
+				throw new IndexOutOfBoundsException( String.format( "No values for this key (%s)", key ) );
 			}
-		} catch ( IndexOutOfBoundsException e ) {
+			try {
+				values.remove( index );
+				if ( values.isEmpty() ) {
+					this.attributes.remove( key );
+				}
+			} catch ( IndexOutOfBoundsException e ) {
+				throw new IndexOutOfBoundsException( String.format( "Index (%d) out of range for this key (%s)", index, key ) );
+			}
+		} else {
 			throw new IndexOutOfBoundsException( String.format( "Index (%d) out of range for this key (%s)", index, key ) );
 		}
 	}
@@ -318,8 +303,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	@Override
 	public void clearAllAttributes() throws UnsupportedOperationException {
 		if ( this.attributes != null ) {
-			this.attributes.clear();
-			//TODO: or simply nullify this.attributes.
+			this.attributes = null;
 		}
 	}
 
@@ -334,18 +318,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public boolean hasAnyAttributes() {
-		//TODO implement nullable attributes.
-		if ( this.attributes != null ) {
-			return ! this.attributes.isEmpty();
-		} else {
-			return false;
-		}
-	}
-
-	@Override
 	public boolean hasNoAttributes() {
-		//TODO implement nullable attributes.
 		if ( this.attributes != null ) {
 			return this.attributes.isEmpty();
 		} else {
@@ -355,11 +328,15 @@ public class FlexiMinXMLStar implements MinXMLStar {
 
 	@Override
 	public boolean hasAttribute( @NonNull String key ) {
-		return this.attributes.containsKey( key );
+		if ( this.attributes != null ) {
+			return this.attributes.containsKey( key );
+		} else {
+			return false;
+		}
 	}
 
 	@Override
-	public boolean hasAttribute( @NonNull String key, int index ) {
+	public boolean hasValueAt( @NonNull String key, int index ) {
 		if ( this.attributes != null ) {
 			final ArrayList< @NonNull String > values = this.attributes.get( key );
 			if ( values != null ) {
@@ -401,7 +378,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public boolean hasSingleValue( @NonNull String key ) {
+	public boolean hasOneValue( @NonNull String key ) {
 		if ( this.attributes != null ) {
 			final ArrayList< @NonNull String > values = this.attributes.get( key );
 			return values != null && values.size() == 1;
@@ -409,6 +386,8 @@ public class FlexiMinXMLStar implements MinXMLStar {
 			return false;
 		}
 	}
+	
+	
 
 	@Override
 	public int sizeAttributes() {
@@ -433,26 +412,12 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public boolean hasSizeKeys( final int n ) {
-		if ( this.attributes != null ) {
-			return n == this.attributes.size();
-		} else {
-			return n == 0;
-		}	
-	}
-
-	@Override
 	public boolean hasNoKeys() {
 		if ( this.attributes != null ) {
 			return this.attributes.isEmpty();
 		} else {
 			return true;
 		}	
-	}
-
-	@Override
-	public boolean hasKeys() {
-		return ! this.hasNoKeys();
 	}
 
 	@Override
@@ -497,12 +462,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 		}
 	}
 
-	@Override
-	public boolean hasValues( @NonNull String key ) {
-		return ! this.hasNoValues( key );
-	}
-
-	static class Attr implements MinXMLStar.Attr {
+	static class Attr implements Fusion.Attr {
 
 		private @NonNull String key;
 		private int keyIndex;
@@ -530,8 +490,8 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 	
 	@Override
-	public @NonNull List< MinXMLStar.Attr > attributesToList() {
-		final List< MinXMLStar.Attr > list = new ArrayList<>();
+	public @NonNull List< Fusion.Attr > attributesToList() {
+		final List< Fusion.Attr > list = new ArrayList<>();
 		if ( this.attributes != null ) {
 			for ( Map.Entry< @NonNull String, ArrayList< @NonNull String > > e : this.attributes.entrySet() ) {
 				int n = 0;
@@ -545,17 +505,19 @@ public class FlexiMinXMLStar implements MinXMLStar {
 
 	@Override
 	public @NonNull List< @NonNull String > valuesToList( @NonNull String key ) {
-		final List< @NonNull String > values = this.attributes.get( key );
 		final @NonNull List< @NonNull String > list = new ArrayList< @NonNull String >();
-		if ( values != null ) {
-			list.addAll( values );
+		if ( this.attributes != null ) {
+			final List< @NonNull String > values = this.attributes.get( key );
+			if ( values != null ) {
+				list.addAll( values );
+			}
 		}
 		return list;	
 	}
 
 	@SuppressWarnings("null")
 	@Override
-	public @NonNull Map< @NonNull String, @NonNull String > firstValuesToMap() {
+	public @NonNull Map< @NonNull String, String > firstValuesToMap() {
 		final TreeMap< @NonNull String, @NonNull String > sofar = new TreeMap<>();
 		if ( this.attributes != null ) {
 			for ( Map.Entry< String, ArrayList< @NonNull String > > e : this.attributes.entrySet() ) {
@@ -568,13 +530,13 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public @NonNull StarMap< @NonNull String, @NonNull String > attributesToStarMap() {
-		return new StdStarMap< @NonNull String, @NonNull String >( this.attributesToList() );
+	public @NonNull StarMap< @NonNull String, @Nullable String > attributesToStarMap() {
+		return new StdStarMap< @NonNull String, @Nullable String >( this.attributesToList() );
 	}
 
 	@SuppressWarnings("null")
 	@Override
-	public @NonNull Map< Pair< @NonNull String, @NonNull Integer >, @NonNull String > attributesToPairMap() {
+	public @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > attributesToPairMap() {
 		final TreeMap< Pair< @NonNull String, @NonNull Integer >, @NonNull String > sofar = new TreeMap<>();
 		if ( this.attributes != null ) {
 			for ( Map.Entry< String, ArrayList< @NonNull String > > e : this.attributes.entrySet() ) {
@@ -589,9 +551,9 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	
 	@Override
 	@NonNull
-	public MinXMLStar getChild() throws IllegalArgumentException {
+	public Fusion getChild() throws IllegalArgumentException {
 		if ( links != null ) {
-			final ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( "" );
+			final ArrayList< @NonNull Fusion > flinks = this.links.get( "" );
 			if ( flinks != null ) {
 				return flinks.get( 0 );
 			} else {
@@ -603,9 +565,9 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 	
 	@Override
-	public @NonNull MinXMLStar getChild( int index ) throws IllegalArgumentException {
+	public @NonNull Fusion getChild( int index ) throws IllegalArgumentException {
 		if ( links != null ) {
-			final ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( "" );
+			final ArrayList< @NonNull Fusion > flinks = this.links.get( "" );
 			if ( flinks != null && index < flinks.size() && 0 <= index ) {
 				return flinks.get( index );
 			} else {
@@ -618,13 +580,13 @@ public class FlexiMinXMLStar implements MinXMLStar {
 
 
 	@Override
-	public @NonNull MinXMLStar getChild( @NonNull String field ) throws IllegalArgumentException {
+	public @NonNull Fusion getChild( @NonNull String field ) throws IllegalArgumentException {
 		if ( links != null ) {
-			final ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
+			final ArrayList< @NonNull Fusion > flinks = this.links.get( field );
 			if ( flinks != null ) {
 				return flinks.get( 0 );
 			} else {
-				throw new IllegalArgumentException( String.format(  "No field with this field (%s)", field ) );
+				throw new IllegalArgumentException( String.format( "No field with this field (%s)", field ) );
 			}
 		} else {
 			throw new IllegalArgumentException( "No children" );			
@@ -632,13 +594,13 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public @NonNull MinXMLStar getChild( @NonNull String field, int index ) throws IllegalArgumentException {
+	public @NonNull Fusion getChild( @NonNull String field, int index ) throws IllegalArgumentException {
 		if ( links != null ) {
-			final ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
+			final ArrayList< @NonNull Fusion > flinks = this.links.get( field );
 			if ( flinks != null && index < flinks.size() && 0 <= index ) {
 				return flinks.get( index );
 			} else {
-				throw new IllegalArgumentException( String.format(  "No field at this position (%s) with this field (%s)", index, field ) );
+				throw new IllegalArgumentException( String.format( "No field at this position (%s) with this field (%s)", index, field ) );
 			}
 		} else {
 			throw new IllegalArgumentException( "No children" );			
@@ -646,9 +608,9 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public @Nullable MinXMLStar getChild( @NonNull String field, @Nullable MinXMLStar otherwise ) {
+	public @Nullable Fusion getChild( @NonNull String field, @Nullable Fusion otherwise ) {
 		if ( this.links == null ) return otherwise;
-		final ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
+		final ArrayList< @NonNull Fusion > flinks = this.links.get( field );
 		if ( flinks != null ) {
 			return flinks.get( 0 );
 		} else {
@@ -657,9 +619,9 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public @Nullable MinXMLStar getChild( @NonNull String field, int index, @Nullable MinXMLStar otherwise ) {
+	public @Nullable Fusion getChild( @NonNull String field, int index, @Nullable Fusion otherwise ) {
 		if ( this.links == null ) return otherwise;
-		final ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
+		final ArrayList< @NonNull Fusion > flinks = this.links.get( field );
 		if ( flinks != null && index < flinks.size() && 0 <= index ) {
 			return flinks.get( index );
 		} else {
@@ -668,15 +630,12 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public void setChild( @NonNull String field, @NonNull MinXMLStar value ) throws UnsupportedOperationException {
-		if ( this.links == null ) {
-			this.links = new TreeMap<>();
-		}
-		ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
+	public void setChild( @NonNull String field, @NonNull Fusion value ) throws UnsupportedOperationException {
+		ArrayList< @NonNull Fusion > flinks = this.getNonNullLinks().get( field );
 		if ( flinks == null ) {
 			flinks = new ArrayList<>();
 		}
-		final @NonNull FlexiMinXMLStar fv = toFlexiMinXMLStar( value );
+		final @NonNull Fusion fv = value;
 		if ( flinks.isEmpty() ) {
 			flinks.add( fv );
 		} else {
@@ -685,15 +644,12 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public void setChild( @NonNull String field, int index, @NonNull MinXMLStar value ) throws IllegalArgumentException, UnsupportedOperationException {
-		if ( this.links == null ) {
-			this.links = new TreeMap<>();
-		}
-		ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
+	public void setChild( @NonNull String field, int index, @NonNull Fusion value ) throws IllegalArgumentException, UnsupportedOperationException {
+		ArrayList< @NonNull Fusion > flinks = this.getNonNullLinks().get( field );
 		if ( flinks == null ) {
 			flinks = new ArrayList<>();
 		}
-		final @NonNull FlexiMinXMLStar fv = toFlexiMinXMLStar( value );
+		final @NonNull Fusion fv = value;
 		if ( index == flinks.size() ) {
 			flinks.add( fv );
 		} else if ( 0 <= index && index < flinks.size() ){
@@ -705,35 +661,31 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	
 
 	@Override
-	public void setAllChildren( @NonNull String field, Iterable< @NonNull MinXMLStar > values ) throws UnsupportedOperationException {
-		if ( this.links == null ) {
-			this.links = new TreeMap<>();
+	public void setAllChildren( @NonNull String field, Iterable< @NonNull Fusion > values ) throws UnsupportedOperationException {
+		final ArrayList< @NonNull Fusion > array = new ArrayList<>();
+		for ( @NonNull Fusion x : values ) {
+			array.add( x );
 		}
-		final ArrayList< @NonNull FlexiMinXMLStar > array = new ArrayList<>();
-		for ( @NonNull MinXMLStar x : values ) {
-			array.add( toFlexiMinXMLStar( x ) );
+		if ( ! array.isEmpty() ) {
+			this.getNonNullLinks().put( field, array );
 		}
-		this.links.put( field, array );
 	}
 
 	@Override
-	public void addChild( @NonNull String field, @NonNull MinXMLStar value ) throws UnsupportedOperationException {
-		if ( this.links == null ) {
-			this.links = new TreeMap<>();
-		}
-		ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
+	public void addChild( @NonNull String field, @NonNull Fusion value ) throws UnsupportedOperationException {
+		ArrayList< @NonNull Fusion > flinks = this.getNonNullLinks().get( field );
 		if ( flinks == null ) {
 			flinks = new ArrayList<>();
 			this.links.put( field, flinks );
 		}
-		final @NonNull FlexiMinXMLStar fv = toFlexiMinXMLStar( value );
-		flinks.add( fv );
+		//final @NonNull AbsFlexiFusion fv = toFlexiMinXMLStar( value );
+		flinks.add( value );
 	}
 
 	@Override
 	public void removeChild( @NonNull String field ) throws UnsupportedOperationException, IllegalArgumentException {
 		if ( this.links != null ) {
-			ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
+			ArrayList< @NonNull Fusion > flinks = this.links.get( field );
 			if ( flinks != null && ! flinks.isEmpty() ) {
 				try {
 					flinks.remove( 0 );
@@ -751,7 +703,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	@Override
 	public void removeChild( @NonNull String field, int index ) throws UnsupportedOperationException, IllegalArgumentException {
 		if ( this.links != null ) {
-			ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
+			ArrayList< @NonNull Fusion > flinks = this.links.get( field );
 			if ( flinks != null ) {
 				try {
 					flinks.remove( 0 );
@@ -769,8 +721,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 
 	@Override
 	public void clearAllLinks() throws UnsupportedOperationException {
-		if ( this.links == null ) return;
-		this.links.clear();
+		this.links = null;
 	}
 
 	@Override
@@ -780,54 +731,49 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public boolean hasAnyLinks() {
-		if ( this.links == null ) return false;
-		return ! this.links.isEmpty();
-	}
-
-	@Override
 	public boolean hasNoLinks() {
 		if ( this.links == null ) return true;
 		return this.links.isEmpty();
 	}
+	
 
 	@Override
 	public boolean hasLink( @NonNull String field ) {
 		if ( this.links == null ) return false;
-		final ArrayList< FlexiMinXMLStar > flinks = this.links.get( field );
+		final ArrayList< Fusion > flinks = this.links.get( field );
 		if ( flinks == null ) return false;
-		return flinks.isEmpty();
+		return ! flinks.isEmpty();
 	}
 
 	@Override
 	public boolean hasLink( @NonNull String field, int index ) {
 		if ( this.links == null ) return false;
-		final ArrayList< FlexiMinXMLStar > flinks = this.links.get( field );
+		final ArrayList< Fusion > flinks = this.links.get( field );
 		if ( flinks == null ) return false;
 		return 0 <= index && index < flinks.size();
 	}
 
 	@Override
-	public boolean hasLink( @NonNull String field, @Nullable MinXMLStar value ) {
+	public boolean hasLink( @NonNull String field, @Nullable Fusion value ) {
 		if ( this.links == null ) return false;
-		final ArrayList< FlexiMinXMLStar > flinks = this.links.get( field );
+		final ArrayList< Fusion > flinks = this.links.get( field );
 		if ( flinks == null ) return false;
 		return flinks.contains( value );
 	}
 
 	@Override
-	public boolean hasLink( @NonNull String field, int index, @Nullable MinXMLStar value ) {
+	public boolean hasLink( @NonNull String field, int index, @Nullable Fusion value ) {
 		if ( this.links == null ) return false;
-		final ArrayList< FlexiMinXMLStar > flinks = this.links.get( field );
+		final ArrayList< Fusion > flinks = this.links.get( field );
 		if ( flinks == null ) return false;
 		if ( ! ( 0 <= index && index < flinks.size() ) ) return false;
 		return flinks.get( index ).equals( value );
 	}
 
 	@Override
-	public boolean hasSingleChild( @NonNull String field ) {
+	public boolean hasOneChild( @NonNull String field ) {
 		if ( this.links == null ) return false;
-		final ArrayList< FlexiMinXMLStar > flinks = this.links.get( field );
+		final ArrayList< Fusion > flinks = this.links.get( field );
 		if ( flinks == null ) return false;
 		return flinks.size() == 1;
 	}
@@ -836,7 +782,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	public int sizeLinks() {
 		int sofar = 0;
 		if ( this.links != null ) {
-			for ( Map.Entry< @NonNull String, @NonNull ArrayList< @NonNull FlexiMinXMLStar > > lentry : this.links.entrySet() ) {
+			for ( Map.Entry< @NonNull String, ArrayList< @NonNull Fusion > > lentry : this.links.entrySet() ) {
 				sofar += lentry.getValue().size();
 			}
 		}
@@ -858,21 +804,16 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	@Override
 	public boolean hasNoFields() {
 		if ( this.links == null ) return true;
-		//	Note that this depends on the list of children never being empty
-		//	but being deleted when they are empty.
-		return this.links.isEmpty();
-	}
-
-	@Override
-	public boolean hasFields() {
-		if ( this.links == null ) return false;
-		return ! this.links.isEmpty();
+		for ( ArrayList< @NonNull Fusion > value : this.links.values() ) {
+			if ( ! value.isEmpty() ) return false;
+		}
+		return true;
 	}
 
 	@Override
 	public int sizeChildren( @NonNull String field ) {
 		if ( this.links == null ) return 0;
-		final ArrayList< FlexiMinXMLStar > flinks = this.links.get( field );
+		final ArrayList< Fusion > flinks = this.links.get( field );
 		if ( flinks == null ) return 0;
 		return flinks.size();
 	}
@@ -880,7 +821,7 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	@Override
 	public boolean hasSizeChildren( @NonNull String field, int n ) {
 		if ( this.links == null ) return n == 0;
-		final ArrayList< FlexiMinXMLStar > flinks = this.links.get( field );
+		final ArrayList< Fusion > flinks = this.links.get( field );
 		if ( flinks == null ) return n == 0;
 		return flinks.size() == n;
 	}
@@ -888,21 +829,16 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	@Override
 	public boolean hasNoChildren( @NonNull String field ) {
 		if ( this.links == null ) return true;
-		final ArrayList< FlexiMinXMLStar > flinks = this.links.get( field );
+		final ArrayList< Fusion > flinks = this.links.get( field );
 		if ( flinks == null ) return true;
 		return flinks.isEmpty();
 	}
 
 	@Override
-	public boolean hasChildren( @NonNull String field ) {
-		return ! this.hasNoChildren( field );
-	}
-
-	@Override
-	public @NonNull List< @NonNull MinXMLStar > childrenToList( @NonNull String field ) {
-		final ArrayList< @NonNull MinXMLStar > sofar = new ArrayList<>();
+	public @NonNull List< @NonNull Fusion > childrenToList( @NonNull String field ) {
+		final ArrayList< @NonNull Fusion > sofar = new ArrayList<>();
 		if ( this.links != null ) {
-			final ArrayList< @NonNull FlexiMinXMLStar > flinks = this.links.get( field );
+			final ArrayList< @NonNull Fusion > flinks = this.links.get( field );
 			if ( flinks != null ) {
 				sofar.addAll( flinks );
 			}
@@ -911,13 +847,13 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public Map< @NonNull String, @NonNull MinXMLStar > firstChildrenToMap() {
-		final Map< @NonNull String, @NonNull MinXMLStar > sofar = new TreeMap<>();
+	public Map< @NonNull String, Fusion > firstChildrenToMap() {
+		final Map< @NonNull String, @NonNull Fusion > sofar = new TreeMap<>();
 		if ( this.links != null ) {
 			if ( this.links != null ) {
-				for ( Map.Entry< @NonNull String, @NonNull ArrayList< @NonNull FlexiMinXMLStar > > lentry : this.links.entrySet() ) {
-					final @NonNull ArrayList< @NonNull FlexiMinXMLStar > children = lentry.getValue();
-					if ( ! children.isEmpty() ) {
+				for ( Map.Entry< @NonNull String, ArrayList< @NonNull Fusion > > lentry : this.links.entrySet() ) {
+					final ArrayList< @NonNull Fusion > children = lentry.getValue();
+					if ( children != null && ! children.isEmpty() ) {
 						final @NonNull String field = lentry.getKey();
 						sofar.put( field, children.get( 0 ) );
 					}
@@ -927,8 +863,9 @@ public class FlexiMinXMLStar implements MinXMLStar {
 		return sofar;
 	}
 
+	@SuppressWarnings("null")
 	@Override
-	public StarMap< @NonNull String, ? extends @NonNull MinXMLStar > linksToStarMap() {
+	public StarMap< @NonNull String, ? extends @NonNull Fusion > linksToStarMap() {
 		if ( this.links != null ) {
 			return new StdStarMap<>( this.links );
 		} else {
@@ -937,14 +874,14 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public Map< Pair< @NonNull String, @NonNull Integer >, ? extends @NonNull MinXMLStar > linksToPairMap() {
-		final Map< Pair< @NonNull String, @NonNull Integer >, @NonNull MinXMLStar > sofar = new TreeMap<>();
+	public Map< Pair< @NonNull String, @NonNull Integer >, ? extends @NonNull Fusion > linksToPairMap() {
+		final Map< Pair< @NonNull String, @NonNull Integer >, @NonNull Fusion > sofar = new TreeMap<>();
 		if ( this.links != null ) {
-			for ( Map.Entry< @NonNull String, ArrayList< @NonNull FlexiMinXMLStar > > lentry : this.links.entrySet() ) {
+			for ( Map.Entry< @NonNull String, ArrayList< @NonNull Fusion > > lentry : this.links.entrySet() ) {
 				final @NonNull String field = lentry.getKey();
-				final ArrayList< @NonNull FlexiMinXMLStar > children = lentry.getValue();
+				final ArrayList< @NonNull Fusion > children = lentry.getValue();
 				int n = 0;
-				for ( @NonNull FlexiMinXMLStar child : children ) {
+				for ( @NonNull Fusion child : children ) {
 					final Pair< @NonNull String, @NonNull Integer >p = new CmpPair< @NonNull String, @NonNull Integer >( field, n++ );
 					sofar.put( p, child );
 				}
@@ -953,13 +890,13 @@ public class FlexiMinXMLStar implements MinXMLStar {
 		return sofar;
 	}
 	
-	static class Link implements MinXMLStar.Link {
+	static class Link implements Fusion.Link {
 		
 		@NonNull String field;
 		@NonNull Integer fieldIndex;
-		@NonNull MinXMLStar child;
+		@NonNull Fusion child;
 		
-		public Link( @NonNull String field, @NonNull Integer fieldIndex, @NonNull MinXMLStar child ) {
+		public Link( @NonNull String field, @NonNull Integer fieldIndex, @NonNull Fusion child ) {
 			super();
 			this.field = field;
 			this.fieldIndex = fieldIndex;
@@ -974,21 +911,21 @@ public class FlexiMinXMLStar implements MinXMLStar {
 			return fieldIndex;
 		}
 
-		public @NonNull MinXMLStar getChild() {
+		public @NonNull Fusion getChild() {
 			return child;
 		}
 		
 	}
 
 	@Override
-	public Iterator< MinXMLStar.Link > iterator() {
-		final LinkedList< MinXMLStar.Link > sofar = new LinkedList<>();
+	public Iterator< Fusion.Link > iterator() {
+		final LinkedList< Fusion.Link > sofar = new LinkedList<>();
 		if ( this.links != null ) {
-			for ( Map.Entry< @NonNull String, ArrayList< @NonNull FlexiMinXMLStar > > lentry : this.links.entrySet() ) {
+			for ( Map.Entry< @NonNull String, ArrayList< @NonNull Fusion > > lentry : this.links.entrySet() ) {
 				final @NonNull String field = lentry.getKey();
-				final ArrayList< @NonNull FlexiMinXMLStar > children = lentry.getValue();
+				final ArrayList< @NonNull Fusion > children = lentry.getValue();
 				int n = 0;
-				for ( @NonNull FlexiMinXMLStar child : children ) {
+				for ( @NonNull Fusion child : children ) {
 					sofar.add( new Link( field, n++, child ) );
 				}
 			}			
@@ -997,14 +934,14 @@ public class FlexiMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public @NonNull List< MinXMLStar.Link > linksToList() {
-		final LinkedList< MinXMLStar.Link > sofar = new LinkedList<>();
+	public @NonNull List< Fusion.Link > linksToList() {
+		final LinkedList< Fusion.Link > sofar = new LinkedList<>();
 		if ( this.links != null ) {
-			for ( Map.Entry< @NonNull String, ArrayList< @NonNull FlexiMinXMLStar > > lentry : this.links.entrySet() ) {
+			for ( Map.Entry< @NonNull String, ArrayList< @NonNull Fusion > > lentry : this.links.entrySet() ) {
 				final @NonNull String field = lentry.getKey();
-				final ArrayList< @NonNull FlexiMinXMLStar > children = lentry.getValue();
+				final ArrayList< @NonNull Fusion > children = lentry.getValue();
 				int n = 0;
-				for ( @NonNull FlexiMinXMLStar child : children ) {
+				for ( @NonNull Fusion child : children ) {
 					sofar.add( new Link( field, n++, child ) );
 				}
 			}			
@@ -1012,52 +949,82 @@ public class FlexiMinXMLStar implements MinXMLStar {
 		return sofar;		
 	}
 
-	@Override
-	public void print( PrintWriter pw ) {
-		new MinXMLStarWriter( pw ).print( this );
-	}
-
-	@Override
-	public void print( Writer w ) {
-		new MinXMLStarWriter( w ).print( this );
-	}
-
-	@Override
-	public void prettyPrint( PrintWriter pw ) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException( "TO BE DONE" );
-	}
-
-	@Override
-	public void prettyPrint( Writer w ) {
-		// TODO Auto-generated method stub
-		throw new RuntimeException( "TO BE DONE" );		
-	}
-
-	@Override
-	public @NonNull MinXMLStar shallowCopy() {
-		return shallowCopy( this );
-	}
-
-	@Override
-	public @NonNull MinXMLStar deepCopy() {
-		return deepCopy( this );
-	}
+//	@Override
+//	public @NonNull Fusion shallowCopy() {
+//		return shallowCopy( this );
+//	}
+//
+//	@Override
+//	public @NonNull Fusion deepCopy() {
+//		return deepCopy( this );
+//	}
 
 	@Override
 	public @NonNull Set< @NonNull String > keysToSet() {
-		return new TreeSet<>( this.attributes.keySet() );
+		if ( this.attributes != null ) {
+			return new TreeSet<>( this.attributes.keySet() );
+		} else {
+			return new TreeSet<>();
+		}
 	}
 
 	@Override
 	public @NonNull Set< @NonNull String > fieldsToSet() {
-		return new TreeSet<>( this.links.keySet() );
+		if ( this.links != null ) {
+			return new TreeSet<>( this.links.keySet() );
+		} else {
+			return new TreeSet<>();			
+		}
 	}
 
 	@Override
-	public void addChild( @NonNull MinXMLStar value ) throws UnsupportedOperationException {
+	public void addChild( @NonNull Fusion value ) throws UnsupportedOperationException {
 		this.addChild( "", value );
 	}
 
+//	/**
+//	 * Creates a copy of the top-level node of the given element.
+//	 * @param element the element to copy
+//	 * @return the copy
+//	 */
+	public static @NonNull FlexiFusion shallowCopy( @NonNull Fusion element ) {
+		return copy( true, element );	
+	}
+		
+	public static @NonNull FlexiFusion deepCopy( @NonNull Fusion element ) {
+		return copy( false, element );
+	}
 	
+	private static @NonNull FlexiFusion copy( final boolean shallow, @NonNull Fusion element ) {
+		final FlexiFusion result = new FlexiFusion( element.getName() );
+		assignAttributes( element, result );
+		assignLinks( shallow, element, result );
+		return result;		
+	}
+
+	private static void assignLinks( boolean shallow, Fusion element, final FlexiFusion result ) {
+		for ( Fusion.Link key_value : element.linksToList() ) {
+			@NonNull String field = key_value.getField();
+			@NonNull Fusion child = key_value.getChild();
+			result.addChild( field, shallow ? child : FlexiFusion.deepCopy( child ) );
+		}
+	}
+
+	private static void assignAttributes( Fusion element, final FlexiFusion result ) {
+		for ( Fusion.Attr key_value : element.attributesToList() ) {
+			@NonNull String key = key_value.getKey();
+			@NonNull String value = key_value.getValue();
+			result.addValue( key, value );
+		}
+	}
+
+	@Override
+	public @NonNull Fusion shallowCopy() {
+		return copy( true, this );
+	}
+
+	@Override
+	public @NonNull Fusion deepCopy() {
+		return copy( false, this );
+	}
 }

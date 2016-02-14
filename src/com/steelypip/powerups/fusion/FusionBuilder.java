@@ -16,9 +16,10 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This interface linearises the construction of a MinXMLStar
@@ -40,7 +41,7 @@ import org.eclipse.jdt.annotation.NonNull;
  * element name.
  *
  */
-public interface MinXMLStarBuilder {
+public interface FusionBuilder {
 
 	/**
 	 * This method should be called to begin the construction of
@@ -83,6 +84,14 @@ public interface MinXMLStarBuilder {
 	 */
 	void add( @NonNull String key, @NonNull String value );
 	
+	void addNull();
+	void addChild( long number );
+	void addChild( double number );
+	void addChild( @Nullable String string );
+	void addChild( boolean bool );
+	void addChild( @Nullable Fusion x ); 
+
+	
 	/**
 	 * This method finishes the construction of the current start tag.
 	 * It may be followed by a call to endTag or startTagOpen. If the
@@ -122,5 +131,7 @@ public interface MinXMLStarBuilder {
 	 *  
 	 * @return the constructed tree
 	 */
-	MinXMLStar build(); 
+	Fusion build();
+
+
 }

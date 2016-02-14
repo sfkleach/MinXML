@@ -47,8 +47,8 @@ public class EmptyMap< T, @Nullable U > extends AbstractMap< T, U > {
 	}
 
 	@Override
-	public U get( Object key ) {
-		return null;
+	public @Nullable U getOrDefault( Object key, @Nullable U defaultValue ) {
+		return defaultValue;
 	}
 
 	@Override

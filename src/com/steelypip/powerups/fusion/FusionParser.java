@@ -16,10 +16,12 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import java.io.Reader;
 import java.util.Iterator;
+
+import org.eclipse.jdt.annotation.NonNull;
 
 import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.charrepeater.CharRepeater;
@@ -35,16 +37,16 @@ import com.steelypip.powerups.charrepeater.ReaderCharRepeater;
  * readElement. Alternatively you can simply iterate 
  * over the parser.
  */
-public class MinXMLStarParser implements Iterable< MinXMLStar > {
+public class FusionParser implements Iterable< Fusion > {
 	
 	private int level = 0;
 	private final CharRepeater cucharin;
 	
 	private boolean pending_end_tag = false;
-	private MinXMLStarBuilder parent = null;
+	private FusionBuilder parent = null;
 	private String tag_name = null;	
 	
-	public MinXMLStarParser( CharRepeater rep, MinXMLStarBuilder parent ) {
+	public FusionParser( CharRepeater rep, FusionBuilder parent ) {
 		this.parent = parent;
 		this.cucharin = rep;
 	}
@@ -55,13 +57,13 @@ public class MinXMLStarParser implements Iterable< MinXMLStar > {
 	 * @param reader the input source
 	 * @param builder used to construct the MinXML objects
 	 */
-	public MinXMLStarParser( Reader reader, MinXMLStarBuilder builder ) {
+	public FusionParser( Reader reader, FusionBuilder builder ) {
 		this.parent = builder;
 		this.cucharin = new ReaderCharRepeater( reader );
 	}
 
-	public MinXMLStarParser( final Reader rep ) {
-		this.parent = new FlexiMinXMLStarBuilder();
+	public FusionParser( final Reader rep ) {
+		this.parent = new FlexiFusionBuilder();
 		this.cucharin = new ReaderCharRepeater( rep );
 	}
 
@@ -146,7 +148,8 @@ public class MinXMLStarParser implements Iterable< MinXMLStar > {
 		return Character.isLetterOrDigit( ch ) || ch == '-' || ch == '.';
 	}
 	
-	private String readName() {
+	@SuppressWarnings("null")
+	private @NonNull String readName() {
 		final StringBuilder name = new StringBuilder();
 		while ( this.cucharin.hasNextChar() ) {
 			final char ch = this.cucharin.nextChar();
@@ -204,7 +207,8 @@ public class MinXMLStarParser implements Iterable< MinXMLStar > {
 		
 	}
 	
-	private String readAttributeValue() {
+	@SuppressWarnings("null")
+	private @NonNull String readAttributeValue() {
 		final StringBuilder attr = new StringBuilder();
 		final char q = this.nextChar();
 		if ( q != '"' && q != '\'' ) throw new Alert( "Attribute value not quoted" ).culprit( "Character", q );
@@ -302,7 +306,7 @@ public class MinXMLStarParser implements Iterable< MinXMLStar > {
 	 * exhausted.
 	 * @return the next element
 	 */
-	public MinXMLStar readElement() {
+	public Fusion readElement() {
 		while ( this.read() ) {
 			if ( this.level == 0 ) break;
 		}
@@ -316,17 +320,17 @@ public class MinXMLStarParser implements Iterable< MinXMLStar > {
 	 * Returns an iterator that reads elements off sequentially
 	 * from this parser.
 	 */
-	public Iterator< MinXMLStar > iterator() {
-		return new Iterator< MinXMLStar >() {
+	public Iterator< Fusion > iterator() {
+		return new Iterator< Fusion >() {
 
 			@Override
 			public boolean hasNext() {
-				return MinXMLStarParser.this.hasNext();
+				return FusionParser.this.hasNext();
 			}
 
 			@Override
-			public MinXMLStar next() {
-				return MinXMLStarParser.this.readElement();
+			public Fusion next() {
+				return FusionParser.this.readElement();
 			}
 
 			@Override

@@ -1,4 +1,4 @@
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import java.util.List;
 import java.util.Map;
@@ -76,14 +76,26 @@ public interface MultiAttributes {
 	void clearAttributes( @NonNull String key ) throws UnsupportedOperationException;
 	void clearAllAttributes() throws UnsupportedOperationException;
 
+	/**
+	 * Returns the number of attributes i.e. the number of key-value pairs.
+	 * @return the number of key-value pairs.
+	 */
+	int sizeAttributes();
 	
+	default boolean hasSizeAttributes( int n ) {
+		return this.sizeAttributes() == n;
+	}
+	
+
 	/**
 	 * Returns true if this has at least one attribute. Synonymous
 	 * with this.sizeAttributes() > 0
 	 * 
 	 * @return true if this has one or more attributes.
 	 */
-	boolean hasAnyAttributes();
+	default boolean hasAnyAttributes() {
+		return ! this.hasNoAttributes();
+	}
 	
 	boolean hasNoAttributes();
 	
@@ -105,7 +117,7 @@ public interface MultiAttributes {
 	 * @param index the position being looked for
 	 * @return true if this has at least index+1 attributes with key @key 
 	 */
-	boolean hasAttribute( @NonNull String key, int index );
+	boolean hasValueAt( @NonNull String key, int index );
 	
 	/**
 	 * Returns true if this has an attribute with the given key and
@@ -134,13 +146,9 @@ public interface MultiAttributes {
 	 * @param key the attribute key
 	 * @return true if the element has an attribute with key @key and value @value
 	 */	
-	boolean hasSingleValue( @NonNull String key );
-	
-	/**
-	 * Returns the number of attributes i.e. the number of key-value pairs.
-	 * @return the number of key-value pairs.
-	 */
-	int sizeAttributes();
+	default boolean hasOneValue( @NonNull String key ) {
+		return this.hasSizeValues( key, 1 );		
+	}
 	
 	/**
 	 * Returns the number of distinct keys.
@@ -154,7 +162,9 @@ public interface MultiAttributes {
 	 * @param n
 	 * @return true if there are n distinct keys, else false.
 	 */
-	boolean hasSizeKeys( int n );
+	default boolean hasSizeKeys( final int n ) {
+		return this.sizeKeys() == n;
+	}
 
 	/**
 	 * Returns true if there no keys. Synonymous with
@@ -170,18 +180,25 @@ public interface MultiAttributes {
 	 * @param n
 	 * @return true if there is one or more keys and hence one or more attributes.
 	 */
-	boolean hasKeys();
+	default boolean hasAnyKeys() {
+		return ! this.hasNoKeys();
+	}
 	
 	int sizeValues( @NonNull String key );
 	boolean hasSizeValues( @NonNull String key, int n );
-	boolean hasNoValues( @NonNull String key );
-	boolean hasValues( @NonNull String key );
+	default boolean hasNoValues( @NonNull String key ) {
+		return ! this.hasAttribute( key );
+	}
+	default boolean hasAnyValues( @NonNull String key ) {
+		return this.hasAttribute( key );
+	}
+
 	
 	@NonNull Set< @NonNull String > keysToSet();
-	@NonNull List< MinXMLStar.Attr > attributesToList();
+	@NonNull List< Fusion.Attr > attributesToList();
 	@NonNull List< @NonNull String > valuesToList( @NonNull String key );
-	@NonNull Map< @NonNull String, @NonNull String > firstValuesToMap();
-	@NonNull StarMap< @NonNull String, @NonNull String > attributesToStarMap();
-	@NonNull Map< Pair< @NonNull String, @NonNull Integer >, @NonNull String > attributesToPairMap();
+	@NonNull Map< @NonNull String, String > firstValuesToMap();
+	@NonNull StarMap< @NonNull String, @Nullable String > attributesToStarMap();
+	@NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > attributesToPairMap();
 	
 }

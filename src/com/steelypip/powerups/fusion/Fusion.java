@@ -16,9 +16,11 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.Map;
 
@@ -26,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.Pair;
+import com.steelypip.powerups.common.StdIndenter;
 
 /**
  * MinXMLStar is a multi-valued extension of MinXML that, in its 
@@ -37,7 +40,7 @@ import com.steelypip.powerups.common.Pair;
  * 
  * @author Stephen Leach
  */
-public interface MinXMLStar extends Named, MultiAttributes, MultiLinks, Iterable< MinXMLStar.Link > {
+public interface Fusion extends Named, MultiAttributes, MultiLinks, Iterable< Fusion.Link >, JSONic {
 	
 	public interface Attr extends Pair< @NonNull String, @NonNull String > {
 		@NonNull String getKey();
@@ -61,16 +64,16 @@ public interface MinXMLStar extends Named, MultiAttributes, MultiLinks, Iterable
 		}
 	}
 
-	public interface Link extends Pair< @NonNull String, @NonNull MinXMLStar > {
+	public interface Link extends Pair< @NonNull String, @NonNull Fusion > {
 		@NonNull String getField();
 		@NonNull Integer getFieldIndex();
-		@NonNull MinXMLStar getChild();
+		@NonNull Fusion getChild();
 	
 		default @NonNull String getFirst() {
 			return this.getField();
 		}
 		
-		default @NonNull MinXMLStar getSecond() {
+		default @NonNull Fusion getSecond() {
 			return this.getChild();
 		}
 		
@@ -78,7 +81,7 @@ public interface MinXMLStar extends Named, MultiAttributes, MultiLinks, Iterable
 			throw new UnsupportedOperationException();
 		}
 		
-		default void setSecond( @NonNull MinXMLStar x ) {
+		default void setSecond( @NonNull Fusion x ) {
 			throw new UnsupportedOperationException();
 		}
 	}
@@ -90,9 +93,12 @@ public interface MinXMLStar extends Named, MultiAttributes, MultiLinks, Iterable
 	 * must be clear on whether any subsequent updates are allowed or forbidden. If subsequent updates
 	 * are forbidden, the implementation must throw an {@link IllegalStateException}.
 	 */
-	void trimToSize();
+	default void trimToSize() {
+		//	Skip.
+	}
 	
 	boolean equals( Object obj );
+	
 	
 	/**
 	 * Renders the element using the supplied {@link PrintWriter}. The rendering will
@@ -100,14 +106,18 @@ public interface MinXMLStar extends Named, MultiAttributes, MultiLinks, Iterable
 	 * 
 	 * @param pw the {@link PrintWriter} to use.
 	 */
-	void print( PrintWriter pw );
+	default void print( PrintWriter pw ) {
+		new FusionWriter( pw ).print( this );
+	}
 	
 	/**
 	 * Renders the element to the supplied {@link java.io.Writer}.
 	 * 
 	 * @param w the {@link Writer} to use.
 	 */
-	void print( Writer w );
+	default void print( Writer w ) {
+		new FusionWriter( w ).print( this );
+	}
 	
 	/**
 	 * Renders the element using the supplied {@link PrintWriter} such that each start and 
@@ -116,7 +126,9 @@ public interface MinXMLStar extends Named, MultiAttributes, MultiLinks, Iterable
 	 * 
 	 * @param pw the {@link PrintWriter} to use.
 	 */
-	void prettyPrint( PrintWriter pw );
+	default void prettyPrint( PrintWriter pw ) {
+		new FusionWriter( pw, new StdIndenter.Factory(), new XmlElementTheme() ).print( this );
+	}
 	
 	/**
 	 * Renders the element using the supplied {@link java.io.Writer} such that each start and 
@@ -125,7 +137,9 @@ public interface MinXMLStar extends Named, MultiAttributes, MultiLinks, Iterable
 	 * 
 	 * @param w the {@link Writer} to use.
 	 */
-	void prettyPrint( Writer w );
+	default void prettyPrint( Writer w ) {
+		new FusionWriter( new PrintWriter( w, true ), new StdIndenter.Factory(), new XmlElementTheme() ).print( this );
+	}
 	
 
 	
@@ -136,7 +150,7 @@ public interface MinXMLStar extends Named, MultiAttributes, MultiLinks, Iterable
 	 * {@link java.lang.UnsupportedOperationException} 
 	 * @return a shallow copy
 	 */
-	@NonNull MinXMLStar shallowCopy();
+	@NonNull Fusion shallowCopy();
 	 
 	/**
 	 * deepCopy makes a copy of the topmost node and all the children. The
@@ -145,5 +159,15 @@ public interface MinXMLStar extends Named, MultiAttributes, MultiLinks, Iterable
 	 * {@link java.lang.UnsupportedOperationException} 
 	 * @return a deep copy
 	 */
-	@NonNull MinXMLStar deepCopy();
+	@NonNull Fusion deepCopy();
+	
+	public static Fusion fromReader( final Reader reader ) {
+		return new FusionParser( reader ).readElement();
+	}
+	
+	public static Fusion fromString( final String string ) {
+		return fromReader( new StringReader( string ) );
+	}
+	
+	
 }

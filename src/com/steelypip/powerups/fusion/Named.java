@@ -1,4 +1,4 @@
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;

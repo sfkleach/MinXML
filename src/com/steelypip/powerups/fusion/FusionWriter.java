@@ -16,11 +16,12 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jdt.annotation.NonNull;
 
@@ -71,26 +72,26 @@ import com.steelypip.powerups.common.NullIndenter;
  *  	CHILDREN ::= CHILD | '(' CHILD+ ')'
  *  however it shares the literal printing with the JSON theme.
  */
-public class MinXMLStarWriter {
+public class FusionWriter {
 
 	final PrintWriter pw;
 	final Indenter indenter;
-	final ElementTheme.Selector theme_selector;
+	final Theme theme;
 	
-	public MinXMLStarWriter( PrintWriter pw, IndenterFactory indenter_factory, ElementTheme.Selector.Factory selector_factory ) {
+	public FusionWriter( PrintWriter pw, IndenterFactory indenter_factory, Theme theme ) {
 		this.pw = pw;
 		this.indenter = indenter_factory.newIndenter( pw );
-		this.theme_selector = selector_factory.newInstance( this );
+		this.theme = theme;
 	}
 	
 	private static NullIndenter.Factory DEFAULT_INDENT_FACTORY = new NullIndenter.Factory();
-	private static ElementTheme.Selector.Factory DEFAULT_THEME_SELECTOR_FACTORY = new XmlElementTheme.Selector.Factory();
+	private static Theme DEFAULT_THEME_SELECTOR_FACTORY = new XmlElementTheme();
 	
-	public MinXMLStarWriter( PrintWriter pw ) {
+	public FusionWriter( PrintWriter pw ) {
 		this( pw, DEFAULT_INDENT_FACTORY, DEFAULT_THEME_SELECTOR_FACTORY );
 	}
 	
-	public MinXMLStarWriter( Writer w ) {
+	public FusionWriter( Writer w ) {
 		this( new PrintWriter( w ) );
 	}
 	
@@ -98,47 +99,16 @@ public class MinXMLStarWriter {
 		return this.pw;
 	}
 	
-	
-	public void print( MinXMLStar x ) {
-		final ElementTheme theme = this.theme_selector.select( x );
-		
-		final String name = x.getName();
-		final boolean has_any_attributes = x.hasAnyAttributes();
-		final boolean has_any_links = x.hasAnyLinks();
-		
-		this.indenter.indent();
-		theme.doStartElement( name, has_any_attributes, has_any_links );
-		theme.doName( name );
-		
-		theme.doStartAttributes( has_any_attributes, has_any_links );
-		for ( @NonNull String key : x.keysToSet() ) {
-			theme.doStartAttributeGroup( key );
-			final List< @NonNull String > values = x.valuesToList( key );
-			int n = 0;
-			for ( @NonNull String value : values ) {
-				n += 1;
-				theme.doAttribute( key, value,  n == 1, n == values.size() );
-			}
-			theme.doEndAttributeGroup( key );
-		}
-		theme.doEndAttributes( has_any_attributes, has_any_links );
-		
-		theme.doStartLinks( has_any_attributes, has_any_links );
-		for ( @NonNull String field : x.fieldsToSet() ) {
-			final @NonNull List< @NonNull MinXMLStar > children = x.childrenToList( field );
-			theme.doStartLinkGroup( field );
-			int n = 0;
-			for ( @NonNull MinXMLStar child : children) {
-				n += 1;
-				theme.doLink( field, child, n == 1, n == children.size() );
-			}
-			theme.doEndLinkGroup( field );
-		}
-		theme.doEndLinks( has_any_attributes, has_any_links ); 
-		
-		theme.doEndElement( name, has_any_attributes, has_any_links );
+	public Indenter getIndenter() {
+		return indenter;
 	}
 
+	public void print( Fusion x ) {
+		if ( ! this.theme.tryRender( this, x ) ) {
+			throw new IllegalStateException( "Canont render this item" );
+		}
+	}
+	
 	void renderString( final String v ) {
 		for ( int n = 0; n < v.length(); n++ ) {
 			final char ch = v.charAt( n );
@@ -162,4 +132,140 @@ public class MinXMLStarWriter {
 		}
 	}
 
+	public void flush() {
+		pw.flush();
+	}
+
+	public void close() {
+		pw.close();
+	}
+
+	public boolean checkError() {
+		return pw.checkError();
+	}
+
+	public void write( int c ) {
+		pw.write( c );
+	}
+
+	public void write( char[] buf, int off, int len ) {
+		pw.write( buf, off, len );
+	}
+
+	public void write( char[] buf ) {
+		pw.write( buf );
+	}
+
+	public void write( String s, int off, int len ) {
+		pw.write( s, off, len );
+	}
+
+	public void write( String s ) {
+		pw.write( s );
+	}
+
+	public void print( boolean b ) {
+		pw.print( b );
+	}
+
+	public void print( char c ) {
+		pw.print( c );
+	}
+
+	public void print( int i ) {
+		pw.print( i );
+	}
+
+	public void print( long l ) {
+		pw.print( l );
+	}
+
+	public void print( float f ) {
+		pw.print( f );
+	}
+
+	public void print( double d ) {
+		pw.print( d );
+	}
+
+	public void print( char[] s ) {
+		pw.print( s );
+	}
+
+	public void print( String s ) {
+		pw.print( s );
+	}
+
+	public void print( Object obj ) {
+		pw.print( obj );
+	}
+
+	public void println() {
+		pw.println();
+	}
+
+	public void println( boolean x ) {
+		pw.println( x );
+	}
+
+	public void println( char x ) {
+		pw.println( x );
+	}
+
+	public void println( int x ) {
+		pw.println( x );
+	}
+
+	public void println( long x ) {
+		pw.println( x );
+	}
+
+	public void println( float x ) {
+		pw.println( x );
+	}
+
+	public void println( double x ) {
+		pw.println( x );
+	}
+
+	public void println( char[] x ) {
+		pw.println( x );
+	}
+
+	public void println( String x ) {
+		pw.println( x );
+	}
+
+	public void println( Object x ) {
+		pw.println( x );
+	}
+
+	public PrintWriter printf( String format, Object... args ) {
+		return pw.printf( format, args );
+	}
+
+	public PrintWriter printf( Locale l, String format, Object... args ) {
+		return pw.printf( l, format, args );
+	}
+
+	public PrintWriter format( String format, Object... args ) {
+		return pw.format( format, args );
+	}
+
+	public PrintWriter format( Locale l, String format, Object... args ) {
+		return pw.format( l, format, args );
+	}
+
+	public PrintWriter append( CharSequence csq ) {
+		return pw.append( csq );
+	}
+
+	public PrintWriter append( CharSequence csq, int start, int end ) {
+		return pw.append( csq, start, end );
+	}
+
+	public PrintWriter append( char c ) {
+		return pw.append( c );
+	}
+	
 }

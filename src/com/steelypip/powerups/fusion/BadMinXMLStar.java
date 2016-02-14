@@ -1,4 +1,4 @@
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -13,8 +13,8 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.util.StarMap;
 
-public class BadMinXMLStar implements MinXMLStar {
-
+public class BadMinXMLStar implements Fusion {
+	
 	@Override
 	public @NonNull String getName() {
 		throw new IllegalStateException();
@@ -114,7 +114,7 @@ public class BadMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public boolean hasAttribute( @NonNull String key, int index ) {
+	public boolean hasValueAt( @NonNull String key, int index ) {
 		throw new IllegalStateException();
 	}
 
@@ -130,7 +130,7 @@ public class BadMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public boolean hasSingleValue( @NonNull String key ) {
+	public boolean hasOneValue( @NonNull String key ) {
 		throw new IllegalStateException();
 	}
 
@@ -155,7 +155,7 @@ public class BadMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public boolean hasKeys() {
+	public boolean hasAnyKeys() {
 		throw new IllegalStateException();
 	}
 
@@ -175,12 +175,12 @@ public class BadMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public boolean hasValues( @NonNull String key ) {
+	public boolean hasAnyValues( @NonNull String key ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull List< MinXMLStar.Attr > attributesToList() {
+	public @NonNull List< Fusion.Attr > attributesToList() {
 		throw new IllegalStateException();
 	}
 
@@ -190,67 +190,67 @@ public class BadMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public @NonNull Map< @NonNull String, @NonNull String > firstValuesToMap() {
+	public @NonNull Map< @NonNull String, String > firstValuesToMap() {
 		throw new IllegalStateException();
 	}
 	
 	@Override
-	public @NonNull StarMap< @NonNull String, @NonNull String > attributesToStarMap() {
+	public @NonNull StarMap< @NonNull String, @Nullable String > attributesToStarMap() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull Map< Pair< @NonNull String, @NonNull Integer >, @NonNull String > attributesToPairMap() {
+	public @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > attributesToPairMap() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull MinXMLStar getChild() throws IllegalArgumentException {
+	public @NonNull Fusion getChild() throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull MinXMLStar getChild( int index ) throws IllegalArgumentException {
+	public @NonNull Fusion getChild( int index ) throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull MinXMLStar getChild( @NonNull String field ) throws IllegalArgumentException {
+	public @NonNull Fusion getChild( @NonNull String field ) throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull MinXMLStar getChild( @NonNull String field, int index ) throws IllegalArgumentException {
+	public @NonNull Fusion getChild( @NonNull String field, int index ) throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @Nullable MinXMLStar getChild( @NonNull String field, @Nullable MinXMLStar otherwise ) {
+	public @Nullable Fusion getChild( @NonNull String field, @Nullable Fusion otherwise ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @Nullable MinXMLStar getChild( @NonNull String field, int index, @Nullable MinXMLStar otherwise ) {
+	public @Nullable Fusion getChild( @NonNull String field, int index, @Nullable Fusion otherwise ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void setChild( @NonNull String field, @NonNull MinXMLStar value ) throws UnsupportedOperationException {
+	public void setChild( @NonNull String field, @NonNull Fusion value ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void setChild( @NonNull String field, int index, @NonNull MinXMLStar value ) throws IllegalArgumentException, UnsupportedOperationException {
+	public void setChild( @NonNull String field, int index, @NonNull Fusion value ) throws IllegalArgumentException, UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void setAllChildren( @NonNull String field, Iterable< @NonNull MinXMLStar > values ) throws UnsupportedOperationException {
+	public void setAllChildren( @NonNull String field, Iterable< @NonNull Fusion > values ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void addChild( @NonNull String field, @NonNull MinXMLStar value ) throws UnsupportedOperationException {
+	public void addChild( @NonNull String field, @NonNull Fusion value ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
@@ -295,17 +295,17 @@ public class BadMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public boolean hasLink( @NonNull String field, @Nullable MinXMLStar value ) {
+	public boolean hasLink( @NonNull String field, @Nullable Fusion value ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public boolean hasLink( @NonNull String field, int index, @Nullable MinXMLStar value ) {
+	public boolean hasLink( @NonNull String field, int index, @Nullable Fusion value ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public boolean hasSingleChild( @NonNull String field ) {
+	public boolean hasOneChild( @NonNull String field ) {
 		throw new IllegalStateException();
 	}
 
@@ -330,7 +330,7 @@ public class BadMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public boolean hasFields() {
+	public boolean hasAnyFields() {
 		throw new IllegalStateException();
 	}
 
@@ -355,27 +355,27 @@ public class BadMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public @NonNull List< MinXMLStar.Link > linksToList() {
+	public @NonNull List< Fusion.Link > linksToList() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull List< @NonNull MinXMLStar > childrenToList( @NonNull String field ) {
+	public @NonNull List< @NonNull Fusion > childrenToList( @NonNull String field ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public Map< @NonNull String, @NonNull MinXMLStar > firstChildrenToMap() {
+	public Map< @NonNull String, Fusion > firstChildrenToMap() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public StarMap< @NonNull String, ? extends @NonNull MinXMLStar > linksToStarMap() {
+	public StarMap< @NonNull String, ? extends @NonNull Fusion > linksToStarMap() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public Map< Pair< @NonNull String, @NonNull Integer >, ? extends @NonNull MinXMLStar > linksToPairMap() {
+	public Map< Pair< @NonNull String, @NonNull Integer >, ? extends @NonNull Fusion > linksToPairMap() {
 		throw new IllegalStateException();
 	}
 
@@ -410,12 +410,12 @@ public class BadMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public @NonNull MinXMLStar shallowCopy() {
+	public @NonNull Fusion shallowCopy() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull MinXMLStar deepCopy() {
+	public @NonNull Fusion deepCopy() {
 		throw new IllegalStateException();
 	}
 
@@ -430,7 +430,82 @@ public class BadMinXMLStar implements MinXMLStar {
 	}
 
 	@Override
-	public void addChild( @NonNull MinXMLStar value ) throws UnsupportedOperationException {
+	public void addChild( @NonNull Fusion value ) throws UnsupportedOperationException {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public boolean isInteger() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public @Nullable Long integerValue() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public long integerValue( long otherwise ) {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public boolean isFloat() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public @Nullable Double floatValue() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public double floatValue( double otherwise ) {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public boolean isString() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public @Nullable String stringValue() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public String stringValue( String otherwise ) {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public boolean isBoolean() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public @Nullable Boolean booleanValue() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public boolean booleanValue( boolean otherwise ) {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public boolean isNull() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public boolean isArray() {
+		throw new IllegalStateException();
+	}
+
+	@Override
+	public boolean isObject() {
 		throw new IllegalStateException();
 	}
 

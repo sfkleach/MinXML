@@ -14,17 +14,20 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.steelypip.powerups.common.Pair;
+import com.steelypip.powerups.fusion.Fusion;
 import com.steelypip.powerups.fusion.FlexiFusion;
 import com.steelypip.powerups.fusion.Fusion.Attr;
 import com.steelypip.powerups.util.StarMap;
 import com.steelypip.powerups.util.StdStarMap;
 
-public class TestFlexiMinXMLStar {
+public abstract class TestReadOnlyMinXMLStar< T extends Fusion > {
 	
 	private static final @NonNull String EXAMPLE = "example";
 	private static final @NonNull String BASE_NAME = "foo";
 	FlexiFusion base;
 	FlexiFusion example;
+	
+	
 	
 
 	@Before

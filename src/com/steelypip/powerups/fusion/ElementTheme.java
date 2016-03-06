@@ -4,7 +4,8 @@ import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-import com.steelypip.powerups.common.Indenter;
+import com.steelypip.powerups.fusion.io.FusionWriter;
+import com.steelypip.powerups.fusion.io.Theme;
 
 /**
  * Elements have three

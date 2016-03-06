@@ -4,15 +4,11 @@ import org.eclipse.jdt.annotation.NonNull;
 
 public class FlexiFusionBuilder extends AbsFusionBuilder {
 	
-	private FusionImplementation factory;
+	private @NonNull FusionFactory _factory = new FlexiFusionFactory();
 	
 	@Override
-	public @NonNull FusionImplementation implementation() {
-		FusionImplementation fi = this.factory;
-		if ( fi == null ) {
-			fi = this.factory = new FlexiFusionImplementation();
-		}
-		return fi;
+	public @NonNull FusionFactory factory() {
+		return this._factory;
 	}
 
 	

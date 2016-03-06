@@ -1,4 +1,4 @@
-package com.steelypip.powerups.fusion;
+package com.steelypip.powerups.hydra;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -44,4 +44,7 @@ public interface Named {
 	 * @throws UnsupportedOperationException if the implementing class cannot support this method
 	 */
 	public void setName( @NonNull String x ) throws UnsupportedOperationException;
+	
+	
+	
 }

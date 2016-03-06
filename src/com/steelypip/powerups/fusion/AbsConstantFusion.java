@@ -17,35 +17,41 @@ import com.steelypip.powerups.common.EmptyList;
 import com.steelypip.powerups.common.EmptyMap;
 import com.steelypip.powerups.common.EmptySet;
 import com.steelypip.powerups.common.Pair;
+import com.steelypip.powerups.hydra.Attribute;
+import com.steelypip.powerups.hydra.Link;
+import com.steelypip.powerups.hydra.StdAttribute;
 import com.steelypip.powerups.util.StarMap;
 import com.steelypip.powerups.util.StdStarMap;
 
-public abstract class AbsConstantFusion extends LiteralConstantsFusion implements PartiallyMutableFusion {
+public abstract class AbsConstantFusion implements Fusion, StdJSONFeatures, LiteralConstants {
 	
 	abstract protected @NonNull String internedType();
 	
 	abstract protected @NonNull String literalValue();
 	
 	abstract protected void setValueAttribute( final String new_value );
+	
+	
 
-	@Override
-	public @NonNull Fusion deepCopy() {
-		return this.shallowCopy();
-	}
+//	@Override
+//	public @NonNull Fusion< String > deepCopy() {
+//		return this.shallowCopy();
+//	}
+
 
 	@Override
 	public @NonNull String getName() {
-		return this.constConstant();
+		return this.nameConstant();
 	}
 
 	@Override
 	public @NonNull String getInternedName() {
-		return this.constConstant();
+		return this.nameConstant();
 	}
 
 	@Override
 	public boolean hasName( @Nullable String name ) {
-		return this.constConstant().equals( name );
+		return this.nameConstant().equals( name );
 	}
 
 	@Override
@@ -55,9 +61,9 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 
 	@Override
 	public @NonNull String getValue( @NonNull String key ) throws IllegalArgumentException {
-		if ( this.constType().equals( key ) ) {
+		if ( this.keyType().equals( key ) ) {
 			return this.internedType();
-		} else if ( this.constValue().equals( key ) ) {
+		} else if ( this.keyValue().equals( key ) ) {
 			return this.literalValue();
 		} else {
 			throw new IllegalArgumentException();
@@ -66,9 +72,9 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 
 	@Override
 	public String getValue( @NonNull String key, int index ) throws IllegalArgumentException {
-		if ( this.constType().equals( key ) ) {
+		if ( this.keyType().equals( key ) ) {
 			if ( index == 0 ) return this.internedType();
-		} else if ( this.constValue().equals( key ) ) {
+		} else if ( this.keyValue().equals( key ) ) {
 			if ( index == 0 ) return this.literalValue();
 		}
 		throw new IllegalArgumentException();
@@ -76,9 +82,9 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 
 	@Override
 	public @Nullable String getValue( @NonNull String key, @Nullable String otherwise ) {
-		if ( this.constType().equals( key ) ) {
+		if ( this.keyType().equals( key ) ) {
 			return this.internedType();
-		} else if ( this.constValue().equals( key ) ) {
+		} else if ( this.keyValue().equals( key ) ) {
 			return this.literalValue();
 		} else {
 			return otherwise;
@@ -87,9 +93,9 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 
 	@Override
 	public @Nullable String getValue( @NonNull String key, int index, @Nullable String otherwise ) {
-		if ( this.constType().equals( key ) ) {
+		if ( this.keyType().equals( key ) ) {
 			if ( index == 0 ) return this.internedType();
-		} else if ( this.constValue().equals( key ) ) {
+		} else if ( this.keyValue().equals( key ) ) {
 			if ( index == 0 ) return this.literalValue();
 		}
 		return otherwise;
@@ -97,7 +103,7 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 
 	@Override
 	public void setValue( @NonNull String key, @NonNull String value ) throws UnsupportedOperationException {
-		if ( this.constValue().equals( key ) ) {
+		if ( this.keyValue().equals( key ) ) {
 			this.setValueAttribute( value );
 		} else {
 			throw new UnsupportedOperationException();
@@ -106,7 +112,7 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 
 	@Override
 	public void setValue( @NonNull String key, int index, @NonNull String value ) throws IllegalArgumentException, UnsupportedOperationException {
-		if ( this.constValue().equals( key ) && index == 0 ) {
+		if ( this.keyValue().equals( key ) && index == 0 ) {
 			this.setValueAttribute( value );
 			return;
 		} 
@@ -115,7 +121,7 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 
 	@Override
 	public void setAllValues( @NonNull String key, Iterable< @NonNull String > values ) throws UnsupportedOperationException {
-		if ( this.constValue().equals( key ) ) {
+		if ( this.keyValue().equals( key ) ) {
 			Iterator< @NonNull String > it = values.iterator();
 			if ( it.hasNext() ) {
 				String v = it.next();
@@ -145,7 +151,7 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 
 	@Override
 	public void clearAttributes( @NonNull String key ) throws UnsupportedOperationException {
-		if ( key.equals( this.constType() ) || key.equals( this.constValue() ) ) {
+		if ( key.equals( this.keyType() ) || key.equals( this.keyValue() ) ) {
 			throw new UnsupportedOperationException();
 		}
 	}
@@ -162,7 +168,7 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 
 	@Override
 	public boolean hasAttribute( @NonNull String key ) {
-		return key.equals( this.constType() ) || key.equals( this.constValue() );
+		return key.equals( this.keyType() ) || key.equals( this.keyValue() );
 	}
 
 	@Override
@@ -172,9 +178,9 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 
 	@Override
 	public boolean hasAttribute( @NonNull String key, @Nullable String value ) {
-		if ( key.equals( this.constType() ) ) {
+		if ( key.equals( this.keyType() ) ) {
 			return this.internedType().equals( value );
-		} else if ( key.equals( this.constValue() ) ) {
+		} else if ( key.equals( this.keyValue() ) ) {
 			return this.literalValue().equals( value );
 		} else {
 			return false;
@@ -224,16 +230,16 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 	@Override
 	public @NonNull Set< @NonNull String > keysToSet() {
 		final @NonNull TreeSet< @NonNull String > result = new TreeSet<>();
-		result.add( this.constType());
-		result.add( this.constValue() );
+		result.add( this.keyType());
+		result.add( this.keyValue() );
 		return result;
 	}
 
 	@Override
-	public @NonNull List< Attr > attributesToList() {
-		final List< Attr > attrs = new LinkedList<>();
-		attrs.add( new FlexiFusion.Attr( this.constType(), 0, this.internedType() ) );
-		attrs.add( new FlexiFusion.Attr( this.constValue(), 0, this.literalValue() ) );
+	public @NonNull List< Attribute< String, String > > attributesToList() {
+		final List< Attribute< String, String > > attrs = new LinkedList<>();
+		attrs.add( new StdAttribute< String, String >( this.keyType(), 0, this.internedType() ) );
+		attrs.add( new StdAttribute< String, String >( this.keyValue(), 0, this.literalValue() ) );
 		return attrs;
 	}
 
@@ -251,24 +257,24 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 	@Override
 	public @NonNull Map< @NonNull String, String > firstValuesToMap() {
 		final TreeMap< @NonNull String, String > m = new TreeMap<>();
-		m.put( this.constType(), this.internedType() );
-		m.put( this.constValue(), this.literalValue() );
+		m.put( this.keyType(), this.internedType() );
+		m.put( this.keyValue(), this.literalValue() );
 		return m;
 	}
 
 	@Override
 	public @NonNull StarMap< @NonNull String, @Nullable String > attributesToStarMap() {
 		final @NonNull StarMap< @NonNull String, @Nullable String > m = new StdStarMap<>();
-		m.add( this.constType(), this.internedType() );
-		m.add( this.constValue(), this.literalValue() );
+		m.add( this.keyType(), this.internedType() );
+		m.add( this.keyValue(), this.literalValue() );
 		return m;
 	}
 
 	@Override
 	public @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > attributesToPairMap() {
 		final TreeMap< Pair< @NonNull String, @NonNull Integer >, String > m = new TreeMap<>();
-		m.put( new CmpPair< @NonNull String, @NonNull Integer >( this.constType(), 0 ), this.internedType() );
-		m.put( new CmpPair< @NonNull String, @NonNull Integer >( this.constValue(), 0 ) , this.literalValue() );
+		m.put( new CmpPair< @NonNull String, @NonNull Integer >( this.keyType(), 0 ), this.internedType() );
+		m.put( new CmpPair< @NonNull String, @NonNull Integer >( this.keyValue(), 0 ) , this.literalValue() );
 		return m;
 	}
 
@@ -413,8 +419,8 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 	}
 
 	@Override
-	public @NonNull List< Link > linksToList() {
-		return new EmptyList< Link >();
+	public @NonNull List< Link< String, Fusion > > linksToList() {
+		return new EmptyList<>();
 	}
 
 	@Override
@@ -428,18 +434,18 @@ public abstract class AbsConstantFusion extends LiteralConstantsFusion implement
 	}
 
 	@Override
-	public StarMap< @NonNull String, ? extends @NonNull Fusion > linksToStarMap() {
+	public StarMap< @NonNull String, @NonNull Fusion > linksToStarMap() {
 		return null;
 	}
 
 	@Override
-	public Map< Pair< @NonNull String, @NonNull Integer >, ? extends Fusion > linksToPairMap() {
+	public Map< Pair< @NonNull String, @NonNull Integer >, Fusion > linksToPairMap() {
 		return new EmptyMap<>();
 	}
 
 	@Override
-	public Iterator< Link > iterator() {
-		return new EmptyIterator< Link >();
+	public Iterator< Link< String, Fusion > > iterator() {
+		return new EmptyIterator<>();
 	}
 	
 }

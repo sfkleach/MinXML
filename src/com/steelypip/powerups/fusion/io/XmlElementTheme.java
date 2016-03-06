@@ -1,4 +1,7 @@
-package com.steelypip.powerups.fusion;
+package com.steelypip.powerups.fusion.io;
+
+import com.steelypip.powerups.fusion.ElementTheme;
+import com.steelypip.powerups.fusion.Fusion;
 
 /**
  * 		<		doStartElement( String name, boolean hasAttributes, boolean hasLinks )

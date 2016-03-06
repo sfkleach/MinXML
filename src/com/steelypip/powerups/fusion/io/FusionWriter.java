@@ -16,7 +16,7 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.fusion;
+package com.steelypip.powerups.fusion.io;
 
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -28,6 +28,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import com.steelypip.powerups.common.Indenter;
 import com.steelypip.powerups.common.IndenterFactory;
 import com.steelypip.powerups.common.NullIndenter;
+import com.steelypip.powerups.fusion.Fusion;
 
 /**
  * Prints out a MinXMLStar object to a {@link java.io.PrintWriter}. It can

@@ -16,7 +16,7 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.fusion;
+package com.steelypip.powerups.fusion.io;
 
 import java.io.Reader;
 import java.util.Iterator;
@@ -26,6 +26,9 @@ import org.eclipse.jdt.annotation.NonNull;
 import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.charrepeater.CharRepeater;
 import com.steelypip.powerups.charrepeater.ReaderCharRepeater;
+import com.steelypip.powerups.fusion.FlexiFusionBuilder;
+import com.steelypip.powerups.fusion.Fusion;
+import com.steelypip.powerups.fusion.FusionBuilder;
 
 /**
  * This class wraps various types of input stream to

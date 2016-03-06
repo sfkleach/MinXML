@@ -1,4 +1,4 @@
-package com.steelypip.powerups.fusion;
+package com.steelypip.powerups.hydra;
 
 import java.util.List;
 import java.util.Map;
@@ -8,7 +8,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.Pair;
-import com.steelypip.powerups.common.StdPair;
 import com.steelypip.powerups.util.StarMap;
 
 /**
@@ -17,8 +16,7 @@ import com.steelypip.powerups.util.StarMap;
  * 		- the key part is called the Key
  * 		- the value part is called the Value
  */
-public interface MultiAttributes {
-	
+public interface MultiAttributes< Key extends Comparable< Key >, Value > {	
 	
 	/**
 	 * Gets the first attribute value associated with a given key. If
@@ -29,8 +27,8 @@ public interface MultiAttributes {
 	 * @return the associated value or null
 	 * @throws IllegalArgumentException
 	 */
-	String getValue( @NonNull String key ) throws IllegalArgumentException;
-	
+	Value getValue( @NonNull Key key ) throws IllegalArgumentException;
+
 	/**
 	 * Gets the attribute value at position index associated with a given key. 
 	 * If this does not have an attribute of that name or the index
@@ -40,7 +38,7 @@ public interface MultiAttributes {
 	 * @return the associated value or null
 	 * @throws IllegalArgumentException
 	 */	
-	String getValue( @NonNull String key, int index ) throws IllegalArgumentException;
+	Value getValue( @NonNull Key key, int index ) throws IllegalArgumentException;
 
 	/**
 	 * Gets the first attribute value associated with a given key. If
@@ -51,7 +49,7 @@ public interface MultiAttributes {
 	 * @param value_otherwise the value to be returned if there is no matching attribute
 	 * @return the associated value
 	 */	
-	@Nullable String getValue( @NonNull String key, @Nullable String otherwise );
+	@Nullable Value getValue( @NonNull Key key, @Nullable Value otherwise );
 
 	/**
 	 * Gets the attribute at position index value associated with a given key. If this
@@ -62,18 +60,18 @@ public interface MultiAttributes {
 	 * @param value_otherwise the value to be returned if there is no matching attribute
 	 * @return the associated value
 	 */	
-	@Nullable String getValue( @NonNull String key, int index, @Nullable String otherwise );
+	@Nullable Value getValue( @NonNull Key key, int index, @Nullable Value otherwise );
 
-	void setValue( @NonNull String key, @NonNull String value ) throws UnsupportedOperationException;
-	void setValue( @NonNull String key, int index, @NonNull String value ) throws IllegalArgumentException, UnsupportedOperationException;
+	void setValue( @NonNull Key key, @NonNull Value value ) throws UnsupportedOperationException;
+	void setValue( @NonNull Key key, int index, @NonNull Value value ) throws IllegalArgumentException, UnsupportedOperationException;
 	
-	void setAllValues( @NonNull String key, Iterable< @NonNull String > values ) throws UnsupportedOperationException;
+	void setAllValues( @NonNull Key key, Iterable< @NonNull Value > values ) throws UnsupportedOperationException;
 	
-	void addValue( @NonNull String key, @NonNull String value ) throws UnsupportedOperationException;
+	void addValue( @NonNull Key key, @NonNull Value value ) throws UnsupportedOperationException;
 
-	void removeValue( @NonNull String key ) throws UnsupportedOperationException, IndexOutOfBoundsException;
-	void removeValue( @NonNull String key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException;
-	void clearAttributes( @NonNull String key ) throws UnsupportedOperationException;
+	void removeValue( @NonNull Key key ) throws UnsupportedOperationException, IndexOutOfBoundsException;
+	void removeValue( @NonNull Key key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException;
+	void clearAttributes( @NonNull Key key ) throws UnsupportedOperationException;
 	void clearAllAttributes() throws UnsupportedOperationException;
 
 	/**
@@ -107,7 +105,7 @@ public interface MultiAttributes {
 	 * @param value the attribute value
 	 * @return true if this has an attribute with key @key and value @value
 	 */
-	boolean hasAttribute( @NonNull String key );
+	boolean hasAttribute( @NonNull Key key );
 	
 	/**
 	 * Returns true if this has at least index+1 attributes with the given key,
@@ -117,7 +115,7 @@ public interface MultiAttributes {
 	 * @param index the position being looked for
 	 * @return true if this has at least index+1 attributes with key @key 
 	 */
-	boolean hasValueAt( @NonNull String key, int index );
+	boolean hasValueAt( @NonNull Key key, int index );
 	
 	/**
 	 * Returns true if this has an attribute with the given key and
@@ -127,7 +125,7 @@ public interface MultiAttributes {
 	 * @param value the attribute value
 	 * @return true if this has an attribute with key @key and value @value
 	 */
-	boolean hasAttribute( @NonNull String key, @Nullable String value );
+	boolean hasAttribute( @NonNull Key key, @Nullable String value );
 	
 	/**
 	 * Returns true if this the Nth occurence of an attribute with the given key has
@@ -137,7 +135,7 @@ public interface MultiAttributes {
 	 * @param value the attribute value
 	 * @return true if this has an attribute with key @key and value @value
 	 */
-	boolean hasAttribute( @NonNull String key, int index, @Nullable String value );
+	boolean hasAttribute( @NonNull Key key, int index, @Nullable String value );
 	
 	/**
 	 * Returns true if there is exactly one attribute whose key is @key (i.e. not zero or
@@ -146,7 +144,7 @@ public interface MultiAttributes {
 	 * @param key the attribute key
 	 * @return true if the element has an attribute with key @key and value @value
 	 */	
-	default boolean hasOneValue( @NonNull String key ) {
+	default boolean hasOneValue( @NonNull Key key ) {
 		return this.hasSizeValues( key, 1 );		
 	}
 	
@@ -184,21 +182,21 @@ public interface MultiAttributes {
 		return ! this.hasNoKeys();
 	}
 	
-	int sizeValues( @NonNull String key );
-	boolean hasSizeValues( @NonNull String key, int n );
-	default boolean hasNoValues( @NonNull String key ) {
+	int sizeValues( @NonNull Key key );
+	boolean hasSizeValues( @NonNull Key key, int n );
+	default boolean hasNoValues( @NonNull Key key ) {
 		return ! this.hasAttribute( key );
 	}
-	default boolean hasAnyValues( @NonNull String key ) {
+	default boolean hasAnyValues( @NonNull Key key ) {
 		return this.hasAttribute( key );
 	}
 
 	
-	@NonNull Set< @NonNull String > keysToSet();
-	@NonNull List< Fusion.Attr > attributesToList();
-	@NonNull List< @NonNull String > valuesToList( @NonNull String key );
-	@NonNull Map< @NonNull String, String > firstValuesToMap();
-	@NonNull StarMap< @NonNull String, @Nullable String > attributesToStarMap();
-	@NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > attributesToPairMap();
+	@NonNull Set< @NonNull Key > keysToSet();
+	@NonNull List< Attribute< Key, Value > > attributesToList();
+	@NonNull List< @NonNull Value > valuesToList( @NonNull Key key );
+	@NonNull Map< @NonNull Key, Value > firstValuesToMap();
+	@NonNull StarMap< @NonNull Key, @Nullable Value > attributesToStarMap();
+	@NonNull Map< Pair< @NonNull Key, @NonNull Integer >, Value > attributesToPairMap();
 	
 }

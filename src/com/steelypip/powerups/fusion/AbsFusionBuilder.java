@@ -19,7 +19,6 @@
 package com.steelypip.powerups.fusion;
 
 import java.util.LinkedList;
-import java.util.Objects;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -36,16 +35,16 @@ import com.steelypip.powerups.alert.Alert;
  */
 public abstract class AbsFusionBuilder implements FusionBuilder {
 	
-	public abstract @NonNull FusionImplementation implementation();
+	public abstract @NonNull FusionFactory factory();
 		
-	static class Link {
+	static class PreLink {
 		
 		private String field;
 		private @NonNull Fusion current;
 		
-		public Link( @NonNull FusionImplementation impl, String field, String name ) {
+		public PreLink( @NonNull FusionFactory impl, String field, String name ) {
 			this.field = field;
-			this.current = impl.newMutableFusion( name != null ? name : "" );
+			this.current = impl.newMutableElementFusion( name != null ? name : "" );
 		}
 
 		public String getField() {
@@ -67,8 +66,8 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 		
 	}
 	
-	private @NonNull Link current_link = new Link( this.implementation(), "DUMMY FIELD", "DUMMY_NODE" );
-	private final LinkedList< @NonNull Link > link_stack = new LinkedList<>();
+	private @NonNull PreLink current_link = new PreLink( this.factory(), "DUMMY FIELD", "DUMMY_NODE" );
+	private final LinkedList< @NonNull PreLink > link_stack = new LinkedList<>();
 	//private final Conventions litf = new StdConventions();
 	
 	private @NonNull Fusion current() {
@@ -78,7 +77,7 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 	@Override
 	public void startTagOpen( final String field, final String name ) {
 		link_stack.addLast( current_link );
-		this.current_link = new Link( this.implementation(), field, name );
+		this.current_link = new PreLink( this.factory(), field, name );
 	}
 
 	@Override
@@ -106,31 +105,30 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 //	@SuppressWarnings("null")
 	@Override
 	public void addChild( final long number ) {
-		this.addChild( this.implementation().newIntegerFusion( number ) );
+		this.addChild( this.factory().newIntegerFusion( number ) );
 //		this.addLiteral( StdLiterals.INSTANCE.getInteger(), Objects.requireNonNull( Long.toString( number, 10 ) ) );
 	}
 	
 //	@SuppressWarnings("null")
 	@Override
 	public void addChild( final double number ) {
-		this.addChild( this.implementation().newFloatFusion( number ) );
+		this.addChild( this.factory().newFloatFusion( number ) );
 //		this.addLiteral( StdLiterals.INSTANCE.getFloat(), Objects.requireNonNull( Double.toString( number ) ) );
 	}
 	
 	@Override
 	public void addChild( final @Nullable String string ) {
-		this.addChild( this.implementation().newStringFusion( string ) );
-//		if ( string != null ) {
-//			this.addLiteral( StdLiterals.INSTANCE.getString(), string );
-//		} else {
-//			this.addLiteral( StdLiterals.INSTANCE.getNull(), StdLiterals.INSTANCE.getNull() );
-//		}
+		if ( string == null ) {
+			this.addNull();
+		} else {
+			this.addChild( this.factory().newStringFusion( string ) );
+		}
 	}
 	
 //	@SuppressWarnings("null")
 	@Override
 	public void addChild( final boolean bool ) {
-		this.addChild( this.implementation().newBooleanFusion( bool ) );
+		this.addChild( this.factory().newBooleanFusion( bool ) );
 //		this.addLiteral( StdLiterals.INSTANCE.getBoolean(), Objects.requireNonNull( Boolean.toString( bool ) ) );
 	}
 	
@@ -145,7 +143,7 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 	
 	@Override
 	public void addNull() {
-		this.current_link.getCurrent().addChild( this.implementation().newNullFusion() );
+		this.current_link.getCurrent().addChild( this.factory().newNullFusion() );
 	}
 	
 	private void bindName( final @Nullable String name ) {
@@ -198,7 +196,7 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 
 	@Override
 	public void endTag() {
-		final Link b2 = link_stack.removeLast();
+		final PreLink b2 = link_stack.removeLast();
 		b2.getCurrent().addChild( this.current_link.getNonNullField(), this.current_link.getCurrent() );
 		this.current_link = b2;
 	}

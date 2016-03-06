@@ -10,10 +10,10 @@ public class FloatFusion extends AbsConstantFusion {
 		this.number = n;
 	}
 
-	@Override
-	public @NonNull Fusion shallowCopy() {
-		return new FloatFusion( this.number );
-	}
+//	@Override
+//	public @NonNull Fusion shallowCopy() {
+//		return new FloatFusion( this.number );
+//	}
 
 	@Override
 	protected @NonNull String internedType() {

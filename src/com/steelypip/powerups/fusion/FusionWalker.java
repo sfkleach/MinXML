@@ -27,6 +27,9 @@ import java.util.ListIterator;
 
 import org.eclipse.jdt.annotation.NonNull;
 
+import com.steelypip.powerups.hydra.Link;
+import com.steelypip.powerups.hydra.StdLink;
+
 /**
  *	A convenience class that implements a recursive
  * 	walk over a MinXMLStar tree. 
@@ -40,7 +43,7 @@ public abstract class FusionWalker {
 	 */
 	public abstract void startWalk( @NonNull String field, int index, Fusion subject );
 	
-	private void startWalk( Fusion.Link link ) {
+	private void startWalk( Link< String, Fusion > link ) {
 		this.startWalk( link.getField(), link.getFieldIndex(), link.getChild() );
 	}
 
@@ -53,7 +56,7 @@ public abstract class FusionWalker {
 	 */
 	public abstract void endWalk( @NonNull String field, int index, Fusion subject );
 
-	private void endWalk( Fusion.Link link ) {
+	private void endWalk( Link< String, Fusion > link ) {
 		this.endWalk( link.getField(), link.getFieldIndex(), link.getChild() );
 	}
 
@@ -69,7 +72,7 @@ public abstract class FusionWalker {
 	 */	
 	private FusionWalker walk( @NonNull String field, int index, final Fusion subject ) {
 		this.startWalk( field, index, subject );
-		for ( Fusion.Link link : subject ) {
+		for ( Link< String, Fusion > link : subject ) {
 			this.walk( link.getField(), link.getFieldIndex(), link.getChild() );
 		}
 		this.endWalk( field, index, subject );
@@ -86,24 +89,24 @@ public abstract class FusionWalker {
 	 * in the queue. Marked items represent 'endWalk' tasks and unmarked items
 	 * represent 'startWalk + expand' tasks. 
 	 */
-	private static final Fusion.Link end_walk_marker = new FlexiFusion.Link( "", 0, new BadMinXMLStar() );
+	private static final Link< String, Fusion > end_walk_marker = new StdLink< String, Fusion >( "", 0, new BadFusion() );
 	
 	static abstract class CommonIterator implements Iterator< @NonNull Fusion > {
 		
 		protected final @NonNull FusionWalker walker;
-		protected final Deque< Fusion.Link > queue = new ArrayDeque<>();
+		protected final Deque< Link< String, Fusion > > queue = new ArrayDeque<>();
 		
 		public CommonIterator( @NonNull FusionWalker walker, @NonNull Fusion subject ) {
 			this.walker = walker;
-			this.queue.add( new FlexiFusion.Link( "", 0, subject ) );
+			this.queue.add( new StdLink< String, Fusion >( "", 0, subject ) );
 		}	
 
-		protected void expand( final Fusion.Link x ) {
+		protected void expand( final Link< String, Fusion > x ) {
 			this.walker.startWalk( x );
 			queue.addLast( x );
 			queue.addLast( end_walk_marker );
-			List< Fusion.Link > link_list = x.getChild().linksToList();
-			final ListIterator< Fusion.Link > it = link_list.listIterator( link_list.size() );
+			List< Link< String, Fusion > > link_list = x.getChild().linksToList();
+			final ListIterator< Link< String, Fusion > > it = link_list.listIterator( link_list.size() );
 			while ( it.hasPrevious() ) {
 				queue.addLast( it.previous() );
 			}						
@@ -129,7 +132,7 @@ public abstract class FusionWalker {
 		
 		@Override
 		public @NonNull Fusion next() {
-			final Fusion.Link x = queue.removeLast();
+			final Link< String, Fusion > x = queue.removeLast();
 			if ( x != end_walk_marker ) {
 				this.expand( x );
 				return x.getChild();
@@ -165,7 +168,7 @@ public abstract class FusionWalker {
 		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
 				if ( end_walk_marker == queue.getLast() ) return true;
-				Fusion.Link e = queue.removeLast();
+				Link< String, Fusion > e = queue.removeLast();
 				this.expand( e );
 			}
 			return false;
@@ -178,11 +181,11 @@ public abstract class FusionWalker {
 		 */
 		@Override
 		public @NonNull Fusion next() {
-			final Fusion.Link x = queue.removeLast();
+			final Link< String, Fusion > x = queue.removeLast();
 			if ( x == end_walk_marker ) {
 				//	The queue is normalised.
 				//	This is the overwhelmingly common case - so we special case it.
-				final Fusion.Link e = queue.removeLast();
+				final Link< String, Fusion > e = queue.removeLast();
 				this.walker.endWalk( e );
 				return e.getChild();
 			} else {

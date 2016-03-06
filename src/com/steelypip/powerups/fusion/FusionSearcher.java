@@ -29,6 +29,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.EmptyIterator;
+import com.steelypip.powerups.hydra.Link;
+import com.steelypip.powerups.hydra.StdLink;
 
 /**
  * A convenience class for implementing a recursive walk of a tree
@@ -45,7 +47,7 @@ public abstract class FusionSearcher {
 	 */
 	public abstract boolean startSearch( @NonNull String field, int index, Fusion subject );
 	
-	public boolean startSearch( final Fusion.Link link ) {
+	public boolean startSearch( final Link< String, Fusion > link ) {
 		return this.startSearch( link.getField(), link.getFieldIndex(), link.getChild() );
 	}
 
@@ -63,13 +65,13 @@ public abstract class FusionSearcher {
 	 */
 	public abstract boolean endSearch( @NonNull String field, int index, Fusion subject, boolean cutoff );
 
-	public boolean endSearch( final Fusion.Link link, boolean cutoff ) {
+	public boolean endSearch( final Link< String, Fusion > link, boolean cutoff ) {
 		return this.endSearch( link.getField(), link.getFieldIndex(), link.getChild(), cutoff );
 	}
 
 
 	
-	private static final Iterator< Fusion.Link > empty = new EmptyIterator<>();
+	private static final Iterator< Link< String, Fusion > > empty = new EmptyIterator<>();
 	
 	/**
 	 * The search method is used to implement basic recursive scans over a tree
@@ -81,14 +83,14 @@ public abstract class FusionSearcher {
 	 */
 	public @Nullable Fusion search( @NonNull String field, int index, final Fusion subject ) {
 		Fusion cutoff = this.startSearch( field, index, subject ) ? subject : null;
-		final Iterator< Fusion.Link > kids = cutoff != null ? empty : subject.iterator();
+		final Iterator< Link< String, Fusion > > kids = cutoff != null ? empty : subject.iterator();
 		while ( cutoff == null && kids.hasNext() ) {
 			cutoff = this.search( kids.next() );
 		}
 		return this.endSearch( field, index, subject, cutoff != null ) ? ( cutoff != null ? cutoff : subject ) : null;
 	}
 	
-	public @Nullable Fusion search( final Fusion.Link link ) {
+	public @Nullable Fusion search( final Link< String, Fusion > link ) {
 		return this.search( link.getField(), link.getFieldIndex(), link.getChild() );
 	}
 
@@ -103,35 +105,35 @@ public abstract class FusionSearcher {
 	 * represent 'startWalk + expand' tasks. The choice of marker is used to signal
 	 * true/false.
 	 */
-	private static final Fusion.Link cutoff_true = new FlexiFusion.Link( "", 0, new BadMinXMLStar() );
-	private static final Fusion.Link cutoff_false = new FlexiFusion.Link( "", 0, new BadMinXMLStar() );
+	private static final Link< String, Fusion > cutoff_true = new StdLink< String, Fusion >( "", 0, new BadFusion() );
+	private static final Link< String, Fusion > cutoff_false = new StdLink< String, Fusion >( "", 0, new BadFusion() );
 	
 	static abstract class CommonMethodsPreOrderIterator implements Iterator< Fusion > {
 		
 		protected final FusionSearcher searcher;
-		protected final Deque< Fusion.Link > queue = new ArrayDeque<>();
+		protected final Deque< Link< String, Fusion > > queue = new ArrayDeque<>();
 		
 		public CommonMethodsPreOrderIterator( FusionSearcher searcher, @NonNull Fusion subject ) {
 			this.searcher = searcher;
-			this.queue.add( new FlexiFusion.Link( "", 0, subject ) );
+			this.queue.add( new StdLink< String, Fusion >( "", 0, subject ) );
 		}			
 
 		protected void cutAwaySiblings() {
 			//	We have to cut away the siblings.
 			while ( ! queue.isEmpty() ) {
-				final Fusion.Link last = queue.removeLast();
+				final Link< String, Fusion > last = queue.removeLast();
 				if ( cutoff_false == last || cutoff_true == last ) break;
 			}
 			queue.addLast( cutoff_true );
 		}
 		
-		protected void expand( final Fusion.Link x ) {
+		protected void expand( final Link< String, Fusion > x ) {
 			final boolean cutoff = this.searcher.startSearch( x );
 			queue.addLast( x );
 			queue.addLast( cutoff ? cutoff_true : cutoff_false );
 			if ( ! cutoff ) {
-				final List< Fusion.Link > link_list = x.getChild().linksToList();
-				final ListIterator< Fusion.Link > it = link_list.listIterator( link_list.size() );
+				final List< Link< String, Fusion > > link_list = x.getChild().linksToList();
+				final ListIterator< Link< String, Fusion > > it = link_list.listIterator( link_list.size() );
 				while ( it.hasPrevious() ) {
 					queue.addLast( it.previous() );
 				}				
@@ -149,7 +151,7 @@ public abstract class FusionSearcher {
 		@Override
 		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
-				final Fusion.Link last = queue.getLast();
+				final Link< String, Fusion > last = queue.getLast();
 				if ( cutoff_false != last && cutoff_true != last ) return true;
 				queue.removeLast();
 				final boolean cutoff = this.searcher.endSearch( queue.removeLast(), cutoff_true == last );
@@ -162,7 +164,7 @@ public abstract class FusionSearcher {
 
 		@Override
 		public Fusion next() {
-			final Fusion.Link x = queue.removeLast();
+			final Link< String, Fusion > x = queue.removeLast();
 			if ( cutoff_false != x && cutoff_true != x ) {
 				this.expand( x );
 				return x.getChild();
@@ -198,7 +200,7 @@ public abstract class FusionSearcher {
 		@Override
 		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
-				final Fusion.Link last = queue.getLast();
+				final Link< String, Fusion > last = queue.getLast();
 				if ( cutoff_false == last || cutoff_true == last ) return true;
 				this.expand( queue.removeLast() );
 			}
@@ -211,9 +213,9 @@ public abstract class FusionSearcher {
 		 */
 		@Override
 		public Fusion next() {
-			final Fusion.Link x = queue.removeLast();
+			final Link< String, Fusion > x = queue.removeLast();
 			if ( cutoff_false == x || cutoff_true == x ) {
-				final Fusion.Link last = queue.removeLast();
+				final Link< String, Fusion > last = queue.removeLast();
 				final boolean cutoff = this.searcher.endSearch( last, cutoff_true == x );
 				if ( cutoff ) {
 					this.cutAwaySiblings();

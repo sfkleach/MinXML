@@ -1,4 +1,6 @@
-package com.steelypip.powerups.fusion;
+package com.steelypip.powerups.fusion.io;
+
+import com.steelypip.powerups.fusion.Fusion;
 
 public interface Theme {
 	

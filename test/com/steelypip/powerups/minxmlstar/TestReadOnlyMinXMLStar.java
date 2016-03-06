@@ -15,8 +15,8 @@ import org.junit.Test;
 
 import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.fusion.Fusion;
-import com.steelypip.powerups.fusion.FlexiFusion;
 import com.steelypip.powerups.fusion.Fusion.Attr;
+import com.steelypip.powerups.hydra.FlexiHydra;
 import com.steelypip.powerups.util.StarMap;
 import com.steelypip.powerups.util.StdStarMap;
 
@@ -24,16 +24,16 @@ public abstract class TestReadOnlyMinXMLStar< T extends Fusion > {
 	
 	private static final @NonNull String EXAMPLE = "example";
 	private static final @NonNull String BASE_NAME = "foo";
-	FlexiFusion base;
-	FlexiFusion example;
+	FlexiHydra base;
+	FlexiHydra example;
 	
 	
 	
 
 	@Before
 	public void setUp() throws Exception {
-		this.base = new FlexiFusion( BASE_NAME );
-		this.example = new FlexiFusion( EXAMPLE );
+		this.base = new FlexiHydra( BASE_NAME );
+		this.example = new FlexiHydra( EXAMPLE );
 		this.example.setValue( "a1", "v1" );
 		this.example.setValue( "a2", "v2" );
 		this.example.setValue( "a2", 1, "v2a" );

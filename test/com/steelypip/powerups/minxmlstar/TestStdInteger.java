@@ -12,17 +12,17 @@ import org.junit.Test;
 
 import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.fusion.IntegerFusion;
-import com.steelypip.powerups.fusion.FlexiFusionImplementation;
+import com.steelypip.powerups.fusion.FlexiFusionFactory;
 import com.steelypip.powerups.fusion.Fusion.Attr;
 import com.steelypip.powerups.util.StarMap;
 
 public class TestStdInteger {
 	
 	IntegerFusion zero, one;
-	static FlexiFusionImplementation INSTANCE = new FlexiFusionImplementation();
-	static @NonNull String CONSTANT = INSTANCE.constConstant();
-	static @NonNull String TYPE = INSTANCE.constType();
-	static @NonNull String VALUE = INSTANCE.constValue();
+	static FlexiFusionFactory INSTANCE = new FlexiFusionFactory();
+	static @NonNull String CONSTANT = INSTANCE.nameConstant();
+	static @NonNull String TYPE = INSTANCE.keyType();
+	static @NonNull String VALUE = INSTANCE.keyValue();
 
 	@Before
 	public void setUp() throws Exception {
@@ -62,7 +62,7 @@ public class TestStdInteger {
 	
 	@Test
 	public void testGetValue() {
-		assertEquals( INSTANCE.constInteger(), this.zero.getValue( TYPE ) );
+		assertEquals( INSTANCE.constTypeInteger(), this.zero.getValue( TYPE ) );
 		assertEquals( "0", this.zero.getValue( VALUE ) );
 		assertSame( 0L, this.zero.integerValue() );
 	}
@@ -82,15 +82,15 @@ public class TestStdInteger {
 	
 	@Test
 	public void testGetValueOtherwise() {
-		assertEquals( INSTANCE.constInteger(), this.zero.getValue( TYPE, null ) );
+		assertEquals( INSTANCE.constTypeInteger(), this.zero.getValue( TYPE, null ) );
 		assertNull( this.one.getValue( "a3", null ) );
 	}
 	
 
 	@Test
 	public void testGetValueOtherwiseWithIndex() {
-		assertEquals( INSTANCE.constInteger(), this.zero.getValue( TYPE, 0, null ) );
-		assertNull( this.one.getValue( INSTANCE.constType(), 1, null ) );
+		assertEquals( INSTANCE.constTypeInteger(), this.zero.getValue( TYPE, 0, null ) );
+		assertNull( this.one.getValue( INSTANCE.keyType(), 1, null ) );
 	}
 
 	@Test(expected=UnsupportedOperationException.class)
@@ -100,7 +100,7 @@ public class TestStdInteger {
 
 	@Test
 	public void testSetValue() {
-		this.one.setValue( INSTANCE.constValue(), "99" );
+		this.one.setValue( INSTANCE.keyValue(), "99" );
 		assertSame( 99L, this.one.integerValue());
 	}
 
@@ -177,7 +177,7 @@ public class TestStdInteger {
 	
 	@Test
 	public void testHasAttributeWithValue() {
-		assertTrue( this.one.hasAttribute( TYPE, INSTANCE.constInteger() ) );
+		assertTrue( this.one.hasAttribute( TYPE, INSTANCE.constTypeInteger() ) );
 		assertFalse( this.one.hasAttribute( TYPE, "xxx" ) );
 		assertTrue( this.one.hasAttribute( VALUE, "1" ) );
 		assertFalse( this.one.hasAttribute( VALUE, "v2a" ) );
@@ -186,7 +186,7 @@ public class TestStdInteger {
 	
 	@Test
 	public void testHasAttributeWithIndexAndValue() {
-		assertTrue( this.one.hasAttribute( TYPE, 0, INSTANCE.constInteger() ) );
+		assertTrue( this.one.hasAttribute( TYPE, 0, INSTANCE.constTypeInteger() ) );
 		assertFalse( this.one.hasAttribute( TYPE, 0, "xxx" ) );
 		assertFalse( this.one.hasAttribute( TYPE, 1, "xxx" ) );
 		assertTrue( this.zero.hasAttribute( VALUE, 0, "0" ) );
@@ -285,7 +285,7 @@ public class TestStdInteger {
 	@Test
 	public void testAttributesAsStarMap() {
 		final StarMap< String, String > smap = this.zero.attributesToStarMap();
-		assertSame( INSTANCE.constInteger(), smap.get( TYPE ) );
+		assertSame( INSTANCE.constTypeInteger(), smap.get( TYPE ) );
 		assertEquals( "0", smap.get( VALUE ) );
 	}
 

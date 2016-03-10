@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-
 import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.util.StarMap;
 
@@ -27,7 +24,7 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 * @return the associated value or null
 	 * @throws IllegalArgumentException
 	 */
-	Value getValue( @NonNull Key key ) throws IllegalArgumentException;
+	Value getValue( Key key ) throws IllegalArgumentException;
 
 	/**
 	 * Gets the attribute value at position index associated with a given key. 
@@ -38,7 +35,7 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 * @return the associated value or null
 	 * @throws IllegalArgumentException
 	 */	
-	Value getValue( @NonNull Key key, int index ) throws IllegalArgumentException;
+	Value getValue( Key key, int index ) throws IllegalArgumentException;
 
 	/**
 	 * Gets the first attribute value associated with a given key. If
@@ -49,7 +46,7 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 * @param value_otherwise the value to be returned if there is no matching attribute
 	 * @return the associated value
 	 */	
-	@Nullable Value getValue( @NonNull Key key, @Nullable Value otherwise );
+	Value getValue( Key key, Value otherwise );
 
 	/**
 	 * Gets the attribute at position index value associated with a given key. If this
@@ -60,18 +57,18 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 * @param value_otherwise the value to be returned if there is no matching attribute
 	 * @return the associated value
 	 */	
-	@Nullable Value getValue( @NonNull Key key, int index, @Nullable Value otherwise );
+	Value getValue( Key key, int index, Value otherwise );
 
-	void setValue( @NonNull Key key, @NonNull Value value ) throws UnsupportedOperationException;
-	void setValue( @NonNull Key key, int index, @NonNull Value value ) throws IllegalArgumentException, UnsupportedOperationException;
+	void setValue( Key key, Value value ) throws UnsupportedOperationException;
+	void setValue( Key key, int index, Value value ) throws IllegalArgumentException, UnsupportedOperationException;
 	
-	void setAllValues( @NonNull Key key, Iterable< @NonNull Value > values ) throws UnsupportedOperationException;
+	void setAllValues( Key key, Iterable< Value > values ) throws UnsupportedOperationException;
 	
-	void addValue( @NonNull Key key, @NonNull Value value ) throws UnsupportedOperationException;
+	void addValue( Key key, Value value ) throws UnsupportedOperationException;
 
-	void removeValue( @NonNull Key key ) throws UnsupportedOperationException, IndexOutOfBoundsException;
-	void removeValue( @NonNull Key key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException;
-	void clearAttributes( @NonNull Key key ) throws UnsupportedOperationException;
+	void removeValue( Key key ) throws UnsupportedOperationException, IndexOutOfBoundsException;
+	void removeValue( Key key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException;
+	void clearAttributes( Key key ) throws UnsupportedOperationException;
 	void clearAllAttributes() throws UnsupportedOperationException;
 
 	/**
@@ -105,7 +102,7 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 * @param value the attribute value
 	 * @return true if this has an attribute with key @key and value @value
 	 */
-	boolean hasAttribute( @NonNull Key key );
+	boolean hasAttribute( Key key );
 	
 	/**
 	 * Returns true if this has at least index+1 attributes with the given key,
@@ -115,7 +112,7 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 * @param index the position being looked for
 	 * @return true if this has at least index+1 attributes with key @key 
 	 */
-	boolean hasValueAt( @NonNull Key key, int index );
+	boolean hasValueAt( Key key, int index );
 	
 	/**
 	 * Returns true if this has an attribute with the given key and
@@ -125,7 +122,7 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 * @param value the attribute value
 	 * @return true if this has an attribute with key @key and value @value
 	 */
-	boolean hasAttribute( @NonNull Key key, @Nullable String value );
+	boolean hasAttribute( Key key, Value value );
 	
 	/**
 	 * Returns true if this the Nth occurence of an attribute with the given key has
@@ -135,7 +132,7 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 * @param value the attribute value
 	 * @return true if this has an attribute with key @key and value @value
 	 */
-	boolean hasAttribute( @NonNull Key key, int index, @Nullable String value );
+	boolean hasAttribute( Key key, int index, Value value );
 	
 	/**
 	 * Returns true if there is exactly one attribute whose key is @key (i.e. not zero or
@@ -144,7 +141,7 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 * @param key the attribute key
 	 * @return true if the element has an attribute with key @key and value @value
 	 */	
-	default boolean hasOneValue( @NonNull Key key ) {
+	default boolean hasOneValue( Key key ) {
 		return this.hasSizeValues( key, 1 );		
 	}
 	
@@ -182,21 +179,21 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 		return ! this.hasNoKeys();
 	}
 	
-	int sizeValues( @NonNull Key key );
-	boolean hasSizeValues( @NonNull Key key, int n );
-	default boolean hasNoValues( @NonNull Key key ) {
+	int sizeValues( Key key );
+	boolean hasSizeValues( Key key, int n );
+	default boolean hasNoValues( Key key ) {
 		return ! this.hasAttribute( key );
 	}
-	default boolean hasAnyValues( @NonNull Key key ) {
+	default boolean hasAnyValues( Key key ) {
 		return this.hasAttribute( key );
 	}
 
 	
-	@NonNull Set< @NonNull Key > keysToSet();
-	@NonNull List< Attribute< Key, Value > > attributesToList();
-	@NonNull List< @NonNull Value > valuesToList( @NonNull Key key );
-	@NonNull Map< @NonNull Key, Value > firstValuesToMap();
-	@NonNull StarMap< @NonNull Key, @Nullable Value > attributesToStarMap();
-	@NonNull Map< Pair< @NonNull Key, @NonNull Integer >, Value > attributesToPairMap();
+	Set< Key > keysToSet();
+	List< Attribute< Key, Value > > attributesToList();
+	List< Value > valuesToList( Key key );
+	Map< Key, Value > firstValuesToMap();
+	StarMap< Key, Value > attributesToStarMap();
+	Map< Pair< Key, Integer >, Value > attributesToPairMap();
 	
 }

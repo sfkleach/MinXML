@@ -3,15 +3,16 @@ package com.steelypip.powerups.fusion;
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 import com.steelypip.powerups.fusion.LiteralConstants;
+import com.steelypip.powerups.hydra.Named;
 
-public interface StdJSONFeatures extends JSONFeatures, LiteralConstants {
+public interface StdJSONFeatures extends JSONFeatures, LiteralConstants, Named {
 	
 	boolean hasAttribute( final @NonNull String type );
 	boolean hasAttribute( final @NonNull String type, final String value );
 	String getValue( final @NonNull String type );
 	
 	default boolean isConstant( final @NonNull String type ) {
-		return this.hasAttribute( this.keyType(), type ) && this.hasAttribute( this.keyValue() );
+		return this.hasName( this.nameConstant() ) && this.hasAttribute( this.keyType(), type ) && this.hasAttribute( this.keyValue() );
 	}
 	
 	default String getConstantValueAsString() {
@@ -53,13 +54,24 @@ public interface StdJSONFeatures extends JSONFeatures, LiteralConstants {
 
 	@Override
 	default boolean isArray() {
-		return this.isConstant( this.constTypeArray() );
+		return this.hasName( this.constTypeArray() );
 	}
 
 	@Override
 	default boolean isObject() {
-		return this.isConstant( this.constTypeObject() );
+		return this.hasName( this.constTypeObject() );
 	}
 
+	@Override
+	default boolean isJSONItem() {
+		return (
+			( 	this.hasName( this.nameConstant() ) &&
+				this.hasAttribute( this.keyType() ) &&
+				this.hasAttribute( this.keyValue() )
+			) || 
+			this.hasName( this.constTypeArray() ) || 
+			this.hasName( this.constTypeObject() )
+		);
+	}
 	
 }

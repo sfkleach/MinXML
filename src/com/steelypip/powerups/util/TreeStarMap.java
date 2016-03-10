@@ -12,20 +12,21 @@ import org.eclipse.jdt.annotation.NonNull;
 import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.common.StdPair;
 
-public class StdStarMap< K, V > implements StarMap< K, V > {
+public class TreeStarMap< K, V > implements StarMap< K, V > {
 
 	private TreeMap< K, List< V > > map;
 	
-	public StdStarMap() {
+	public TreeStarMap() {
 		this.map = new TreeMap<>();
 	}
 	
-	public StdStarMap( Iterable< ? extends Pair< K, V > > initial ) {
+	public TreeStarMap( Iterable< ? extends Map.Entry< K, V > > initial ) {
 		this();
-		this.addAllPairs( initial );
+		this.addAllEntries( initial );
 	}
 
-	public StdStarMap( @NonNull Map< K, ? extends List< ? extends V > > initial ) {
+
+	public TreeStarMap( @NonNull Map< K, ? extends List< ? extends V > > initial ) {
 		this();
 		for ( Map.Entry< K, ? extends List< ? extends V > > e : initial.entrySet() ) {
 			for ( V v : e.getValue() ) {
@@ -195,14 +196,12 @@ public class StdStarMap< K, V > implements StarMap< K, V > {
 	 * @param values
 	 * @return
 	 */
-	public void addAllPairs( Iterable< ? extends Pair< K, V > > values ) {
+	public void addAllEntries( Iterable< ? extends Map.Entry< K, V > > values ) {
 		values = Objects.requireNonNull( values );
-		for ( Pair< K, V > value : values ) {
-			this.add( value.getFirst(), value.getSecond() );
+		for ( Map.Entry< K, V > value : values ) {
+			this.add( value.getKey(), value.getValue() );
 		}
 	}
-	
-
 	
 	/**
 	 * Stores all key-value pairs of multimap in this multimap, in the order 

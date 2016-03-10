@@ -33,63 +33,58 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 		throw new IllegalStateException();
 	}
 
-//	@Override
-//	public int compareTo( Named o ) {
-//		throw new IllegalStateException();
-//	}
-
 	@Override
-	public Value getValue( @NonNull Key key ) throws IllegalArgumentException {
+	public Value getValue( Key key ) throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public Value getValue( @NonNull Key key, int index ) throws IllegalArgumentException {
+	public Value getValue( Key key, int index ) throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @Nullable Value getValue( @NonNull Key key, @Nullable Value otherwise ) {
+	public Value getValue( Key key, Value otherwise ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @Nullable Value getValue( @NonNull Key key, int index, @Nullable Value otherwise ) {
+	public Value getValue( Key key, int index, Value otherwise ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void setValue( @NonNull Key key, @NonNull Value value ) throws UnsupportedOperationException {
+	public void setValue( Key key, Value value ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void setValue( @NonNull Key key, int index, @NonNull Value value ) throws IllegalArgumentException, UnsupportedOperationException {
+	public void setValue( Key key, int index, Value value ) throws IllegalArgumentException, UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void setAllValues( @NonNull Key key, Iterable< @NonNull Value > values ) throws UnsupportedOperationException {
+	public void setAllValues( Key key, Iterable< Value > values ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void addValue( @NonNull Key key, @NonNull Value value ) throws UnsupportedOperationException {
+	public void addValue( Key key, Value value ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void removeValue( @NonNull Key key ) throws UnsupportedOperationException, IndexOutOfBoundsException {
+	public void removeValue( Key key ) throws UnsupportedOperationException, IndexOutOfBoundsException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void removeValue( @NonNull Key key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException {
+	public void removeValue( Key key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void clearAttributes( @NonNull Key key ) throws UnsupportedOperationException {
+	public void clearAttributes( Key key ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
@@ -109,22 +104,22 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 	@Override
-	public boolean hasAttribute( @NonNull Key key ) {
+	public boolean hasAttribute( Key key ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public boolean hasValueAt( @NonNull Key key, int index ) {
+	public boolean hasValueAt( Key key, int index ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public boolean hasAttribute( @NonNull Key key, @Nullable String value ) {
+	public boolean hasAttribute( Key key, Value value ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public boolean hasAttribute( @NonNull Key key, int index, @Nullable String value ) {
+	public boolean hasAttribute( Key key, int index, Value value ) {
 		throw new IllegalStateException();
 	}
 
@@ -139,42 +134,42 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 	@Override
-	public int sizeValues( @NonNull Key key ) {
+	public int sizeValues( Key key ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public boolean hasSizeValues( @NonNull Key key, int n ) {
+	public boolean hasSizeValues( Key key, int n ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull Set< @NonNull Key > keysToSet() {
+	public Set< Key > keysToSet() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull List< Attribute< Key, Value > > attributesToList() {
+	public List< Attribute< Key, Value > > attributesToList() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull List< @NonNull Value > valuesToList( @NonNull Key key ) {
+	public List< Value > valuesToList( Key key ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull Map< @NonNull Key, Value > firstValuesToMap() {
+	public Map< Key, Value > firstValuesToMap() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull StarMap< @NonNull Key, @Nullable Value > attributesToStarMap() {
+	public StarMap< Key, Value > attributesToStarMap() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull Map< Pair< @NonNull Key, @NonNull Integer >, Value > attributesToPairMap() {
+	public Map< Pair< Key, Integer >, Value > attributesToPairMap() {
 		throw new IllegalStateException();
 	}
 
@@ -194,62 +189,62 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 	@Override
-	public Child getChild( @NonNull Field field ) throws IllegalArgumentException {
+	public Child getChild( Field field ) throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public Child getChild( @NonNull Field field, int index ) throws IllegalArgumentException {
+	public Child getChild( Field field, int index ) throws IllegalArgumentException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @Nullable Child getChild( @NonNull Field field, @Nullable Child otherwise ) {
+	public Child getChild( Field field, Child otherwise ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @Nullable Child getChild( @NonNull Field field, int index, @Nullable Child otherwise ) {
+	public Child getChild( Field field, int index, Child otherwise ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void setChild( @NonNull Field field, @NonNull Child value ) throws UnsupportedOperationException {
+	public void setChild( Field field, Child value ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void setChild( @NonNull Field field, int index, @NonNull Child value ) throws IllegalArgumentException, UnsupportedOperationException {
+	public void setChild( Field field, int index, Child value ) throws IllegalArgumentException, UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void setAllChildren( @NonNull Field field, Iterable< @NonNull Child > values ) throws UnsupportedOperationException {
+	public void setAllChildren( Field field, Iterable< Child > values ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void addChild( @NonNull Field field, @NonNull Child value ) throws UnsupportedOperationException {
+	public void addChild( Field field, Child value ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void addChild( @NonNull Child value ) throws UnsupportedOperationException {
+	public void addChild( Child value ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void removeChild( @NonNull Field key ) throws UnsupportedOperationException, IndexOutOfBoundsException {
+	public void removeChild( Field key ) throws UnsupportedOperationException, IndexOutOfBoundsException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void removeChild( @NonNull Field key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException {
+	public void removeChild( Field key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public void clearLinks( @NonNull Field key ) throws UnsupportedOperationException {
+	public void clearLinks( Field key ) throws UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
@@ -269,22 +264,22 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 	@Override
-	public boolean hasLink( @NonNull Field field ) {
+	public boolean hasLink( Field field ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public boolean hasLink( @NonNull Field field, int index ) {
+	public boolean hasLink( Field field, int index ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public boolean hasLink( @NonNull Field field, @Nullable Child value ) {
+	public boolean hasLink( Field field, Child value ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public boolean hasLink( @NonNull Field field, int index, @Nullable Child value ) {
+	public boolean hasLink( Field field, int index, Child value ) {
 		throw new IllegalStateException();
 	}
 
@@ -299,42 +294,42 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 	@Override
-	public int sizeChildren( @NonNull Field field ) {
+	public int sizeChildren( Field field ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public boolean hasNoChildren( @NonNull Field field ) {
+	public boolean hasNoChildren( Field field ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull Set< @NonNull Field > fieldsToSet() {
+	public Set< Field > fieldsToSet() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull List< Link< Field, Child > > linksToList() {
+	public List< Link< Field, Child > > linksToList() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public @NonNull List< @NonNull Child > childrenToList( @NonNull String field ) {
+	public List< Child > childrenToList( Field field ) {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public Map< @NonNull Field, Child > firstChildrenToMap() {
+	public Map< Field, Child > firstChildrenToMap() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public StarMap< @NonNull Field, @NonNull Child > linksToStarMap() {
+	public StarMap< Field, Child > linksToStarMap() {
 		throw new IllegalStateException();
 	}
 
 	@Override
-	public Map< Pair< @NonNull Field, @NonNull Integer >, Child > linksToPairMap() {
+	public Map< Pair< Field, Integer >, Child > linksToPairMap() {
 		throw new IllegalStateException();
 	}
 
@@ -344,12 +339,12 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 //	@Override
-//	public @NonNull Hydra< Key, Value, Field, Child > shallowCopy() {
+//	public Hydra< Key, Value, Field, Child > shallowCopy() {
 //		throw new IllegalStateException();
 //	}
 //
 //	@Override
-//	public @NonNull Hydra< Key, Value, Field, Child > deepCopy() {
+//	public Hydra< Key, Value, Field, Child > deepCopy() {
 //		throw new IllegalStateException();
 //	}
 	

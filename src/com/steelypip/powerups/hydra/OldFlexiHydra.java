@@ -33,7 +33,7 @@ import org.eclipse.jdt.annotation.Nullable;
 import com.steelypip.powerups.common.CmpPair;
 import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.util.StarMap;
-import com.steelypip.powerups.util.StdStarMap;
+import com.steelypip.powerups.util.TreeStarMap;
 
 /**
  * This implementation provides a full implementation of all the
@@ -48,7 +48,7 @@ import com.steelypip.powerups.util.StdStarMap;
  * and when there are no values/children the ArrayList is not allocated; these 
  * two cases are so common that the reduction in space is (typically) significant. 
  */
-public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > implements Hydra< Key, AttrValue, Field, ChildValue >, MutableHydraXML {
+public abstract class OldFlexiHydra< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > implements Hydra< Key, AttrValue, Field, ChildValue >, MutableHydraXML {
 	
 	protected @NonNull String name;
 	protected TreeMap< @NonNull Key, ArrayList< @NonNull AttrValue > > attributes = null;
@@ -65,7 +65,7 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 	 * @param name the name of the element
 	 */
 	@SuppressWarnings("null")
-	public FlexiHydra( final @NonNull String name ) {
+	public OldFlexiHydra( final @NonNull String name ) {
 		this.name = name.intern(); 
 	}
 	
@@ -120,19 +120,10 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 	}
 
 	@Override
-	public @NonNull String getName() {
-		return this.name;
-	}
-
-	@Override
 	public @NonNull String getInternedName() {
 		return this.name;
 	}
 
-	@Override
-	public boolean hasName( @Nullable String name ) {
-		return name != null && this.name.equals( name );
-	}
 
 	@Override
 	public void setName( @NonNull String x ) throws UnsupportedOperationException {
@@ -501,7 +492,7 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 
 	@Override
 	public @NonNull StarMap< @NonNull Key, @Nullable AttrValue > attributesToStarMap() {
-		return new StdStarMap< @NonNull Key, @Nullable AttrValue >( this.attributesToList() );
+		return new TreeStarMap< @NonNull Key, @Nullable AttrValue >( this.attributesToList() );
 	}
 
 	@SuppressWarnings("null")
@@ -837,9 +828,9 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 	@Override
 	public StarMap< @NonNull Field, @NonNull ChildValue > linksToStarMap() {
 		if ( this.links != null ) {
-			return new StdStarMap<>( this.links );
+			return new TreeStarMap<>( this.links );
 		} else {
-			return new StdStarMap<>();
+			return new TreeStarMap<>();
 		}
 	}
 
@@ -893,15 +884,6 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 		return sofar;		
 	}
 
-//	@Override
-//	public @NonNull Fusion shallowCopy() {
-//		return shallowCopy( this );
-//	}
-//
-//	@Override
-//	public @NonNull Fusion deepCopy() {
-//		return deepCopy( this );
-//	}
 
 	@Override
 	public @NonNull Set< @NonNull Key > keysToSet() {

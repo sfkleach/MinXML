@@ -15,22 +15,22 @@ import org.junit.Test;
 
 import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.fusion.Fusion.Attr;
-import com.steelypip.powerups.hydra.FlexiHydra;
+import com.steelypip.powerups.hydra.OldFlexiHydra;
 import com.steelypip.powerups.util.StarMap;
-import com.steelypip.powerups.util.StdStarMap;
+import com.steelypip.powerups.util.TreeStarMap;
 
 public class TestFlexiMinXMLStar {
 	
 	private static final @NonNull String EXAMPLE = "example";
 	private static final @NonNull String BASE_NAME = "foo";
-	FlexiHydra base;
-	FlexiHydra example;
+	OldFlexiHydra base;
+	OldFlexiHydra example;
 	
 
 	@Before
 	public void setUp() throws Exception {
-		this.base = new FlexiHydra( BASE_NAME );
-		this.example = new FlexiHydra( EXAMPLE );
+		this.base = new OldFlexiHydra( BASE_NAME );
+		this.example = new OldFlexiHydra( EXAMPLE );
 		this.example.setValue( "a1", "v1" );
 		this.example.setValue( "a2", "v2" );
 		this.example.setValue( "a2", 1, "v2a" );
@@ -322,7 +322,7 @@ public class TestFlexiMinXMLStar {
 		assertTrue( blist.isEmpty() );
 		final @NonNull List< Attr > elist = this.example.attributesToList();
 		assertFalse( elist.isEmpty() );
-		assertSame( 3, elist.size() );
+		assertSame( 3, elist.sizeEntries() );
 	}
 
 	@Test
@@ -339,7 +339,7 @@ public class TestFlexiMinXMLStar {
 		final Map< @NonNull String, @NonNull String > m1 = this.base.firstValuesToMap();
 		assertTrue( m1.isEmpty() );
 		final Map< @NonNull String, @NonNull String > m2 = this.example.firstValuesToMap();
-		assertSame( 2, m2.size() );
+		assertSame( 2, m2.sizeEntries() );
 	}
 
 	@Test
@@ -355,7 +355,7 @@ public class TestFlexiMinXMLStar {
 		final @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > m1 = this.base.attributesToPairMap();
 		assertTrue( m1.isEmpty() );
 		final @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > m2 = this.example.attributesToPairMap();
-		assertSame( 3, m2.size() );
+		assertSame( 3, m2.sizeEntries() );
 	}
 	
 	//	public @NonNull MinXMLStar getChild( @NonNull String field ) throws IllegalArgumentException {

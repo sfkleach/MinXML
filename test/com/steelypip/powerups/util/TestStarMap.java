@@ -20,8 +20,8 @@ public class TestStarMap {
 
 	@Before
 	public void setUp() throws Exception {
-		this.base = new StdStarMap< String, Integer >();
-		this.sample = new StdStarMap< String, Integer >();
+		this.base = new TreeStarMap< String, Integer >();
+		this.sample = new TreeStarMap< String, Integer >();
 		this.sample.add( "a1", 10 );
 		this.sample.add( "a2", 20 );
 		this.sample.add( "a2", 21 );

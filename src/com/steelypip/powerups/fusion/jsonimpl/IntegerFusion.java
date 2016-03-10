@@ -1,38 +1,43 @@
-package com.steelypip.powerups.fusion;
+package com.steelypip.powerups.fusion.jsonimpl;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-public class FloatFusion extends AbsConstantFusion {
+public class IntegerFusion extends AbsConstantFusion {
 	
-	private double number;
+	private long number;
 
-	public FloatFusion( double n ) {
+	public IntegerFusion( long n ) {
 		this.number = n;
 	}
 
-//	@Override
-//	public @NonNull Fusion shallowCopy() {
-//		return new FloatFusion( this.number );
-//	}
-
 	@Override
 	protected @NonNull String internedType() {
-		return "integer";
+		return this.constTypeInteger();
 	}
 
 	@SuppressWarnings("null")
 	@Override
 	protected @NonNull String literalValue() {
-		return Double.toString( this.number );
+		return Long.toString( this.number );
 	}
 
 	@Override
 	protected void setValueAttribute( String new_value ) throws UnsupportedOperationException {
 		try {
-			this.number = Double.parseDouble( new_value );
+			this.number = Long.parseLong( new_value );
 		} catch ( NumberFormatException _e ) {
 			throw new UnsupportedOperationException();
 		}
+	}
+
+	@Override
+	public long integerValue( long otherwise ) {
+		return this.number;
+	}
+	
+	@Override
+	public Long integerValue() {
+		return this.number;
 	}
 	
 	

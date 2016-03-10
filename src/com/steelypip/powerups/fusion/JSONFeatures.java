@@ -24,4 +24,6 @@ public interface JSONFeatures {
 	boolean isArray();
 	boolean isObject();
 	
+	boolean isJSONItem();
+	
 }

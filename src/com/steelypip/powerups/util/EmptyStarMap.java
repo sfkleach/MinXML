@@ -1,6 +1,7 @@
 package com.steelypip.powerups.util;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.jdt.annotation.Nullable;
@@ -72,7 +73,7 @@ public class EmptyStarMap< K, @Nullable V > implements StarMap< K, V > {
 	}
 
 	@Override
-	public void addAllPairs( Iterable< ? extends Pair< K, V > > values ) {
+	public void addAllEntries( Iterable< ? extends Map.Entry< K, V > > values ) {
 		throw new UnsupportedOperationException();
 	}
 

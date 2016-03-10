@@ -11,9 +11,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.steelypip.powerups.common.Pair;
-import com.steelypip.powerups.fusion.IntegerFusion;
 import com.steelypip.powerups.fusion.FlexiFusionFactory;
 import com.steelypip.powerups.fusion.Fusion.Attr;
+import com.steelypip.powerups.fusion.jsonimpl.IntegerFusion;
 import com.steelypip.powerups.util.StarMap;
 
 public class TestStdInteger {
@@ -262,7 +262,7 @@ public class TestStdInteger {
 	public void testAttributesAsList() {
 		final @NonNull List< Attr > elist = this.one.attributesToList();
 		assertFalse( elist.isEmpty() );
-		assertSame( 2, elist.size() );
+		assertSame( 2, elist.sizeEntries() );
 	}
 
 	@Test
@@ -278,7 +278,7 @@ public class TestStdInteger {
 	public void testFirstValuesAsMap() {
 		final Map< @NonNull String, String > m1 = this.one.firstValuesToMap();
 		assertFalse( m1.isEmpty() );
-		assertSame( 2, m1.size() );
+		assertSame( 2, m1.sizeEntries() );
 		assertTrue( m1.keySet().contains( TYPE ) );
 	}
 
@@ -292,7 +292,7 @@ public class TestStdInteger {
 	@Test
 	public void testAttributesAsPairMap() {
 		final @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > m1 = this.one.attributesToPairMap();
-		assertSame( 2, m1.size() );
+		assertSame( 2, m1.sizeEntries() );
 	}
 
 	@Test

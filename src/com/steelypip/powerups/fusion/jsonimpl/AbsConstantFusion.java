@@ -1,4 +1,4 @@
-package com.steelypip.powerups.fusion;
+package com.steelypip.powerups.fusion.jsonimpl;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -17,46 +17,25 @@ import com.steelypip.powerups.common.EmptyList;
 import com.steelypip.powerups.common.EmptyMap;
 import com.steelypip.powerups.common.EmptySet;
 import com.steelypip.powerups.common.Pair;
+import com.steelypip.powerups.fusion.Fusion;
+import com.steelypip.powerups.fusion.LiteralConstants;
 import com.steelypip.powerups.hydra.Attribute;
 import com.steelypip.powerups.hydra.Link;
 import com.steelypip.powerups.hydra.StdAttribute;
 import com.steelypip.powerups.util.StarMap;
-import com.steelypip.powerups.util.StdStarMap;
+import com.steelypip.powerups.util.TreeStarMap;
 
-public abstract class AbsConstantFusion implements Fusion, StdJSONFeatures, LiteralConstants {
+public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, LiteralConstants {
 	
 	abstract protected @NonNull String internedType();
 	
 	abstract protected @NonNull String literalValue();
 	
 	abstract protected void setValueAttribute( final String new_value );
-	
-	
-
-//	@Override
-//	public @NonNull Fusion< String > deepCopy() {
-//		return this.shallowCopy();
-//	}
-
-
-	@Override
-	public @NonNull String getName() {
-		return this.nameConstant();
-	}
 
 	@Override
 	public @NonNull String getInternedName() {
 		return this.nameConstant();
-	}
-
-	@Override
-	public boolean hasName( @Nullable String name ) {
-		return this.nameConstant().equals( name );
-	}
-
-	@Override
-	public void setName( @NonNull String x ) throws UnsupportedOperationException {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -238,8 +217,8 @@ public abstract class AbsConstantFusion implements Fusion, StdJSONFeatures, Lite
 	@Override
 	public @NonNull List< Attribute< String, String > > attributesToList() {
 		final List< Attribute< String, String > > attrs = new LinkedList<>();
-		attrs.add( new StdAttribute< String, String >( this.keyType(), 0, this.internedType() ) );
-		attrs.add( new StdAttribute< String, String >( this.keyValue(), 0, this.literalValue() ) );
+		attrs.add( new StdAttribute<>( this.keyType(), 0, this.internedType() ) );
+		attrs.add( new StdAttribute<>( this.keyValue(), 0, this.literalValue() ) );
 		return attrs;
 	}
 
@@ -264,7 +243,7 @@ public abstract class AbsConstantFusion implements Fusion, StdJSONFeatures, Lite
 
 	@Override
 	public @NonNull StarMap< @NonNull String, @Nullable String > attributesToStarMap() {
-		final @NonNull StarMap< @NonNull String, @Nullable String > m = new StdStarMap<>();
+		final @NonNull StarMap< @NonNull String, @Nullable String > m = new TreeStarMap<>();
 		m.add( this.keyType(), this.internedType() );
 		m.add( this.keyValue(), this.literalValue() );
 		return m;
@@ -447,5 +426,5 @@ public abstract class AbsConstantFusion implements Fusion, StdJSONFeatures, Lite
 	public Iterator< Link< String, Fusion > > iterator() {
 		return new EmptyIterator<>();
 	}
-	
+		
 }

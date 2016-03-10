@@ -12,7 +12,7 @@ public interface Named {
 	 * 
 	 * @return the element name
 	 */
-	public @NonNull String getName();
+	default public @NonNull String getName() { return this.getInternedName(); }
 	
 	/**
 	 * Returns the interned name of a MinXML element.
@@ -32,7 +32,7 @@ public interface Named {
 	 * @param name the name we are checking
 	 * @return true if the element has that name
 	 */
-	boolean hasName( @Nullable String name );
+	default boolean hasName( @Nullable String name ) { return this.getInternedName().equals( name ); }
 	
 	/**
 	 * Changes the name of the element to the given string. Note
@@ -43,7 +43,9 @@ public interface Named {
 	 * @param name the name we are setting
 	 * @throws UnsupportedOperationException if the implementing class cannot support this method
 	 */
-	public void setName( @NonNull String x ) throws UnsupportedOperationException;
+	default public void setName( @NonNull String x ) throws UnsupportedOperationException {
+		throw new UnsupportedOperationException();
+	}
 	
 	
 	

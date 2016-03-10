@@ -4,9 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-
 import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.util.StarMap;
 
@@ -18,28 +15,28 @@ import com.steelypip.powerups.util.StarMap;
  */
 public interface MultiLinks< Field extends Comparable< Field >, Value > {
 	
-	@NonNull Field defaultField();   
+	Field defaultField();   
 		
 	Value getChild() throws IllegalArgumentException;
 	Value getChild( int index ) throws IllegalArgumentException;
 	
-	Value getChild( @NonNull Field field ) throws IllegalArgumentException;
-	Value getChild( @NonNull Field field, int index ) throws IllegalArgumentException;
+	Value getChild( Field field ) throws IllegalArgumentException;
+	Value getChild( Field field, int index ) throws IllegalArgumentException;
 	
-	@Nullable Value getChild( @NonNull Field field, @Nullable Value otherwise );
-	@Nullable Value getChild( @NonNull Field field, int index, @Nullable Value otherwise );
+	Value getChild( Field field, Value otherwise );
+	Value getChild( Field field, int index, Value otherwise );
 
-	void setChild( @NonNull Field field, @NonNull Value value ) throws UnsupportedOperationException;
-	void setChild( @NonNull Field field, int index, @NonNull Value value ) throws IllegalArgumentException, UnsupportedOperationException;
+	void setChild( Field field, Value value ) throws UnsupportedOperationException;
+	void setChild( Field field, int index, Value value ) throws IllegalArgumentException, UnsupportedOperationException;
 	
-	void setAllChildren( @NonNull Field field, Iterable< @NonNull Value > values ) throws UnsupportedOperationException;
+	void setAllChildren( Field field, Iterable< Value > values ) throws UnsupportedOperationException;
 	
-	void addChild( @NonNull Field field, @NonNull Value value ) throws UnsupportedOperationException;
-	void addChild( @NonNull Value value ) throws UnsupportedOperationException;
+	void addChild( Field field, Value value ) throws UnsupportedOperationException;
+	void addChild( Value value ) throws UnsupportedOperationException;
 	
-	void removeChild( @NonNull Field key ) throws UnsupportedOperationException, IndexOutOfBoundsException;
-	void removeChild( @NonNull Field key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException;
-	void clearLinks( @NonNull Field key ) throws UnsupportedOperationException;
+	void removeChild( Field key ) throws UnsupportedOperationException, IndexOutOfBoundsException;
+	void removeChild( Field key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException;
+	void clearLinks( Field key ) throws UnsupportedOperationException;
 	void clearAllLinks() throws UnsupportedOperationException;
 
 	boolean hasNoLinks();
@@ -50,11 +47,11 @@ public interface MultiLinks< Field extends Comparable< Field >, Value > {
 	default boolean hasSizeLinks( int n ) {
 		return this.sizeLinks() == n;
 	}
-	boolean hasLink( @NonNull Field field );
-	boolean hasLink( @NonNull Field field, int index );
-	boolean hasLink( @NonNull Field field, @Nullable Value value );
-	boolean hasLink( @NonNull Field field, int index, @Nullable Value value );
-	default boolean hasOneChild( @NonNull Field field ) {
+	boolean hasLink( Field field );
+	boolean hasLink( Field field, int index );
+	boolean hasLink( Field field, Value value );
+	boolean hasLink( Field field, int index, Value value );
+	default boolean hasOneChild( Field field ) {
 		return this.hasSizeChildren( field, 1 );
 	}
 	
@@ -67,20 +64,20 @@ public interface MultiLinks< Field extends Comparable< Field >, Value > {
 		return ! this.hasNoFields();
 	}
 	
-	int sizeChildren( @NonNull Field field );
-	default boolean hasSizeChildren( @NonNull Field field, int n ) {
+	int sizeChildren( Field field );
+	default boolean hasSizeChildren( Field field, int n ) {
 		return this.sizeChildren( field ) == n;
 	}
-	boolean hasNoChildren( @NonNull Field field );
-	default boolean hasChildren( @NonNull Field field ) {
+	boolean hasNoChildren( Field field );
+	default boolean hasChildren( Field field ) {
 		return ! this.hasNoChildren( field );
 	}
 
-	@NonNull Set< @NonNull Field > fieldsToSet();
-	@NonNull List< Link< Field, Value > > linksToList();
-	@NonNull List< @NonNull Value > childrenToList( @NonNull String field );
-	Map< @NonNull Field, Value > firstChildrenToMap();
-	StarMap< @NonNull Field, @NonNull Value > linksToStarMap();
-	Map< Pair< @NonNull Field, @NonNull Integer >, Value > linksToPairMap();
+	Set< Field > fieldsToSet();
+	List< Link< Field, Value > > linksToList();
+	List< Value > childrenToList( Field field );
+	Map< Field, Value > firstChildrenToMap();
+	StarMap< Field, Value > linksToStarMap();
+	Map< Pair< Field, Integer >, Value > linksToPairMap();
 	
 }

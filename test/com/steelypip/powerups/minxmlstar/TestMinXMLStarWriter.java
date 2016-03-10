@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.steelypip.powerups.fusion.AbsFusionBuilder;
 import com.steelypip.powerups.fusion.FlexiFusionBuilder;
 import com.steelypip.powerups.fusion.Fusion;
-import com.steelypip.powerups.hydra.FlexiHydra;
+import com.steelypip.powerups.hydra.OldFlexiHydra;
 
 public class TestMinXMLStarWriter {
 
@@ -20,7 +20,7 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testName() {
-		FlexiHydra alpha = new FlexiHydra( "alpha" );
+		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
 		StringWriter w = new StringWriter();
 		alpha.print( w );
 		assertEquals( "<alpha/>", w.toString() );
@@ -28,7 +28,7 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testAttributes() {
-		FlexiHydra alpha = new FlexiHydra( "alpha" );
+		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
 		alpha.addValue( "left", "right" );
 		StringWriter w = new StringWriter();
 		alpha.print( w );
@@ -37,7 +37,7 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testAttributeWithWideChar() {
-		FlexiHydra alpha = new FlexiHydra( "alpha" );
+		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
 		alpha.addValue( "left", "é" );
 		StringWriter w = new StringWriter();
 		alpha.print( w );
@@ -46,7 +46,7 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testSeveralAttributes() {
-		FlexiHydra alpha = new FlexiHydra( "alpha" );
+		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
 		alpha.addValue( "left1", "right1" );
 		alpha.addValue( "left2", "right2" );
 		StringWriter w = new StringWriter();
@@ -56,7 +56,7 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testMultiValuedAttribute() {
-		FlexiHydra alpha = new FlexiHydra( "alpha" );
+		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
 		alpha.addValue( "left", "right1" );
 		alpha.addValue( "left", "right2" );
 		StringWriter w = new StringWriter();
@@ -66,8 +66,8 @@ public class TestMinXMLStarWriter {
 	
 	@Test
 	public void testChild() {
-		FlexiHydra alpha = new FlexiHydra( "alpha" );
-		FlexiHydra beta = new FlexiHydra( "beta" );
+		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
+		OldFlexiHydra beta = new OldFlexiHydra( "beta" );
 		alpha.addChild( beta );
 		StringWriter w = new StringWriter();
 		alpha.print( w );
@@ -76,10 +76,10 @@ public class TestMinXMLStarWriter {
 	
 	@Test
 	public void testChildren() {
-		FlexiHydra alpha = new FlexiHydra( "alpha" );
-		FlexiHydra beta = new FlexiHydra( "beta" );
+		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
+		OldFlexiHydra beta = new OldFlexiHydra( "beta" );
 		beta.addValue( "b.left", "b.right" );
-		FlexiHydra gamma = new FlexiHydra( "gamma" );
+		OldFlexiHydra gamma = new OldFlexiHydra( "gamma" );
 		alpha.addChild( beta );
 		alpha.addChild( gamma );
 		StringWriter w = new StringWriter();
@@ -89,8 +89,8 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testFieldChild() {
-		FlexiHydra alpha = new FlexiHydra( "alpha" );
-		FlexiHydra beta = new FlexiHydra( "beta" );
+		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
+		OldFlexiHydra beta = new OldFlexiHydra( "beta" );
 		beta.addValue( "b.left", "b.right" );
 		alpha.addChild( "child", beta );
 		StringWriter w = new StringWriter();
@@ -100,12 +100,12 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testFieldChildren() {
-		FlexiHydra alpha = new FlexiHydra( "alpha" );
-		FlexiHydra beta = new FlexiHydra( "beta" );
+		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
+		OldFlexiHydra beta = new OldFlexiHydra( "beta" );
 		alpha.addChild( "child", beta );
-		FlexiHydra gamma = new FlexiHydra( "gamma" );
+		OldFlexiHydra gamma = new OldFlexiHydra( "gamma" );
 		alpha.addChild( "child", gamma );
-		FlexiHydra delta = new FlexiHydra( "delta" );
+		OldFlexiHydra delta = new OldFlexiHydra( "delta" );
 		alpha.addChild( "alt.child", delta );
 		StringWriter w = new StringWriter();
 		alpha.print( w );

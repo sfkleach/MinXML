@@ -5,7 +5,7 @@ import org.eclipse.jdt.annotation.NonNull;
 /**
  * Must return INTERNED values.
  */
-interface LiteralConstants {
+public interface LiteralConstants {
 	
 	default @NonNull String nameConstant() { return "constant"; }
 	default @NonNull String keyValue() { return "value"; }

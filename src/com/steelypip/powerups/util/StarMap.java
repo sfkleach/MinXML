@@ -114,7 +114,7 @@ public interface StarMap< K, V > {
 	 * @param values
 	 * @return
 	 */
-	void addAllPairs( Iterable< ? extends Pair< K, V > > values );
+	void addAllEntries( Iterable< ? extends Map.Entry< K, V > > values );
 
 	
 	/**

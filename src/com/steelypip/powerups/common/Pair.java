@@ -1,6 +1,8 @@
 package com.steelypip.powerups.common;
 
-public interface Pair< T, U > {
+import java.util.Map;
+
+public interface Pair< T, U > extends Map.Entry< T, U > {
 
 	T getFirst();
 
@@ -9,5 +11,16 @@ public interface Pair< T, U > {
 	U getSecond();
 
 	void setSecond( U second );
+	
+	default T getKey() { return this.getFirst(); }
+	
+	default U getValue() { return this.getSecond(); }
+	
+	@Override
+	default U setValue( U value ) {
+		U old_value = this.getSecond();
+		this.setSecond( value );
+		return old_value;
+	}
 
 }

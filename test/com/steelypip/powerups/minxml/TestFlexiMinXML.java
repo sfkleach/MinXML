@@ -33,9 +33,9 @@ public class TestFlexiMinXML {
 	public void testBasic() {
 		FlexiMinXML x = new FlexiMinXML( "xxx" );
 		assertEquals( "xxx", x.getName() );
-		assertEquals( 0, x.getAttributes().size() );
+		assertEquals( 0, x.getAttributes().sizeEntries() );
 		x.putAttribute( "alpha", "001" );
-		assertEquals( 1, x.getAttributes().size() );
+		assertEquals( 1, x.getAttributes().sizeEntries() );
 		assertEquals( "001", x.getAttribute( "alpha" ) );
 		assertTrue( x.isEmpty() );
 		assertEquals( 0, x.size() );

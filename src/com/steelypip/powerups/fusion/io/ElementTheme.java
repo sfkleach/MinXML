@@ -1,11 +1,10 @@
-package com.steelypip.powerups.fusion;
+package com.steelypip.powerups.fusion.io;
 
 import java.util.List;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-import com.steelypip.powerups.fusion.io.FusionWriter;
-import com.steelypip.powerups.fusion.io.Theme;
+import com.steelypip.powerups.fusion.Fusion;
 
 /**
  * Elements have three

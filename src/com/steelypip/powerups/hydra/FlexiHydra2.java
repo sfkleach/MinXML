@@ -36,8 +36,6 @@ import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.common.StdPair;
 import com.steelypip.powerups.util.EmptyMutatingMultiMap;
 import com.steelypip.powerups.util.MutatingMultiMap;
-import com.steelypip.powerups.util.StarMap;
-import com.steelypip.powerups.util.TreeStarMap;
 
 import sun.awt.SunHints.Value;
 
@@ -255,11 +253,6 @@ public abstract class FlexiHydra2< Key extends Comparable< Key >, AttrValue, Fie
 			}
 		}
 		return sofar;
-	}
-
-	@Override
-	public StarMap< Key, AttrValue > attributesToStarMap() {
-		return new TreeStarMap< Key, AttrValue >( this.attributes.entriesToList() );
 	}
 
 	@Override

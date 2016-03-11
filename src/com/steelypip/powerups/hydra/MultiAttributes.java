@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.steelypip.powerups.common.Pair;
-import com.steelypip.powerups.util.StarMap;
+//import com.steelypip.powerups.util.StarMap;
 
 /**
  * A kind of multi-map where:
@@ -192,7 +192,7 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	List< Map.Entry< Key, Value > > attributesToList();
 	List< Value > valuesToList( Key key );
 	Map< Key, Value > firstValuesToMap();
-	StarMap< Key, Value > attributesToStarMap();
+//	StarMap< Key, Value > attributesToStarMap();
 	Map< Pair< Key, Integer >, Value > attributesToPairMap();
 	
 }

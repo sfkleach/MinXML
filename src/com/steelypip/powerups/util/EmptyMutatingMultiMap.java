@@ -1,5 +1,6 @@
 package com.steelypip.powerups.util;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,12 +45,12 @@ public class EmptyMutatingMultiMap< K, V > implements MutatingMultiMap< K, V > {
 
 	@Override
 	public List< Map.Entry< K, V > > entriesToList() {
-		return new EmptyList<>();
+		return Collections.emptyList();
 	}
 
 	@Override
 	public List< V > getAll( K key ) {
-		return new EmptyList<>();
+		return Collections.emptyList();
 	}
 
 	@Override
@@ -69,7 +70,7 @@ public class EmptyMutatingMultiMap< K, V > implements MutatingMultiMap< K, V > {
 
 	@Override
 	public Set< K > keySet() {
-		return new EmptySet<>();
+		return Collections.emptySet();
 	}
 
 	@Override
@@ -124,11 +125,9 @@ public class EmptyMutatingMultiMap< K, V > implements MutatingMultiMap< K, V > {
 		return 0;
 	}
 
-	
-	
 	@Override
 	public List< V > valuesList() {
-		return new EmptyList<>();
+		return Collections.emptyList();
 	}
 
 	@Override

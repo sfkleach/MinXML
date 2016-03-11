@@ -87,10 +87,7 @@ public interface MutatingMultiMap< K, V > extends Iterable< Map.Entry< K, V > >{
 	 * @return list of the values associated with key
 	 */
 	List< V > getAll( K key );
-	
-//	default Iterator< V > getIterator( K key ) {
-//		return this.getAll( key ).iterator();
-//	}
+
 	
 	/** Returns the first value associated with key in 
 	 * this multimap
@@ -136,11 +133,7 @@ public interface MutatingMultiMap< K, V > extends Iterable< Map.Entry< K, V > >{
 	default Set< K > keySet() {
 		return this.entriesToList().stream().map( ( Map.Entry< K, V > p ) -> p.getKey() ).collect( Collectors.toSet() );
 	}
-	
-	default Iterator< K > keyIterator() {
-		return this.keySet().iterator();
-	}
-	
+		
 	/**
 	 * Stores a key-value pair in this multimap.
 	 */

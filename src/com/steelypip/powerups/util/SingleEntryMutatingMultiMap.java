@@ -21,7 +21,7 @@ public class SingleEntryMutatingMultiMap< K, V > implements MutatingMultiMap< K,
 
 	@Override
 	public MutatingMultiMap< K, V > clearAllEntries() {
-		return this.newEmpty();
+		return EmptyMutatingMultiMap.getInstance();
 	}
 
 	@Override
@@ -102,16 +102,11 @@ public class SingleEntryMutatingMultiMap< K, V > implements MutatingMultiMap< K,
 			return new SingleValueMutatingMultiMap< K, V >().add( this.key, this.value ).add( _key, _value );
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
-	private EmptyMutatingMultiMap<K,V> newEmpty() {
-		return (EmptyMutatingMultiMap<K,V>)EmptyMutatingMultiMap.INSTANCE;
-	}
 
 	@Override
 	public MutatingMultiMap< K, V > removeEntry( K _key, V _value ) {
 		if ( this.hasEntry( _key, _value ) ) {
-			return this.newEmpty();
+			return this.clearAllEntries();
 		} else {
 			return this;
 		}
@@ -120,7 +115,7 @@ public class SingleEntryMutatingMultiMap< K, V > implements MutatingMultiMap< K,
 	@Override
 	public MutatingMultiMap< K, V > removeEntryAt( K _key, int N ) {
 		if ( this.hasKey( _key ) && N == 0 ) {
-			return this.newEmpty();
+			return this.clearAllEntries();
 		} else {
 			return this;
 		}
@@ -129,7 +124,7 @@ public class SingleEntryMutatingMultiMap< K, V > implements MutatingMultiMap< K,
 	@Override
 	public MutatingMultiMap< K, V > removeEntries( K _key ) {
 		if ( this.hasKey( _key ) ) {
-			return this.newEmpty();
+			return this.clearAllEntries();
 		} else {
 			return this;
 		}
@@ -137,10 +132,10 @@ public class SingleEntryMutatingMultiMap< K, V > implements MutatingMultiMap< K,
 
 	@Override
 	public MutatingMultiMap< K, V > setValues( K _key, Iterable< ? extends V > values ) {
-		if ( this.hasKey( _key ) ) {
-			return new SharedKeyMutatingMultiMap< K, V >( key ).add( this.value ).addAll( values );
+		if ( values.iterator().hasNext() ) {
+			return new SharedKeyMutatingMultiMap< K, V >( _key ).addAll( values ).add( this.key, this.value );
 		} else {
-			return this.newEmpty().addAll( _key, values ).add( this.key, this.value );
+			return this;
 		}
 	}
 

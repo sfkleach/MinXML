@@ -24,9 +24,7 @@ import com.steelypip.powerups.fusion.StdJSONFeatures;
 import com.steelypip.powerups.hydra.Attribute;
 import com.steelypip.powerups.hydra.Link;
 import com.steelypip.powerups.hydra.StdLink;
-import com.steelypip.powerups.util.EmptyStarMap;
-import com.steelypip.powerups.util.StarMap;
-import com.steelypip.powerups.util.TreeStarMap;
+
 
 public class ArrayFusion implements Fusion, NullJSONFeatures, LiteralConstants {
 	
@@ -211,10 +209,6 @@ public class ArrayFusion implements Fusion, NullJSONFeatures, LiteralConstants {
 		return new EmptyMap<>();
 	}
 
-	@Override
-	public StarMap< String, String > attributesToStarMap() {
-		return new EmptyStarMap<>();
-	}
 
 	@Override
 	public Map< Pair< String, Integer >, String > attributesToPairMap() {

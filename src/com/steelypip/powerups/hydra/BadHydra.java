@@ -9,7 +9,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.Pair;
-import com.steelypip.powerups.util.StarMap;
 
 public class BadHydra< Key extends Comparable< Key >, Value, Field extends Comparable< Field >, Child  > implements Hydra< Key, Value, Field, Child > {
 
@@ -163,10 +162,10 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 		throw new IllegalStateException();
 	}
 
-	@Override
-	public StarMap< Key, Value > attributesToStarMap() {
-		throw new IllegalStateException();
-	}
+//	@Override
+//	public StarMap< Key, Value > attributesToStarMap() {
+//		throw new IllegalStateException();
+//	}
 
 	@Override
 	public Map< Pair< Key, Integer >, Value > attributesToPairMap() {

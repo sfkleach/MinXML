@@ -19,9 +19,6 @@ import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.common.StdPair;
 import com.steelypip.powerups.fusion.Fusion;
 import com.steelypip.powerups.fusion.LiteralConstants;
-import com.steelypip.powerups.hydra.Link;
-import com.steelypip.powerups.util.StarMap;
-import com.steelypip.powerups.util.TreeStarMap;
 
 public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, LiteralConstants {
 	
@@ -239,13 +236,13 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 		return m;
 	}
 
-	@Override
-	public StarMap< String, String > attributesToStarMap() {
-		final StarMap< String, String > m = new TreeStarMap<>();
-		m.add( this.keyType(), this.internedType() );
-		m.add( this.keyValue(), this.literalValue() );
-		return m;
-	}
+//	@Override
+//	public StarMap< String, String > attributesToStarMap() {
+//		final StarMap< String, String > m = new TreeStarMap<>();
+//		m.add( this.keyType(), this.internedType() );
+//		m.add( this.keyValue(), this.literalValue() );
+//		return m;
+//	}
 
 	@Override
 	public Map< Pair< String, Integer >, String > attributesToPairMap() {

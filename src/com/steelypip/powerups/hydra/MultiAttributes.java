@@ -59,9 +59,8 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 */	
 	Value getValue( Key key, int index, Value otherwise );
 
+	void updateValue( Key key, int index, Value value ) throws IllegalArgumentException, UnsupportedOperationException;
 	void setValue( Key key, Value value ) throws UnsupportedOperationException;
-	void setValue( Key key, int index, Value value ) throws IllegalArgumentException, UnsupportedOperationException;
-	
 	void setAllValues( Key key, Iterable< Value > values ) throws UnsupportedOperationException;
 	
 	void addValue( Key key, Value value ) throws UnsupportedOperationException;
@@ -190,7 +189,7 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 
 	
 	Set< Key > keysToSet();
-	List< Attribute< Key, Value > > attributesToList();
+	List< Map.Entry< Key, Value > > attributesToList();
 	List< Value > valuesToList( Key key );
 	Map< Key, Value > firstValuesToMap();
 	StarMap< Key, Value > attributesToStarMap();

@@ -24,6 +24,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
@@ -45,10 +46,10 @@ public abstract class FusionSearcher {
 	 * @param subject the MinXML element to be visited
 	 * @return flag saying if the children were cutoff.
 	 */
-	public abstract boolean startSearch( @NonNull String field, int index, Fusion subject );
+	public abstract boolean startSearch( String field, Fusion subject );
 	
-	public boolean startSearch( final Link< String, Fusion > link ) {
-		return this.startSearch( link.getField(), link.getFieldIndex(), link.getChild() );
+	public boolean startSearch( final Map.Entry< String, Fusion > link ) {
+		return this.startSearch( link.getKey(), link.getValue() );
 	}
 
 	
@@ -63,15 +64,15 @@ public abstract class FusionSearcher {
 	 * @param cutoff flag indicating if any child search was cutoff.
 	 * @return boolean a flag saying if sibling-search should be cutoff.
 	 */
-	public abstract boolean endSearch( @NonNull String field, int index, Fusion subject, boolean cutoff );
+	public abstract boolean endSearch( String field, Fusion subject, boolean cutoff );
 
-	public boolean endSearch( final Link< String, Fusion > link, boolean cutoff ) {
-		return this.endSearch( link.getField(), link.getFieldIndex(), link.getChild(), cutoff );
+	public boolean endSearch( final Map.Entry< String, Fusion > link, boolean cutoff ) {
+		return this.endSearch( link.getKey(), link.getValue(), cutoff );
 	}
 
 
 	
-	private static final Iterator< Link< String, Fusion > > empty = new EmptyIterator<>();
+	private static final Iterator< Map.Entry< String, Fusion > > empty = new EmptyIterator<>();
 	
 	/**
 	 * The search method is used to implement basic recursive scans over a tree
@@ -81,22 +82,22 @@ public abstract class FusionSearcher {
 	 * @param subject the element tree to be searched
 	 * @return a successful node, otherwise null.
 	 */
-	public @Nullable Fusion search( @NonNull String field, int index, final Fusion subject ) {
-		Fusion cutoff = this.startSearch( field, index, subject ) ? subject : null;
-		final Iterator< Link< String, Fusion > > kids = cutoff != null ? empty : subject.iterator();
+	public @Nullable Fusion search( String field, final Fusion subject ) {
+		Fusion cutoff = this.startSearch( field, subject ) ? subject : null;
+		final Iterator< Map.Entry< String, Fusion > > kids = cutoff != null ? empty : subject.iterator();
 		while ( cutoff == null && kids.hasNext() ) {
 			cutoff = this.search( kids.next() );
 		}
-		return this.endSearch( field, index, subject, cutoff != null ) ? ( cutoff != null ? cutoff : subject ) : null;
+		return this.endSearch( field, subject, cutoff != null ) ? ( cutoff != null ? cutoff : subject ) : null;
 	}
 	
-	public @Nullable Fusion search( final Link< String, Fusion > link ) {
-		return this.search( link.getField(), link.getFieldIndex(), link.getChild() );
+	public @Nullable Fusion search( final Map.Entry< String, Fusion > link ) {
+		return this.search( link.getKey(), link.getValue() );
 	}
 
 	
 	public @Nullable Fusion search( final Fusion subject ) {
-		return this.search(  "", 0, subject );
+		return this.search(  "", subject );
 	}
 	
 	/**
@@ -111,7 +112,7 @@ public abstract class FusionSearcher {
 	static abstract class CommonMethodsPreOrderIterator implements Iterator< Fusion > {
 		
 		protected final FusionSearcher searcher;
-		protected final Deque< Link< String, Fusion > > queue = new ArrayDeque<>();
+		protected final Deque< Map.Entry< String, Fusion > > queue = new ArrayDeque<>();
 		
 		public CommonMethodsPreOrderIterator( FusionSearcher searcher, @NonNull Fusion subject ) {
 			this.searcher = searcher;
@@ -121,19 +122,19 @@ public abstract class FusionSearcher {
 		protected void cutAwaySiblings() {
 			//	We have to cut away the siblings.
 			while ( ! queue.isEmpty() ) {
-				final Link< String, Fusion > last = queue.removeLast();
+				final Map.Entry< String, Fusion > last = queue.removeLast();
 				if ( cutoff_false == last || cutoff_true == last ) break;
 			}
 			queue.addLast( cutoff_true );
 		}
 		
-		protected void expand( final Link< String, Fusion > x ) {
+		protected void expand( final Map.Entry< String, Fusion > x ) {
 			final boolean cutoff = this.searcher.startSearch( x );
 			queue.addLast( x );
 			queue.addLast( cutoff ? cutoff_true : cutoff_false );
 			if ( ! cutoff ) {
-				final List< Link< String, Fusion > > link_list = x.getChild().linksToList();
-				final ListIterator< Link< String, Fusion > > it = link_list.listIterator( link_list.size() );
+				final List< Map.Entry< String, Fusion > > link_list = x.getValue().linksToList();
+				final ListIterator< Map.Entry< String, Fusion > > it = link_list.listIterator( link_list.size() );
 				while ( it.hasPrevious() ) {
 					queue.addLast( it.previous() );
 				}				
@@ -151,7 +152,7 @@ public abstract class FusionSearcher {
 		@Override
 		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
-				final Link< String, Fusion > last = queue.getLast();
+				final Map.Entry< String, Fusion > last = queue.getLast();
 				if ( cutoff_false != last && cutoff_true != last ) return true;
 				queue.removeLast();
 				final boolean cutoff = this.searcher.endSearch( queue.removeLast(), cutoff_true == last );
@@ -164,10 +165,10 @@ public abstract class FusionSearcher {
 
 		@Override
 		public Fusion next() {
-			final Link< String, Fusion > x = queue.removeLast();
+			final Map.Entry< String, Fusion > x = queue.removeLast();
 			if ( cutoff_false != x && cutoff_true != x ) {
 				this.expand( x );
-				return x.getChild();
+				return x.getValue();
 			} else {
 				queue.addLast( x );
 				this.hasNext();
@@ -200,7 +201,7 @@ public abstract class FusionSearcher {
 		@Override
 		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
-				final Link< String, Fusion > last = queue.getLast();
+				final Map.Entry< String, Fusion > last = queue.getLast();
 				if ( cutoff_false == last || cutoff_true == last ) return true;
 				this.expand( queue.removeLast() );
 			}
@@ -213,14 +214,14 @@ public abstract class FusionSearcher {
 		 */
 		@Override
 		public Fusion next() {
-			final Link< String, Fusion > x = queue.removeLast();
+			final Map.Entry< String, Fusion > x = queue.removeLast();
 			if ( cutoff_false == x || cutoff_true == x ) {
-				final Link< String, Fusion > last = queue.removeLast();
+				final Map.Entry< String, Fusion > last = queue.removeLast();
 				final boolean cutoff = this.searcher.endSearch( last, cutoff_true == x );
 				if ( cutoff ) {
 					this.cutAwaySiblings();
 				}
-				return last.getChild();
+				return last.getValue();
 			} else {
 				queue.addLast( x );
 				this.hasNext();

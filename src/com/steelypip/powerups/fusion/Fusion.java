@@ -6,8 +6,7 @@ import com.steelypip.powerups.hydra.Hydra;
 
 public interface Fusion extends Hydra< String, String, String, Fusion >, JSONFeatures {
 
-	@Override
-	default @NonNull String defaultField() {
+	default String defaultField() {
 		return "";
 	}
 	

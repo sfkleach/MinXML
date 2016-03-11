@@ -36,7 +36,7 @@ public abstract class TestReadOnlyMinXMLStar< T extends Fusion > {
 		this.example = new OldFlexiHydra( EXAMPLE );
 		this.example.setValue( "a1", "v1" );
 		this.example.setValue( "a2", "v2" );
-		this.example.setValue( "a2", 1, "v2a" );
+		this.example.updateValue( "a2", 1, "v2a" );
 	}
 
 	@Test
@@ -137,24 +137,24 @@ public abstract class TestReadOnlyMinXMLStar< T extends Fusion > {
 
 	@Test
 	public void testSetValueWithIndex() {
-		this.example.setValue( "a3", 0, "v3" );
+		this.example.updateValue( "a3", 0, "v3" );
 		assertEquals( "v3", this.example.getValue( "a3" ) );
-		this.example.setValue( "a2", 0, "v2x" );
+		this.example.updateValue( "a2", 0, "v2x" );
 		assertEquals( "v2x", this.example.getValue( "a2" ) );
-		this.example.setValue( "a1", 1, "v1a" );
+		this.example.updateValue( "a1", 1, "v1a" );
 		assertEquals( "v1a", this.example.getValue( "a1", 1 ) );
-		this.example.setValue( "a2", 1, "v2ax" );
+		this.example.updateValue( "a2", 1, "v2ax" );
 		assertEquals( "v2ax", this.example.getValue( "a2", 1 ) );
 	}
 
 	@Test(expected=IllegalArgumentException.class)
 	public void badTestSetValueWithIndex1() {
-		this.example.setValue( "a3", 1, "v3" );
+		this.example.updateValue( "a3", 1, "v3" );
 	}
 
 	@Test(expected=IllegalArgumentException.class)
 	public void badTestSetValueWithIndex2() {
-		this.example.setValue( "a2", -1, "v3" );
+		this.example.updateValue( "a2", -1, "v3" );
 	}
 	
 	@Test

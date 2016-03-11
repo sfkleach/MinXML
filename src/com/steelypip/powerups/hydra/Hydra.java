@@ -20,6 +20,7 @@ package com.steelypip.powerups.hydra;
 
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Map;
 
 import com.steelypip.powerups.common.StdIndenter;
 import com.steelypip.powerups.fusion.io.FusionWriter;
@@ -35,7 +36,13 @@ import com.steelypip.powerups.fusion.io.XmlElementTheme;
  * 
  * @author Stephen Leach
  */
-public interface Hydra< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > extends Named, MultiAttributes< Key, AttrValue >, MultiLinks< Field, ChildValue >, Iterable< Link< Field, ChildValue > > {
+public interface Hydra< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > 
+extends 
+	Named, 
+	MultiAttributes< Key, AttrValue >, 
+	MultiLinks< Field, ChildValue >, 
+	Iterable< Map.Entry< Field, ChildValue > > 
+{
 	
 	/**
 	 * This method signals that there will be no further updates to an element, at least for a while, 

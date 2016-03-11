@@ -24,7 +24,7 @@ public class SingleValueMutatingMultiMap< Key, Value > extends TreeMap< Key, Val
 	}
 
 	@Override
-	public List< Pair< Key, Value > > entriesAsList() {
+	public List< Map.Entry< Key, Value > > entriesToList() {
 		return 
 			this.entrySet().
 			stream().
@@ -133,9 +133,26 @@ public class SingleValueMutatingMultiMap< Key, Value > extends TreeMap< Key, Val
 	}
 	
 	@Override
-	public int sizeEntries( Key _key ) {
+	public int sizeEntriesWithKey( Key _key ) {
 		return this.hasKey( _key ) ? 1 : 0;
  	}
+
+	@Override
+	public MutatingMultiMap< Key, Value > setSingletonValue( Key key, Value value ) {
+		this.put( key, value );
+		return this;
+	}
+
+	@Override
+	public MutatingMultiMap< Key, Value > updateValue( Key key, int n, Value value ) throws IllegalArgumentException {
+		if ( n != 0 ) throw new IllegalArgumentException();
+		if ( this.hasKey( key ) ) {
+			this.put( key, value );
+			return this;
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
 	
 	
 

@@ -29,6 +29,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.CmpPair;
 import com.steelypip.powerups.common.Pair;
@@ -136,18 +137,12 @@ public abstract class FlexiHydra2< Key extends Comparable< Key >, AttrValue, Fie
 
 	@Override
 	public void setValue( Key key, AttrValue value ) throws UnsupportedOperationException {
-		this.setValue( key, 0, value );
+		this.attributes = this.attributes.setSingletonValue( key, value );
 	}
 
 	@Override
-	public void setValue( Key key, int index, AttrValue value ) throws IllegalArgumentException, UnsupportedOperationException {
-		final ArrayList< AttrValue > a = new ArrayList<>( this.attributes.getAll( key ) );
-		try {
-			a.set( index, value );
-			this.attributes = this.attributes.setValues( key, a );
-		} catch ( IndexOutOfBoundsException e ) {
-			throw new IllegalArgumentException( e );
-		}
+	public void updateValue( Key key, int index, AttrValue value ) throws IllegalArgumentException, UnsupportedOperationException {
+		this.attributes = this.attributes.updateValue( key, index, value );
 	}
 
 	@Override
@@ -192,7 +187,7 @@ public abstract class FlexiHydra2< Key extends Comparable< Key >, AttrValue, Fie
 
 	@Override
 	public boolean hasValueAt( Key key, int index ) {
-		return this.attributes.sizeEntries( key ) > index;
+		return this.attributes.sizeEntriesWithKey( key ) > index;
 	}
 
 	@Override
@@ -207,7 +202,7 @@ public abstract class FlexiHydra2< Key extends Comparable< Key >, AttrValue, Fie
 
 	@Override
 	public boolean hasOneValue( Key key ) {
-		return this.attributes.sizeEntries( key ) == 1;
+		return this.attributes.sizeEntriesWithKey( key ) == 1;
 	}
 
 	@Override
@@ -227,29 +222,22 @@ public abstract class FlexiHydra2< Key extends Comparable< Key >, AttrValue, Fie
 
 	@Override
 	public int sizeValues( Key key ) {
-		return this.attributes.sizeEntries( key );
+		return this.attributes.sizeEntriesWithKey( key );
 	}
 
 	@Override
 	public boolean hasSizeValues( Key key, int n ) {
-		return this.attributes.sizeEntries( key ) == n;
+		return this.attributes.sizeEntriesWithKey( key ) == n;
 	}
 
 	@Override
 	public boolean hasNoValues( Key key ) {
-		return this.attributes.sizeEntries( key ) == 0;
+		return this.attributes.sizeEntriesWithKey( key ) == 0;
 	}
 	
 	@Override
-	public List< Attribute< Key, AttrValue > > attributesToList() {
-		final List< Attribute< Key, AttrValue > > list = new ArrayList<>();
-		
-		int n = 0;
-		for ( Pair< Key, AttrValue > p : this.attributes.entriesAsList() ) {
-			list.add( new StdAttribute< Key, AttrValue >( p.getFirst(), n++, p.getSecond() ) );
-		}
-		
-		return list;
+	public List< Map.Entry< Key, AttrValue > > attributesToList() {
+		return this.attributes.entriesToList();
 	}
 
 	@Override
@@ -271,7 +259,7 @@ public abstract class FlexiHydra2< Key extends Comparable< Key >, AttrValue, Fie
 
 	@Override
 	public StarMap< Key, AttrValue > attributesToStarMap() {
-		return new TreeStarMap< Key, AttrValue >( this.attributes.entriesAsList() );
+		return new TreeStarMap< Key, AttrValue >( this.attributes.entriesToList() );
 	}
 
 	@Override
@@ -317,262 +305,143 @@ public abstract class FlexiHydra2< Key extends Comparable< Key >, AttrValue, Fie
 	}
 
 	@Override
-	public void setChild( Field field, ChildValue value ) throws UnsupportedOperationException {
-		this.links.set
-		ArrayList< ChildValue > flinks = this.getNonNullLinks().get( field );
-		if ( flinks == null ) {
-			flinks = new ArrayList<>();
-		}
-		final ChildValue fv = value;
-		if ( flinks.isEmpty() ) {
-			flinks.add( fv );
-		} else {
-			flinks.set( 0, fv );
-		}
+	public void setChild( Field field, ChildValue child ) throws UnsupportedOperationException {
+		this.links = this.links.setSingletonValue( field, child );
 	}
 
 	@Override
-	public void setChild( Field field, int index, ChildValue value ) throws IllegalArgumentException, UnsupportedOperationException {
-		ArrayList< ChildValue > flinks = this.getNonNullLinks().get( field );
-		if ( flinks == null ) {
-			flinks = new ArrayList<>();
-		}
-		final ChildValue fv = value;
-		if ( index == flinks.size() ) {
-			flinks.add( fv );
-		} else if ( 0 <= index && index < flinks.size() ){
-			flinks.set( 0, fv );
-		} else {
-			throw new IllegalArgumentException( String.format( "Bounds error while trying to set the Nth (%d) element of the field (%s)", index, field ) );
-		}
+	public void updateChild( Field field, int index, ChildValue child ) throws IllegalArgumentException, UnsupportedOperationException {
+		this.links = this.links.updateValue( field, index, child );
 	}
 	
 
 	@Override
 	public void setAllChildren( Field field, Iterable< ChildValue > values ) throws UnsupportedOperationException {
-		final ArrayList< ChildValue > array = new ArrayList<>();
-		for ( ChildValue x : values ) {
-			array.add( x );
-		}
-		if ( ! array.isEmpty() ) {
-			this.getNonNullLinks().put( field, array );
-		}
+		this.links = this.links.setValues( field, values );
 	}
 
 	@Override
-	public void addChild( Field field, ChildValue value ) throws UnsupportedOperationException {
-		ArrayList< ChildValue > flinks = this.getNonNullLinks().get( field );
-		if ( flinks == null ) {
-			flinks = new ArrayList<>();
-			this.links.put( field, flinks );
-		}
-		//final AbsFlexiFusion fv = toFlexiMinXMLStar( value );
-		flinks.add( value );
+	public void addChild( Field field, ChildValue child ) throws UnsupportedOperationException {
+		this.links = this.links.add( field, child );
 	}
 
 	@Override
 	public void removeChild( Field field ) throws UnsupportedOperationException, IllegalArgumentException {
-		if ( this.links != null ) {
-			ArrayList< ChildValue > flinks = this.links.get( field );
-			if ( flinks != null && ! flinks.isEmpty() ) {
-				try {
-					flinks.remove( 0 );
-				} catch ( IndexOutOfBoundsException _e ) {
-					throw new IllegalArgumentException( String.format( "No child at this position (%d) with this field (%s)", 0, field ), _e );
-				}
-			} else {
-				throw new IllegalArgumentException( String.format( "No child at this position (%d) with this field (%s)", 0, field ) );				
-			}
-		} else {
-			throw new IllegalArgumentException( String.format( "No child at this position (%d) with this field (%s)", 0, field ) );
-		}
+		this.links = this.links.removeEntries( field );
 	}
 
 	@Override
 	public void removeChild( Field field, int index ) throws UnsupportedOperationException, IllegalArgumentException {
-		if ( this.links != null ) {
-			ArrayList< ChildValue > flinks = this.links.get( field );
-			if ( flinks != null ) {
-				try {
-					flinks.remove( 0 );
-				} catch ( IndexOutOfBoundsException _e ) {
-					throw new IndexOutOfBoundsException( String.format( "No child at this position (%d) with this field (%s)", index, field ) );
-				}
-			} else {
-				throw new IllegalArgumentException( String.format( "No child at this position (%d) with this field (%s)", index, field ) );				
-			}
-		} else {
-			throw new IllegalArgumentException( String.format( "No child at this position (%d) with this field (%s)", index, field ) );
-		}
+		this.links = this.links.removeEntryAt( field, index );
 	}
-
 
 	@Override
 	public void clearAllLinks() throws UnsupportedOperationException {
-		this.links = null;
+		this.links = this.links.clearAllEntries();
 	}
 
 	@Override
-	public void clearLinks( Field key ) throws UnsupportedOperationException {
-		if ( this.links == null ) return;
-		this.links.remove( key );
+	public void clearLinks( Field field ) throws UnsupportedOperationException {
+		this.links = this.links.removeEntries( field );
 	}
 
 	@Override
 	public boolean hasNoLinks() {
-		if ( this.links == null ) return true;
 		return this.links.isEmpty();
 	}
 	
-
 	@Override
 	public boolean hasLink( Field field ) {
-		if ( this.links == null ) return false;
-		final ArrayList< ChildValue > flinks = this.links.get( field );
-		if ( flinks == null ) return false;
-		return ! flinks.isEmpty();
+		return this.links.hasKey( field );
 	}
 
 	@Override
 	public boolean hasLink( Field field, int index ) {
-		if ( this.links == null ) return false;
-		final ArrayList< ChildValue > flinks = this.links.get( field );
-		if ( flinks == null ) return false;
-		return 0 <= index && index < flinks.size();
+		return this.links.sizeEntriesWithKey( field ) > index;
 	}
 
 	@Override
-	public boolean hasLink( Field field, ChildValue value ) {
-		if ( this.links == null ) return false;
-		final ArrayList< ChildValue > flinks = this.links.get( field );
-		if ( flinks == null ) return false;
-		return flinks.contains( value );
+	public boolean hasLink( Field field, ChildValue child ) {
+		return this.links.hasEntry( field, child );
 	}
 
 	@Override
-	public boolean hasLink( Field field, int index, ChildValue value ) {
-		if ( this.links == null ) return false;
-		final ArrayList< ChildValue > flinks = this.links.get( field );
-		if ( flinks == null ) return false;
-		if ( ! ( 0 <= index && index < flinks.size() ) ) return false;
-		return flinks.get( index ).equals( value );
+	public boolean hasLink( Field field, int index, ChildValue child ) {
+		return this.links.hasEntry( field, index, child );
 	}
 
 	@Override
 	public boolean hasOneChild( Field field ) {
-		if ( this.links == null ) return false;
-		final ArrayList< ChildValue > flinks = this.links.get( field );
-		if ( flinks == null ) return false;
-		return flinks.size() == 1;
+		return this.links.sizeEntriesWithKey( field ) == 1;
 	}
 
 	@Override
 	public int sizeLinks() {
-		int sofar = 0;
-		if ( this.links != null ) {
-			for ( Map.Entry< Field, ArrayList< ChildValue > > lentry : this.links.entrySet() ) {
-				sofar += lentry.getValue().size();
-			}
-		}
-		return sofar;
+		return this.links.sizeEntries();
 	}
 
 	@Override
 	public int sizeFields() {
-		if ( this.links == null ) return 0;
-		return this.links.size();
+		return this.links.sizeKeys();
 	}
 
 	@Override
 	public boolean hasSizeFields( int n ) {
-		if ( this.links == null ) return n == 0;
-		return this.links.size() == n;
+		return this.links.sizeKeys() == n;
 	}
 
 	@Override
 	public boolean hasNoFields() {
-		if ( this.links == null ) return true;
-		for ( ArrayList< ChildValue > value : this.links.values() ) {
-			if ( ! value.isEmpty() ) return false;
-		}
-		return true;
+		return this.links.isEmpty();
 	}
 
 	@Override
 	public int sizeChildren( Field field ) {
-		if ( this.links == null ) return 0;
-		final ArrayList< ChildValue > flinks = this.links.get( field );
-		if ( flinks == null ) return 0;
-		return flinks.size();
+		return this.links.sizeEntriesWithKey( field );
 	}
 
 	@Override
 	public boolean hasSizeChildren( Field field, int n ) {
-		if ( this.links == null ) return n == 0;
-		final ArrayList< ChildValue > flinks = this.links.get( field );
-		if ( flinks == null ) return n == 0;
-		return flinks.size() == n;
+		return this.links.sizeEntriesWithKey( field ) == n;
 	}
 
 	@Override
 	public boolean hasNoChildren( Field field ) {
-		if ( this.links == null ) return true;
-		final ArrayList< ChildValue > flinks = this.links.get( field );
-		if ( flinks == null ) return true;
-		return flinks.isEmpty();
+		return this.links.sizeEntriesWithKey( field ) == 0;
 	}
 
 	@Override
-	public List< ChildValue > childrenToList( String field ) {
-		final ArrayList< ChildValue > sofar = new ArrayList<>();
-		if ( this.links != null ) {
-			final ArrayList< ChildValue > flinks = this.links.get( field );
-			if ( flinks != null ) {
-				sofar.addAll( flinks );
-			}
-		}		
-		return sofar;
+	public List< ChildValue > childrenToList( Field field ) {
+		return this.links.getAll( field );
 	}
 
 	@Override
 	public Map< Field, ChildValue > firstChildrenToMap() {
 		final Map< Field, ChildValue > sofar = new TreeMap<>();
-		if ( this.links != null ) {
-			if ( this.links != null ) {
-				for ( Map.Entry< Field, ArrayList< ChildValue > > lentry : this.links.entrySet() ) {
-					final ArrayList< ChildValue > children = lentry.getValue();
-					if ( children != null && ! children.isEmpty() ) {
-						final Field field = lentry.getKey();
-						sofar.put( field, children.get( 0 ) );
-					}
-				}
+		for ( Field k : this.links.keySet() ) {
+			final List< ChildValue > list = this.links.getAll( k );
+			if ( ! list.isEmpty() ) {
+				sofar.put( k, list.get( 0 ) );
 			}
-		}		
+		}
 		return sofar;
 	}
 
-	@SuppressWarnings("null")
-	@Override
-	public StarMap< Field, ChildValue > linksToStarMap() {
-		if ( this.links != null ) {
-			return new TreeStarMap<>( this.links );
-		} else {
-			return new TreeStarMap<>();
-		}
-	}
+//	@SuppressWarnings("null")
+//	@Override
+//	public StarMap< Field, ChildValue > linksToStarMap() {
+//		return new TreeStarMap<>( this.links.entriesAsList() );
+//	}
 
 	@Override
 	public Map< Pair< Field, Integer >, ChildValue > linksToPairMap() {
 		final Map< Pair< Field, Integer >, ChildValue > sofar = new TreeMap<>();
-		if ( this.links != null ) {
-			for ( Map.Entry< Field, ArrayList< ChildValue > > lentry : this.links.entrySet() ) {
-				final Field field = lentry.getKey();
-				final ArrayList< ChildValue > children = lentry.getValue();
-				int n = 0;
-				for ( ChildValue child : children ) {
-					final Pair< Field, Integer >p = new CmpPair< Field, Integer >( field, n++ );
-					sofar.put( p, child );
-				}
+		for ( Field k : this.links.keySet() ) {
+			final List< ChildValue > list = this.links.getAll( k );
+			int n = 0;
+			for ( ChildValue child : list ) {
+				final Pair< Field, Integer > p = new CmpPair< Field, Integer >( k, n++ );
+				sofar.put( p, child );
 			}			
 		}
 		return sofar;
@@ -580,54 +449,24 @@ public abstract class FlexiHydra2< Key extends Comparable< Key >, AttrValue, Fie
 	
 
 	@Override
-	public Iterator< Link< Field, ChildValue > > iterator() {
-		final LinkedList< Link< Field, ChildValue > > sofar = new LinkedList<>();
-		if ( this.links != null ) {
-			for ( Map.Entry< Field, ArrayList< ChildValue > > lentry : this.links.entrySet() ) {
-				final Field field = lentry.getKey();
-				final ArrayList< ChildValue > children = lentry.getValue();
-				int n = 0;
-				for ( ChildValue child : children ) {
-					sofar.add( new StdLink< Field, ChildValue >( field, n++, child ) );
-				}
-			}			
-		}
-		return sofar.iterator();		
+	public Iterator< Map.Entry< Field, ChildValue > > iterator() {
+		return this.links.iterator();	
 	}
 
 	@Override
-	public List< Link< Field, ChildValue > > linksToList() {
-		final LinkedList< Link< Field, ChildValue > > sofar = new LinkedList<>();
-		if ( this.links != null ) {
-			for ( Map.Entry< Field, ArrayList< ChildValue > > lentry : this.links.entrySet() ) {
-				final Field field = lentry.getKey();
-				final ArrayList< ChildValue > children = lentry.getValue();
-				int n = 0;
-				for ( ChildValue child : children ) {
-					sofar.add( new StdLink< Field, ChildValue >( field, n++, child ) );
-				}
-			}			
-		}
-		return sofar;		
+	public List< Map.Entry< Field, ChildValue > > linksToList() {
+		return this.links.entriesToList();
 	}
 
 
 	@Override
 	public Set< Key > keysToSet() {
-		if ( this.attributes != null ) {
-			return new TreeSet<>( this.attributes.keySet() );
-		} else {
-			return new TreeSet<>();
-		}
+		return this.attributes.keySet();
 	}
 
 	@Override
 	public Set< Field > fieldsToSet() {
-		if ( this.links != null ) {
-			return new TreeSet<>( this.links.keySet() );
-		} else {
-			return new TreeSet<>();			
-		}
+		return this.links.keySet();
 	}
 
 	@Override

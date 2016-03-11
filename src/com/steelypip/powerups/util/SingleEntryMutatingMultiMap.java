@@ -1,8 +1,7 @@
 package com.steelypip.powerups.util;
 
 import java.util.List;
-
-import org.eclipse.jdt.annotation.Nullable;
+import java.util.Map;
 
 import com.steelypip.powerups.common.EmptyList;
 import com.steelypip.powerups.common.Pair;
@@ -41,7 +40,7 @@ public class SingleEntryMutatingMultiMap< K, V > implements MutatingMultiMap< K,
 	}
 
 	@Override
-	public List< Pair< K, V > > entriesAsList() {
+	public List< Map.Entry< K, V > > entriesToList() {
 		return new SingletonList<>( new StdPair<>( this.key, this.value ) );
 	}
 
@@ -156,8 +155,30 @@ public class SingleEntryMutatingMultiMap< K, V > implements MutatingMultiMap< K,
 	}
 
 	@Override
-	public int sizeEntries( K _key ) {
+	public int sizeEntriesWithKey( K _key ) {
 		return this.hasKey( _key ) ? 1 : 0;
 	}
+
+	@Override
+	public MutatingMultiMap< K, V > setSingletonValue( K _key, V _value ) {
+		if ( this.hasKey( _key ) ) {
+			this.value = _value;
+			return this;
+		} else {
+			return new SingleValueMutatingMultiMap<  K, V  >().setSingletonValue( _key, _value ).setSingletonValue( this.key, this.value );
+		}
+	}
+
+	@Override
+	public MutatingMultiMap< K, V > updateValue( K _key, int n, V _value ) throws IllegalArgumentException {
+		if ( n != 0 ) throw new IllegalArgumentException();
+		if ( this.hasKey( _key ) ) {
+			this.value = _value;
+			return this;
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+	
 
 }

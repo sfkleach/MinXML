@@ -2,6 +2,7 @@ package com.steelypip.powerups.util;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.steelypip.powerups.common.EmptyList;
@@ -42,7 +43,7 @@ public class EmptyMutatingMultiMap< K, V > implements MutatingMultiMap< K, V > {
 	}
 
 	@Override
-	public List< Pair< K, V > > entriesAsList() {
+	public List< Map.Entry< K, V > > entriesToList() {
 		return new EmptyList<>();
 	}
 
@@ -114,7 +115,7 @@ public class EmptyMutatingMultiMap< K, V > implements MutatingMultiMap< K, V > {
 	}
 
 	@Override
-	public int sizeEntries( K key ) {
+	public int sizeEntriesWithKey( K key ) {
 		return 0;
 	}
 
@@ -139,5 +140,17 @@ public class EmptyMutatingMultiMap< K, V > implements MutatingMultiMap< K, V > {
 	public V getElse( K key, int N, V otherwise ) throws IllegalArgumentException {
 		return otherwise;
 	}
+
+	@Override
+	public MutatingMultiMap< K, V > setSingletonValue( K key, V value ) {
+		return new SingleEntryMutatingMultiMap< K, V >( key, value );
+	}
+
+	@Override
+	public MutatingMultiMap< K, V > updateValue( K key, int n, V value ) throws IllegalArgumentException {
+		throw new IllegalArgumentException();
+	}
+	
+	
 	
 }

@@ -106,13 +106,13 @@ public class TestStdInteger {
 
 	@Test
 	public void testSetValueWithIndex() {
-		this.one.setValue( VALUE, 0, "99" );
+		this.one.updateValue( VALUE, 0, "99" );
 		assertSame( 99L, this.one.integerValue() );
 	}
 
 	@Test(expected=UnsupportedOperationException.class)
 	public void badTestSetValueWithIndex1() {
-		this.one.setValue( VALUE, 1, "99" );
+		this.one.updateValue( VALUE, 1, "99" );
 	}
 
 	

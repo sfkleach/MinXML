@@ -59,7 +59,7 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 	@Override
-	public void setValue( Key key, int index, Value value ) throws IllegalArgumentException, UnsupportedOperationException {
+	public void updateValue( Key key, int index, Value value ) throws IllegalArgumentException, UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
@@ -149,7 +149,7 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 	@Override
-	public List< Attribute< Key, Value > > attributesToList() {
+	public List< Map.Entry< Key, Value > > attributesToList() {
 		throw new IllegalStateException();
 	}
 
@@ -214,7 +214,7 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 	@Override
-	public void setChild( Field field, int index, Child value ) throws IllegalArgumentException, UnsupportedOperationException {
+	public void updateChild( Field field, int index, Child value ) throws IllegalArgumentException, UnsupportedOperationException {
 		throw new IllegalStateException();
 	}
 
@@ -309,7 +309,7 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 	@Override
-	public List< Link< Field, Child > > linksToList() {
+	public List< Map.Entry< Field, Child > > linksToList() {
 		throw new IllegalStateException();
 	}
 
@@ -323,10 +323,10 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 		throw new IllegalStateException();
 	}
 
-	@Override
-	public StarMap< Field, Child > linksToStarMap() {
-		throw new IllegalStateException();
-	}
+//	@Override
+//	public StarMap< Field, Child > linksToStarMap() {
+//		throw new IllegalStateException();
+//	}
 
 	@Override
 	public Map< Pair< Field, Integer >, Child > linksToPairMap() {
@@ -334,7 +334,7 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	}
 
 	@Override
-	public Iterator< Link< Field, Child > > iterator() {
+	public Iterator< Map.Entry< Field, Child > > iterator() {
 		throw new IllegalStateException();
 	}
 

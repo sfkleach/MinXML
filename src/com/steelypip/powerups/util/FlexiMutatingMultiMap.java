@@ -6,9 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.eclipse.jdt.annotation.Nullable;
-
-import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.common.StdPair;
 
 public class FlexiMutatingMultiMap< Key, Value > extends TreeMap< Key, List< Value > > implements MutatingMultiMap< Key, Value > {
@@ -16,7 +13,7 @@ public class FlexiMutatingMultiMap< Key, Value > extends TreeMap< Key, List< Val
 	private static final long serialVersionUID = 7434046523595764233L;
 
 	public FlexiMutatingMultiMap( MutatingMultiMap< Key, Value > mmm ) {
-		mmm.entriesAsList().forEach( ( Pair< Key, Value > p ) -> add( p ) );
+		mmm.entriesToList().forEach( ( Map.Entry< Key, Value > p ) -> add( p ) );
 	}
 
 	public FlexiMutatingMultiMap() {
@@ -28,8 +25,8 @@ public class FlexiMutatingMultiMap< Key, Value > extends TreeMap< Key, List< Val
 	}
 
 	@Override
-	public List< Pair< Key, Value > > entriesAsList() {
-		final List< Pair< Key, Value > > list = new ArrayList<>();
+	public List< Map.Entry< Key, Value > > entriesToList() {
+		final List< Map.Entry< Key, Value > > list = new ArrayList<>();
 		for ( Map.Entry< Key, List< Value > > e : this.entrySet() ) {
 			for ( Value v : e.getValue() ) {
 				list.add( new StdPair<>( e.getKey(), v ) );
@@ -142,7 +139,7 @@ public class FlexiMutatingMultiMap< Key, Value > extends TreeMap< Key, List< Val
 	}
 
 	@Override
-	public int sizeEntries( Key _key ) {
+	public int sizeEntriesWithKey( Key _key ) {
 		List< Value > list = this.get( _key );
 		return list == null ? 0 : list.size();
 	}
@@ -150,6 +147,30 @@ public class FlexiMutatingMultiMap< Key, Value > extends TreeMap< Key, List< Val
 	@Override
 	public int sizeKeys() {
 		return this.size();
+	}
+
+	@Override
+	public MutatingMultiMap< Key, Value > setSingletonValue( Key key, Value value ) {
+		List< Value > list = this.get( key );
+		if ( list == null ) {
+			list = new ArrayList<>();
+		} else {
+			list.clear();
+		}
+		list.add( value );
+		return this;
+	}
+
+	@Override
+	public MutatingMultiMap< Key, Value > updateValue( Key key, int n, Value value ) throws IllegalArgumentException {
+		List< Value > list = this.get( key );
+		if ( list == null ) throw new IllegalArgumentException();
+		try {
+			list.set( n, value );
+		} catch ( IndexOutOfBoundsException e ) {
+			throw new IllegalArgumentException();
+		}
+		return this;
 	}
 
 }

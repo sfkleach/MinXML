@@ -1,17 +1,14 @@
 package com.steelypip.powerups.fusion;
 
-import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
-import com.steelypip.powerups.fusion.LiteralConstants;
 import com.steelypip.powerups.hydra.Named;
 
 public interface StdJSONFeatures extends JSONFeatures, LiteralConstants, Named {
 	
-	boolean hasAttribute( final @NonNull String type );
-	boolean hasAttribute( final @NonNull String type, final String value );
-	String getValue( final @NonNull String type );
+	boolean hasAttribute( final String type );
+	boolean hasAttribute( final String type, final String value );
+	String getValue( final String type );
 	
-	default boolean isConstant( final @NonNull String type ) {
+	default boolean isConstant( final String type ) {
 		return this.hasName( this.nameConstant() ) && this.hasAttribute( this.keyType(), type ) && this.hasAttribute( this.keyValue() );
 	}
 	
@@ -20,7 +17,7 @@ public interface StdJSONFeatures extends JSONFeatures, LiteralConstants, Named {
 	}
 
 	@Override
-	default @Nullable Long integerValue() {
+	default Long integerValue() {
 		try {
 			return this.isConstant( this.constTypeInteger() ) ? Long.parseLong( this.getConstantValueAsString() ) : null;
 		} catch ( NumberFormatException _e ) {
@@ -29,7 +26,7 @@ public interface StdJSONFeatures extends JSONFeatures, LiteralConstants, Named {
 	}
 
 	@Override
-	default @Nullable Double floatValue() {
+	default Double floatValue() {
 		try {
 			return this.isConstant( this.constTypeFloat() ) ? Double.parseDouble( this.getConstantValueAsString() ) : null;
 		} catch ( NumberFormatException _e ) {
@@ -38,12 +35,12 @@ public interface StdJSONFeatures extends JSONFeatures, LiteralConstants, Named {
 	}
 
 	@Override
-	default @Nullable String stringValue() {
+	default String stringValue() {
 		return this.isConstant( this.constTypeString() ) ? this.getConstantValueAsString() : null;
 	}
 
 	@Override
-	default @Nullable Boolean booleanValue() {
+	default Boolean booleanValue() {
 		return this.isConstant( this.constTypeBoolean() ) ? Boolean.parseBoolean( this.getConstantValueAsString() ) : null;
 	}
 

@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.steelypip.powerups.common.Pair;
-import com.steelypip.powerups.util.StarMap;
+
+//import com.steelypip.powerups.common.Pair;
+//import com.steelypip.powerups.util.StarMap;
 
 /**
  * A kind of multi-map where:
@@ -27,7 +29,7 @@ public interface MultiLinks< Field extends Comparable< Field >, Value > {
 	Value getChild( Field field, int index, Value otherwise );
 
 	void setChild( Field field, Value value ) throws UnsupportedOperationException;
-	void setChild( Field field, int index, Value value ) throws IllegalArgumentException, UnsupportedOperationException;
+	void updateChild( Field field, int index, Value value ) throws IllegalArgumentException, UnsupportedOperationException;
 	
 	void setAllChildren( Field field, Iterable< Value > values ) throws UnsupportedOperationException;
 	
@@ -74,10 +76,10 @@ public interface MultiLinks< Field extends Comparable< Field >, Value > {
 	}
 
 	Set< Field > fieldsToSet();
-	List< Link< Field, Value > > linksToList();
+	List< Map.Entry< Field, Value > > linksToList();
 	List< Value > childrenToList( Field field );
 	Map< Field, Value > firstChildrenToMap();
-	StarMap< Field, Value > linksToStarMap();
+//	StarMap< Field, Value > linksToStarMap();
 	Map< Pair< Field, Integer >, Value > linksToPairMap();
 	
 }

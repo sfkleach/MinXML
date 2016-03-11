@@ -24,11 +24,11 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-import com.steelypip.powerups.hydra.Link;
-import com.steelypip.powerups.hydra.StdLink;
+import com.steelypip.powerups.common.StdPair;
 
 /**
  *	A convenience class that implements a recursive
@@ -41,10 +41,10 @@ public abstract class FusionWalker {
 	 * 
 	 * @param subject the MinXML element to be visited
 	 */
-	public abstract void startWalk( @NonNull String field, int index, Fusion subject );
+	public abstract void startWalk( String field, Fusion subject );
 	
-	private void startWalk( Link< String, Fusion > link ) {
-		this.startWalk( link.getField(), link.getFieldIndex(), link.getChild() );
+	private void startWalk( Map.Entry< String, Fusion > link ) {
+		this.startWalk( link.getKey(), link.getValue() );
 	}
 
 	
@@ -54,10 +54,10 @@ public abstract class FusionWalker {
 	 * 
 	 * @param subject the MinXML element to be visited
 	 */
-	public abstract void endWalk( @NonNull String field, int index, Fusion subject );
+	public abstract void endWalk( String field, Fusion subject );
 
-	private void endWalk( Link< String, Fusion > link ) {
-		this.endWalk( link.getField(), link.getFieldIndex(), link.getChild() );
+	private void endWalk( Map.Entry< String, Fusion > link ) {
+		this.endWalk( link.getKey(), link.getValue() );
 	}
 
 
@@ -70,17 +70,17 @@ public abstract class FusionWalker {
 	 * @param subject the element tree to be walked
 	 * @return the walker itself, used for chaining method calls.
 	 */	
-	private FusionWalker walk( @NonNull String field, int index, final Fusion subject ) {
-		this.startWalk( field, index, subject );
-		for ( Link< String, Fusion > link : subject ) {
-			this.walk( link.getField(), link.getFieldIndex(), link.getChild() );
+	private FusionWalker walk( String field, final Fusion subject ) {
+		this.startWalk( field, subject );
+		for ( Map.Entry< String, Fusion > link : subject ) {
+			this.walk( link.getKey(), link.getValue() );
 		}
-		this.endWalk( field, index, subject );
+		this.endWalk( field, subject );
 		return this;
 	}
 	
 	public FusionWalker walk( final Fusion subject ) {
-		return this.walk( "", 0, subject );
+		return this.walk( "", subject );
 	}
 	
 	
@@ -89,24 +89,24 @@ public abstract class FusionWalker {
 	 * in the queue. Marked items represent 'endWalk' tasks and unmarked items
 	 * represent 'startWalk + expand' tasks. 
 	 */
-	private static final Link< String, Fusion > end_walk_marker = new StdLink< String, Fusion >( "", 0, new BadFusion() );
+	private static final Map.Entry< String, Fusion > end_walk_marker = new StdPair< String, Fusion >( "", new BadFusion() );
 	
-	static abstract class CommonIterator implements Iterator< @NonNull Fusion > {
+	static abstract class CommonIterator implements Iterator< Fusion > {
 		
-		protected final @NonNull FusionWalker walker;
-		protected final Deque< Link< String, Fusion > > queue = new ArrayDeque<>();
+		protected final FusionWalker walker;
+		protected final Deque< Map.Entry< String, Fusion > > queue = new ArrayDeque<>();
 		
-		public CommonIterator( @NonNull FusionWalker walker, @NonNull Fusion subject ) {
+		public CommonIterator( FusionWalker walker, Fusion subject ) {
 			this.walker = walker;
-			this.queue.add( new StdLink< String, Fusion >( "", 0, subject ) );
+			this.queue.add( new StdPair< String, Fusion >( "", subject ) );
 		}	
 
-		protected void expand( final Link< String, Fusion > x ) {
+		protected void expand( final Map.Entry< String, Fusion > x ) {
 			this.walker.startWalk( x );
 			queue.addLast( x );
 			queue.addLast( end_walk_marker );
-			List< Link< String, Fusion > > link_list = x.getChild().linksToList();
-			final ListIterator< Link< String, Fusion > > it = link_list.listIterator( link_list.size() );
+			List< Map.Entry< String, Fusion > > link_list = x.getValue().linksToList();
+			final ListIterator< Map.Entry< String, Fusion > > it = link_list.listIterator( link_list.size() );
 			while ( it.hasPrevious() ) {
 				queue.addLast( it.previous() );
 			}						
@@ -116,7 +116,7 @@ public abstract class FusionWalker {
 	
 	static class PreOrderIterator extends CommonIterator {
 		
-		public PreOrderIterator( @NonNull FusionWalker walker, @NonNull Fusion subject ) {
+		public PreOrderIterator( FusionWalker walker, Fusion subject ) {
 			super( walker, subject );
 		}	
 		
@@ -131,23 +131,23 @@ public abstract class FusionWalker {
 		}
 		
 		@Override
-		public @NonNull Fusion next() {
-			final Link< String, Fusion > x = queue.removeLast();
+		public Fusion next() {
+			final Map.Entry< String, Fusion > x = queue.removeLast();
 			if ( x != end_walk_marker ) {
 				this.expand( x );
-				return x.getChild();
+				return x.getValue();
 			}
 			this.walker.endWalk( queue.removeLast() );
 			this.hasNext();
-			return queue.removeLast().getChild();
+			return queue.removeLast().getValue();
 		}
 		
 	}
 	
-	public Iterable< @NonNull Fusion > preOrder( final @NonNull Fusion subject ) {
-		return new Iterable< @NonNull Fusion >() {
+	public Iterable< Fusion > preOrder( final @NonNull Fusion subject ) {
+		return new Iterable< Fusion >() {
 			@Override
-			public Iterator< @NonNull Fusion > iterator() {
+			public Iterator< Fusion > iterator() {
 				return new PreOrderIterator( FusionWalker.this, subject );
 			}
 		};
@@ -168,7 +168,7 @@ public abstract class FusionWalker {
 		public boolean hasNext() {
 			while ( ! queue.isEmpty() ) {
 				if ( end_walk_marker == queue.getLast() ) return true;
-				Link< String, Fusion > e = queue.removeLast();
+				Map.Entry< String, Fusion > e = queue.removeLast();
 				this.expand( e );
 			}
 			return false;
@@ -180,14 +180,14 @@ public abstract class FusionWalker {
 		 * hasNext would sort it out.
 		 */
 		@Override
-		public @NonNull Fusion next() {
-			final Link< String, Fusion > x = queue.removeLast();
+		public Fusion next() {
+			final Map.Entry< String, Fusion > x = queue.removeLast();
 			if ( x == end_walk_marker ) {
 				//	The queue is normalised.
 				//	This is the overwhelmingly common case - so we special case it.
-				final Link< String, Fusion > e = queue.removeLast();
+				final Map.Entry< String, Fusion > e = queue.removeLast();
 				this.walker.endWalk( e );
-				return e.getChild();
+				return e.getValue();
 			} else {
 				//	The queue was not normalised by a call to hasNext and the
 				//	head of the queue was not a request for an end-visit. We
@@ -200,10 +200,10 @@ public abstract class FusionWalker {
 	}
 
 	
-	public Iterable< @NonNull Fusion > postOrder( final @NonNull Fusion subject ) {
-		return new Iterable< @NonNull Fusion >() {
+	public Iterable< Fusion > postOrder( final @NonNull Fusion subject ) {
+		return new Iterable< Fusion >() {
 			@Override
-			public Iterator< @NonNull Fusion > iterator() {
+			public Iterator< Fusion > iterator() {
 				return new PostOrderIterator( FusionWalker.this, subject );
 			}
 		};

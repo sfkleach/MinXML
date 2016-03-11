@@ -1,11 +1,10 @@
 package com.steelypip.powerups.util;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.steelypip.powerups.common.Pair;
 
 /**
  * A SmartMap is a mutating collection of key-to-value entries. Entries are considered
@@ -18,7 +17,7 @@ import com.steelypip.powerups.common.Pair;
  * @param <K>
  * @param <V>
  */
-public interface MutatingMultiMap< K, V > {
+public interface MutatingMultiMap< K, V > extends Iterable< Map.Entry< K, V > >{
 
 	/** 
 	 * Removes all key-value pairs from the multimap, leaving it empty. If the
@@ -60,8 +59,8 @@ public interface MutatingMultiMap< K, V > {
 
 	/* Returns true if this multimap contains at least one key-value pair with the value value.*/
 	default boolean	hasValue( V value ) {
-		for ( Pair< K, V > p : this.entriesAsList() ) {
-			V v = p.getSecond();
+		for ( Map.Entry< K, V > p : this.entriesToList() ) {
+			V v = p.getValue();
 			if ( v == null ? value == null : v.equals( value ) ) return true;
 		}
 		return false;
@@ -71,7 +70,11 @@ public interface MutatingMultiMap< K, V > {
 	 * Returns list of all key-value pairs contained in this 
 	 * multimap/ 
 	 */
-	List< Pair< K, V > > entriesAsList();
+	List< Map.Entry< K, V > > entriesToList();
+	
+	default Iterator< Map.Entry< K, V > > iterator() {
+		return this.entriesToList().iterator();
+	}
 	
 	/**
 	 *	Compares the specified object with this multimap for equality.  
@@ -84,6 +87,10 @@ public interface MutatingMultiMap< K, V > {
 	 * @return list of the values associated with key
 	 */
 	List< V > getAll( K key );
+	
+//	default Iterator< V > getIterator( K key ) {
+//		return this.getAll( key ).iterator();
+//	}
 	
 	/** Returns the first value associated with key in 
 	 * this multimap
@@ -127,7 +134,11 @@ public interface MutatingMultiMap< K, V > {
 	 * Returns the set of all distinct keys contained in this multimap.
 	 */
 	default Set< K > keySet() {
-		return this.entriesAsList().stream().map( ( Pair< K, V > p ) -> p.getFirst() ).collect( Collectors.toSet() );
+		return this.entriesToList().stream().map( ( Map.Entry< K, V > p ) -> p.getKey() ).collect( Collectors.toSet() );
+	}
+	
+	default Iterator< K > keyIterator() {
+		return this.keySet().iterator();
 	}
 	
 	/**
@@ -176,7 +187,7 @@ public interface MutatingMultiMap< K, V > {
 	 */
 	default MutatingMultiMap< K, V > addAll( MutatingMultiMap< ? extends K, ? extends V > multimap ) {
 		MutatingMultiMap< K, V > self = this;
-		for ( Pair< K, V > p : this.entriesAsList() ) {
+		for ( Map.Entry< K, V > p : this.entriesToList() ) {
 			self = self.add( p );
 		}
 		return self;
@@ -211,6 +222,12 @@ public interface MutatingMultiMap< K, V > {
 	 */
 	MutatingMultiMap< K, V > setValues( K key, Iterable<? extends V> values );
 	
+	MutatingMultiMap< K, V > setSingletonValue( K key, V value );
+	
+	MutatingMultiMap< K, V > updateValue( K key, int n, V value );
+
+
+	
 	/**
 	 * Returns the number of key-value pairs in this multimap.
 	 */
@@ -219,7 +236,7 @@ public interface MutatingMultiMap< K, V > {
 	/**
 	 * Returns the number of key-value pairs in this multimap that share key key.
 	 */
-	int	sizeEntries( K key );
+	int	sizeEntriesWithKey( K key );
 	
 	default int sizeKeys() {
 		return this.keySet().size();
@@ -230,7 +247,7 @@ public interface MutatingMultiMap< K, V > {
 	 * contained in this multimap, without collapsing duplicates (so values().size() == size()). 
 	 */
 	default List< V > valuesList() {
-		return this.entriesAsList().stream().map( ( Pair< K, V > p ) -> p.getSecond() ).collect( Collectors.toList() );
+		return this.entriesToList().stream().map( ( Map.Entry< K, V > p ) -> p.getValue() ).collect( Collectors.toList() );
 	}
 	
 	default MutatingMultiMap< K, V > trimToSize() {

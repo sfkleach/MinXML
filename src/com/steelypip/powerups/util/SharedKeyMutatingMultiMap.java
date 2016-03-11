@@ -2,6 +2,7 @@ package com.steelypip.powerups.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -51,8 +52,8 @@ public class SharedKeyMutatingMultiMap< Key, Value > implements MutatingMultiMap
 	}
 
 	@Override
-	public List< Pair< Key, Value > > entriesAsList() {
-		final List< Pair< Key, Value > > list = new ArrayList<>();
+	public List< Map.Entry< Key, Value > > entriesToList() {
+		final List< Map.Entry< Key, Value > > list = new ArrayList<>();
 		for ( Value v : this.values_list ) {
 			list.add( new StdPair<>( this.key, v ) );
 		}
@@ -184,7 +185,7 @@ public class SharedKeyMutatingMultiMap< Key, Value > implements MutatingMultiMap
 	}
 
 	@Override
-	public int sizeEntries( Key _key ) {
+	public int sizeEntriesWithKey( Key _key ) {
 		if ( this.hasKey( _key ) ) {
 			return this.values_list.size();
 		} else {
@@ -214,5 +215,32 @@ public class SharedKeyMutatingMultiMap< Key, Value > implements MutatingMultiMap
 			return otherwise;
 		}
 	}
+
+	@Override
+	public MutatingMultiMap< Key, Value > setSingletonValue( Key _key, Value _value ) {
+		if ( this.hasKey( _key ) ) {
+			this.values_list.clear();
+			this.values_list.add( _value );
+			return this;
+		} else {
+			return new FlexiMutatingMultiMap<>( this ).add( _key, _value );
+		}
+	}
+
+	@Override
+	public MutatingMultiMap< Key, Value > updateValue( Key _key, int n, Value _value ) throws IllegalArgumentException {
+		if ( this.hasKey( _key ) ) {
+			try {
+				this.values_list.set( n, _value );
+				return this;
+			} catch ( IndexOutOfBoundsException _e ) {
+				throw new IllegalArgumentException( _e );
+			}
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	
 
 }

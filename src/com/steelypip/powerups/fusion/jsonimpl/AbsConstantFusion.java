@@ -9,7 +9,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.CmpPair;
 import com.steelypip.powerups.common.EmptyIterator;
@@ -17,11 +16,10 @@ import com.steelypip.powerups.common.EmptyList;
 import com.steelypip.powerups.common.EmptyMap;
 import com.steelypip.powerups.common.EmptySet;
 import com.steelypip.powerups.common.Pair;
+import com.steelypip.powerups.common.StdPair;
 import com.steelypip.powerups.fusion.Fusion;
 import com.steelypip.powerups.fusion.LiteralConstants;
-import com.steelypip.powerups.hydra.Attribute;
 import com.steelypip.powerups.hydra.Link;
-import com.steelypip.powerups.hydra.StdAttribute;
 import com.steelypip.powerups.util.StarMap;
 import com.steelypip.powerups.util.TreeStarMap;
 
@@ -39,7 +37,7 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public @NonNull String getValue( @NonNull String key ) throws IllegalArgumentException {
+	public String getValue( String key ) throws IllegalArgumentException {
 		if ( this.keyType().equals( key ) ) {
 			return this.internedType();
 		} else if ( this.keyValue().equals( key ) ) {
@@ -50,7 +48,7 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public String getValue( @NonNull String key, int index ) throws IllegalArgumentException {
+	public String getValue( String key, int index ) throws IllegalArgumentException {
 		if ( this.keyType().equals( key ) ) {
 			if ( index == 0 ) return this.internedType();
 		} else if ( this.keyValue().equals( key ) ) {
@@ -60,7 +58,7 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public @Nullable String getValue( @NonNull String key, @Nullable String otherwise ) {
+	public String getValue( String key, String otherwise ) {
 		if ( this.keyType().equals( key ) ) {
 			return this.internedType();
 		} else if ( this.keyValue().equals( key ) ) {
@@ -71,7 +69,7 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public @Nullable String getValue( @NonNull String key, int index, @Nullable String otherwise ) {
+	public String getValue( String key, int index, String otherwise ) {
 		if ( this.keyType().equals( key ) ) {
 			if ( index == 0 ) return this.internedType();
 		} else if ( this.keyValue().equals( key ) ) {
@@ -81,7 +79,7 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public void setValue( @NonNull String key, @NonNull String value ) throws UnsupportedOperationException {
+	public void setValue( String key, String value ) throws UnsupportedOperationException {
 		if ( this.keyValue().equals( key ) ) {
 			this.setValueAttribute( value );
 		} else {
@@ -90,7 +88,7 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public void setValue( @NonNull String key, int index, @NonNull String value ) throws IllegalArgumentException, UnsupportedOperationException {
+	public void updateValue( String key, int index, String value ) throws IllegalArgumentException, UnsupportedOperationException {
 		if ( this.keyValue().equals( key ) && index == 0 ) {
 			this.setValueAttribute( value );
 			return;
@@ -99,9 +97,9 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public void setAllValues( @NonNull String key, Iterable< @NonNull String > values ) throws UnsupportedOperationException {
+	public void setAllValues( String key, Iterable< String > values ) throws UnsupportedOperationException {
 		if ( this.keyValue().equals( key ) ) {
-			Iterator< @NonNull String > it = values.iterator();
+			Iterator< String > it = values.iterator();
 			if ( it.hasNext() ) {
 				String v = it.next();
 				if ( ! it.hasNext() ) {
@@ -114,22 +112,22 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public void addValue( @NonNull String key, @NonNull String value ) throws UnsupportedOperationException {
+	public void addValue( String key, String value ) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();		
 	}
 
 	@Override
-	public void removeValue( @NonNull String key ) throws UnsupportedOperationException, IndexOutOfBoundsException {
+	public void removeValue( String key ) throws UnsupportedOperationException, IndexOutOfBoundsException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void removeValue( @NonNull String key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException {
+	public void removeValue( String key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void clearAttributes( @NonNull String key ) throws UnsupportedOperationException {
+	public void clearAttributes( String key ) throws UnsupportedOperationException {
 		if ( key.equals( this.keyType() ) || key.equals( this.keyValue() ) ) {
 			throw new UnsupportedOperationException();
 		}
@@ -146,17 +144,17 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public boolean hasAttribute( @NonNull String key ) {
+	public boolean hasAttribute( String key ) {
 		return key.equals( this.keyType() ) || key.equals( this.keyValue() );
 	}
 
 	@Override
-	public boolean hasValueAt( @NonNull String key, int index ) {
+	public boolean hasValueAt( String key, int index ) {
 		return index == 0 && this.hasAttribute( key );
 	}
 
 	@Override
-	public boolean hasAttribute( @NonNull String key, @Nullable String value ) {
+	public boolean hasAttribute( String key, String value ) {
 		if ( key.equals( this.keyType() ) ) {
 			return this.internedType().equals( value );
 		} else if ( key.equals( this.keyValue() ) ) {
@@ -167,12 +165,12 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public boolean hasAttribute( @NonNull String key, int index, @Nullable String value ) {
+	public boolean hasAttribute( String key, int index, String value ) {
 		return index == 0 && this.hasAttribute(  key, value );
 	}
 
 	@Override
-	public boolean hasOneValue( @NonNull String key ) {
+	public boolean hasOneValue( String key ) {
 		return this.hasAttribute( key );
 	}
 
@@ -192,40 +190,40 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public int sizeValues( @NonNull String key ) {
+	public int sizeValues( String key ) {
 		return this.hasAttribute( key ) ? 1 : 0;
 	}
 
 	@Override
-	public boolean hasSizeValues( @NonNull String key, int n ) {
+	public boolean hasSizeValues( String key, int n ) {
 		return ( n == 0 || n == 1 ) && ( this.hasAttribute( key ) ? n == 1 : n == 0 );
 	}
 
 	@Override
-	public boolean hasNoValues( @NonNull String key ) {
+	public boolean hasNoValues( String key ) {
 		return ! this.hasAttribute( key );
 	}
 
 	@Override
-	public @NonNull Set< @NonNull String > keysToSet() {
-		final @NonNull TreeSet< @NonNull String > result = new TreeSet<>();
+	public Set< String > keysToSet() {
+		final TreeSet< String > result = new TreeSet<>();
 		result.add( this.keyType());
 		result.add( this.keyValue() );
 		return result;
 	}
 
 	@Override
-	public @NonNull List< Attribute< String, String > > attributesToList() {
-		final List< Attribute< String, String > > attrs = new LinkedList<>();
-		attrs.add( new StdAttribute<>( this.keyType(), 0, this.internedType() ) );
-		attrs.add( new StdAttribute<>( this.keyValue(), 0, this.literalValue() ) );
+	public List< Map.Entry< String, String > > attributesToList() {
+		final List< Map.Entry< String, String > > attrs = new LinkedList<>();
+		attrs.add( new StdPair<String, String>( this.keyType(),this.internedType() ) );
+		attrs.add( new StdPair<String, String>( this.keyValue(), this.literalValue() ) );
 		return attrs;
 	}
 
 	@Override
-	public @NonNull List< @NonNull String > valuesToList( @NonNull String key ) {
+	public List< String > valuesToList( String key ) {
 		if ( this.hasAttribute( key ) ) {
-			List< @NonNull String > values = new LinkedList<>();
+			List< String > values = new LinkedList<>();
 			values.add( this.getValue( key ) );
 			return values;
 		} else {
@@ -234,26 +232,26 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public @NonNull Map< @NonNull String, String > firstValuesToMap() {
-		final TreeMap< @NonNull String, String > m = new TreeMap<>();
+	public Map< String, String > firstValuesToMap() {
+		final TreeMap< String, String > m = new TreeMap<>();
 		m.put( this.keyType(), this.internedType() );
 		m.put( this.keyValue(), this.literalValue() );
 		return m;
 	}
 
 	@Override
-	public @NonNull StarMap< @NonNull String, @Nullable String > attributesToStarMap() {
-		final @NonNull StarMap< @NonNull String, @Nullable String > m = new TreeStarMap<>();
+	public StarMap< String, String > attributesToStarMap() {
+		final StarMap< String, String > m = new TreeStarMap<>();
 		m.add( this.keyType(), this.internedType() );
 		m.add( this.keyValue(), this.literalValue() );
 		return m;
 	}
 
 	@Override
-	public @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > attributesToPairMap() {
-		final TreeMap< Pair< @NonNull String, @NonNull Integer >, String > m = new TreeMap<>();
-		m.put( new CmpPair< @NonNull String, @NonNull Integer >( this.keyType(), 0 ), this.internedType() );
-		m.put( new CmpPair< @NonNull String, @NonNull Integer >( this.keyValue(), 0 ) , this.literalValue() );
+	public Map< Pair< String, Integer >, String > attributesToPairMap() {
+		final TreeMap< Pair< String, Integer >, String > m = new TreeMap<>();
+		m.put( new CmpPair< String, Integer >( this.keyType(), 0 ), this.internedType() );
+		m.put( new CmpPair< String, Integer >( this.keyValue(), 0 ) , this.literalValue() );
 		return m;
 	}
 
@@ -268,62 +266,62 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public @NonNull Fusion getChild( @NonNull String field ) throws IllegalArgumentException {
+	public Fusion getChild( String field ) throws IllegalArgumentException {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public @NonNull Fusion getChild( @NonNull String field, int index ) throws IllegalArgumentException {
+	public Fusion getChild( String field, int index ) throws IllegalArgumentException {
 		throw new IllegalArgumentException();
 	}
 
 	@Override
-	public @Nullable Fusion getChild( @NonNull String field, @Nullable Fusion otherwise ) {
+	public Fusion getChild( String field, Fusion otherwise ) {
 		return otherwise;
 	}
 
 	@Override
-	public @Nullable Fusion getChild( @NonNull String field, int index, @Nullable Fusion otherwise ) {
+	public Fusion getChild( String field, int index, Fusion otherwise ) {
 		return otherwise;
 	}
 
 	@Override
-	public void setChild( @NonNull String field, @NonNull Fusion value ) throws UnsupportedOperationException {
+	public void setChild( String field, Fusion value ) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void setChild( @NonNull String field, int index, @NonNull Fusion value ) throws IllegalArgumentException, UnsupportedOperationException {
+	public void updateChild( String field, int index, Fusion value ) throws IllegalArgumentException, UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void setAllChildren( @NonNull String field, Iterable< @NonNull Fusion > values ) throws UnsupportedOperationException {
+	public void setAllChildren( String field, Iterable< Fusion > values ) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void addChild( @NonNull String field, @NonNull Fusion value ) throws UnsupportedOperationException {
+	public void addChild( String field, Fusion value ) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void addChild( @NonNull Fusion value ) throws UnsupportedOperationException {
+	public void addChild( Fusion value ) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void removeChild( @NonNull String key ) throws UnsupportedOperationException, IndexOutOfBoundsException {
+	public void removeChild( String key ) throws UnsupportedOperationException, IndexOutOfBoundsException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void removeChild( @NonNull String key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException {
+	public void removeChild( String key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException {
 		throw new UnsupportedOperationException();
 	}
 
 	@Override
-	public void clearLinks( @NonNull String key ) throws UnsupportedOperationException {
+	public void clearLinks( String key ) throws UnsupportedOperationException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -338,27 +336,27 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public boolean hasLink( @NonNull String field ) {
+	public boolean hasLink( String field ) {
 		return false;
 	}
 
 	@Override
-	public boolean hasLink( @NonNull String field, int index ) {
+	public boolean hasLink( String field, int index ) {
 		return false;
 	}
 
 	@Override
-	public boolean hasLink( @NonNull String field, @Nullable Fusion value ) {
+	public boolean hasLink( String field, Fusion value ) {
 		return false;
 	}
 
 	@Override
-	public boolean hasLink( @NonNull String field, int index, @Nullable Fusion value ) {
+	public boolean hasLink( String field, int index, Fusion value ) {
 		return false;
 	}
 
 	@Override
-	public boolean hasOneChild( @NonNull String field ) {
+	public boolean hasOneChild( String field ) {
 		return false;
 	}
 
@@ -378,52 +376,52 @@ public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, Lit
 	}
 
 	@Override
-	public int sizeChildren( @NonNull String field ) {
+	public int sizeChildren( String field ) {
 		return 0;
 	}
 
 	@Override
-	public boolean hasSizeChildren( @NonNull String field, int n ) {
+	public boolean hasSizeChildren( String field, int n ) {
 		return n == 0;
 	}
 
 	@Override
-	public boolean hasNoChildren( @NonNull String field ) {
+	public boolean hasNoChildren( String field ) {
 		return true;
 	}
 
 	@Override
-	public @NonNull Set< @NonNull String > fieldsToSet() {
-		return new EmptySet< @NonNull String >();
+	public Set< String > fieldsToSet() {
+		return new EmptySet< String >();
 	}
 
 	@Override
-	public @NonNull List< Link< String, Fusion > > linksToList() {
+	public List< Map.Entry< String, Fusion > > linksToList() {
 		return new EmptyList<>();
 	}
 
 	@Override
-	public @NonNull List< @NonNull Fusion > childrenToList( @NonNull String field ) {
-		return new EmptyList< @NonNull Fusion >();
+	public List< Fusion > childrenToList( String field ) {
+		return new EmptyList< Fusion >();
 	}
 
 	@Override
-	public Map< @NonNull String, Fusion > firstChildrenToMap() {
-		return new EmptyMap< @NonNull String,@Nullable Fusion >();
+	public Map< String, Fusion > firstChildrenToMap() {
+		return new EmptyMap<>();
 	}
 
-	@Override
-	public StarMap< @NonNull String, @NonNull Fusion > linksToStarMap() {
-		return null;
-	}
+//	@Override
+//	public StarMap< String, Fusion > linksToStarMap() {
+//		return null;
+//	}
 
 	@Override
-	public Map< Pair< @NonNull String, @NonNull Integer >, Fusion > linksToPairMap() {
+	public Map< Pair< String, Integer >, Fusion > linksToPairMap() {
 		return new EmptyMap<>();
 	}
 
 	@Override
-	public Iterator< Link< String, Fusion > > iterator() {
+	public Iterator< Map.Entry< String, Fusion > > iterator() {
 		return new EmptyIterator<>();
 	}
 		

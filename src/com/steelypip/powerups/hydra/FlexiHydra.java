@@ -18,26 +18,19 @@
  */
 package com.steelypip.powerups.hydra;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.CmpPair;
 import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.common.StdPair;
 import com.steelypip.powerups.util.EmptyMutatingMultiMap;
 import com.steelypip.powerups.util.MutatingMultiMap;
-
-import sun.awt.SunHints.Value;
 
 /**
  * This implementation provides a full implementation of all the
@@ -52,7 +45,7 @@ import sun.awt.SunHints.Value;
  * and when there are no values/children the ArrayList is not allocated; these 
  * two cases are so common that the reduction in space is (typically) significant. 
  */
-public abstract class FlexiHydra2< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > implements Hydra< Key, AttrValue, Field, ChildValue >, MutableHydraXML {
+public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > implements Hydra< Key, AttrValue, Field, ChildValue >, MutableHydraXML {
 	
 	protected @NonNull String name;
 	protected MutatingMultiMap< Key, AttrValue > attributes = EmptyMutatingMultiMap.getInstance();
@@ -69,7 +62,7 @@ public abstract class FlexiHydra2< Key extends Comparable< Key >, AttrValue, Fie
 	 * @param name the name of the element
 	 */
 	@SuppressWarnings("null")
-	public FlexiHydra2( final String name ) {
+	public FlexiHydra( final String name ) {
 		this.name = name.intern(); 
 	}
 	

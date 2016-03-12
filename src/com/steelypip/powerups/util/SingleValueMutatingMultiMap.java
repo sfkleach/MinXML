@@ -1,17 +1,11 @@
 package com.steelypip.powerups.util;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
-
-import org.eclipse.jdt.annotation.Nullable;
-
-import com.steelypip.powerups.common.EmptyList;
-import com.steelypip.powerups.common.Pair;
-import com.steelypip.powerups.common.SingletonList;
-import com.steelypip.powerups.common.StdPair;
 
 public class SingleValueMutatingMultiMap< Key, Value > extends TreeMap< Key, Value > implements MutatingMultiMap< Key, Value > {
 	
@@ -25,26 +19,22 @@ public class SingleValueMutatingMultiMap< Key, Value > extends TreeMap< Key, Val
 
 	@Override
 	public List< Map.Entry< Key, Value > > entriesToList() {
-		return 
-			this.entrySet().
-			stream().
-			map( ( Map.Entry< Key, Value > e ) -> new StdPair< Key, Value >( e.getKey(), e.getValue() ) ).
-			collect( Collectors.toList() );
+		return new ArrayList<>( this.entrySet() );
 	}
 
 	@Override
 	public List< Value > getAll( Key key ) {
-		Value v = this.get( key );
+		final Value v = this.get( key );
 		if ( v == null && ! this.containsKey( key ) ) {
-			return new EmptyList<>();
+			return Collections.emptyList();
 		} else {
-			return new SingletonList<>( v );
+			return Collections.singletonList( v );
 		}
 	}
 
 	@Override
 	public Value getOrFail( Key key ) throws IllegalArgumentException {
-		Value v = this.get( key );
+		final Value v = this.get( key );
 		if ( v == null && ! this.containsKey( key ) ) {
 			throw new IllegalArgumentException();
 		} else {
@@ -78,11 +68,14 @@ public class SingleValueMutatingMultiMap< Key, Value > extends TreeMap< Key, Val
 
 	@Override
 	public MutatingMultiMap< Key, Value > add( Key key, Value value ) {
-		if ( this.containsKey( key ) ) {
-			return new FlexiMutatingMultiMap< Key, Value >( this ).add( key, value );
-		} else {
+		final Value v = this.get( key );
+		if ( v == value ) {
+			return this;
+		} else if ( v == null && ! this.containsKey( key ) ) {
 			this.put( key, value );
 			return this;
+		} else {
+			return new FlexiMutatingMultiMap< Key, Value >( this ).add( key, value );
 		}
 	}
 
@@ -111,7 +104,7 @@ public class SingleValueMutatingMultiMap< Key, Value > extends TreeMap< Key, Val
 
 	@Override
 	public MutatingMultiMap< Key, Value > setValues( Key key, Iterable< ? extends Value > values ) {
-		Iterator< ? extends Value > it = values.iterator();
+		final Iterator< ? extends Value > it = values.iterator();
 		if ( ! it.hasNext() ) return this;
 		Value v = it.next();
 		if ( it.hasNext() ) {

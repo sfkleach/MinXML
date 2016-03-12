@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import com.steelypip.powerups.common.EmptyList;
-import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.common.SingletonList;
 import com.steelypip.powerups.common.StdPair;
 

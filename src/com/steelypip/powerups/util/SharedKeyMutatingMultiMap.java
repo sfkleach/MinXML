@@ -1,16 +1,13 @@
 package com.steelypip.powerups.util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import org.eclipse.jdt.annotation.Nullable;
-
-import com.steelypip.powerups.common.EmptyList;
-import com.steelypip.powerups.common.Pair;
-import com.steelypip.powerups.common.SingletonSet;
 import com.steelypip.powerups.common.StdPair;
 
 public class SharedKeyMutatingMultiMap< Key, Value > implements MutatingMultiMap< Key, Value > {
@@ -23,14 +20,9 @@ public class SharedKeyMutatingMultiMap< Key, Value > implements MutatingMultiMap
 		this.key = key;
 	}
 	
-	@SuppressWarnings("unchecked")
-	private EmptyMutatingMultiMap< Key, Value > newEmpty() {
-		return (EmptyMutatingMultiMap< Key, Value >)EmptyMutatingMultiMap.INSTANCE;
-	}
-
 	@Override
 	public MutatingMultiMap< Key, Value > clearAllEntries() {
-		return this.newEmpty();
+		return EmptyMutatingMultiMap.getInstance();
 	}
 
 	@Override
@@ -53,19 +45,15 @@ public class SharedKeyMutatingMultiMap< Key, Value > implements MutatingMultiMap
 
 	@Override
 	public List< Map.Entry< Key, Value > > entriesToList() {
-		final List< Map.Entry< Key, Value > > list = new ArrayList<>();
-		for ( Value v : this.values_list ) {
-			list.add( new StdPair<>( this.key, v ) );
-		}
-		return list;
+		return this.values_list.stream().map( ( Value v ) -> new StdPair< Key, Value >( this.key, v ) ).collect( Collectors.toList() );
 	}
 
 	@Override
 	public List< Value > getAll( Key _key ) {
 		if ( this.hasKey( _key ) ) {
-			return new ArrayList<>( this.values_list );
+			return Collections.unmodifiableList( this.values_list );
 		} else {
-			return new EmptyList<>();
+			return Collections.emptyList();
 		}
 	}
 
@@ -94,7 +82,7 @@ public class SharedKeyMutatingMultiMap< Key, Value > implements MutatingMultiMap
 
 	@Override
 	public Set< Key > keySet() {
-		return new SingletonSet< Key >( this.key );
+		return Collections.singleton( this.key );
 	}
 
 	@Override
@@ -123,7 +111,6 @@ public class SharedKeyMutatingMultiMap< Key, Value > implements MutatingMultiMap
 			this.values_list.add( v );
 		}
 		return this;
-		
 	}
 
 	@Override
@@ -195,7 +182,7 @@ public class SharedKeyMutatingMultiMap< Key, Value > implements MutatingMultiMap
 
 	@Override
 	public List< Value > valuesList() {
-		return new ArrayList< Value >( this.values_list );
+		return Collections.unmodifiableList( this.values_list );
 	}
 
 	@Override

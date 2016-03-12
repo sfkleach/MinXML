@@ -11,4 +11,10 @@ public class FlexiFusion extends FlexiHydra< String, String, String, Fusion > im
 		super( name );
 	}
 
+	public FlexiFusion( Fusion fusion ) {
+		this( fusion.getInternedName() );
+		this.attributes = this.attributes.addAllEntries( fusion.attributesToList() );
+		this.links = this.links.addAllEntries( fusion.linksToList() );
+	}
+
 }

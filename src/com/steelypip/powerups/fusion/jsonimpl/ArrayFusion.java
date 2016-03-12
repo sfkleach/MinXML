@@ -10,7 +10,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNull;
-import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.CmpPair;
 import com.steelypip.powerups.common.EmptyList;
@@ -20,10 +19,6 @@ import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.common.StdPair;
 import com.steelypip.powerups.fusion.Fusion;
 import com.steelypip.powerups.fusion.LiteralConstants;
-import com.steelypip.powerups.fusion.StdJSONFeatures;
-import com.steelypip.powerups.hydra.Attribute;
-import com.steelypip.powerups.hydra.Link;
-import com.steelypip.powerups.hydra.StdLink;
 
 
 public class ArrayFusion implements Fusion, NullJSONFeatures, LiteralConstants {

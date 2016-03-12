@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.steelypip.powerups.common.EmptyList;
-import com.steelypip.powerups.common.EmptySet;
-import com.steelypip.powerups.common.Pair;
-
 public class EmptyMutatingMultiMap< K, V > implements MutatingMultiMap< K, V > {
 	
 	@SuppressWarnings("rawtypes")

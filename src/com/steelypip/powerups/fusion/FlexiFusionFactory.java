@@ -4,7 +4,6 @@ import org.eclipse.jdt.annotation.NonNull;
 
 public class FlexiFusionFactory implements FusionFactory, LiteralConstants {
 
-	@SuppressWarnings("null")
 	@Override
 	public @NonNull Fusion newIntegerFusion( final long n ) {
 		final Fusion f = new FlexiFusion( this.nameConstant() );
@@ -13,7 +12,6 @@ public class FlexiFusionFactory implements FusionFactory, LiteralConstants {
 		return f;
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public @NonNull Fusion newFloatFusion( final double d ) {
 		final Fusion f = new FlexiFusion( this.nameConstant() );
@@ -22,16 +20,14 @@ public class FlexiFusionFactory implements FusionFactory, LiteralConstants {
 		return f;
 	}
 
-	@SuppressWarnings("null")
 	@Override
-	public @NonNull Fusion newStringFusion( final String s ) {
+	public @NonNull Fusion newStringFusion( final @NonNull String s ) {
 		final Fusion f = new FlexiFusion( this.nameConstant() );
 		f.addValue( this.keyType(), this.constTypeString() );
 		f.addValue( this.keyValue(), s );
 		return f;
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public @NonNull Fusion newBooleanFusion( final boolean b ) {
 		final Fusion f = new FlexiFusion( this.nameConstant() );

@@ -68,8 +68,12 @@ public class SharedKeyMutatingMultiMap< Key, Value > implements MutatingMultiMap
 
 	@Override
 	public Value getOrFail( Key _key, int N ) throws IllegalArgumentException {
-		if ( N == 0 && this.hasKey( _key ) && ! this.values_list.isEmpty() ) {
-			return this.values_list.get( 0 );
+		if ( this.hasKey( _key ) ) {
+			try {
+				return this.values_list.get( N );
+			} catch ( IndexOutOfBoundsException _e ) {
+				throw new IllegalArgumentException();
+			}
 		} else {
 			throw new IllegalArgumentException();
 		}

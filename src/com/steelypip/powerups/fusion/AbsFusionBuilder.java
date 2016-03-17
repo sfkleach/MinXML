@@ -35,16 +35,30 @@ import com.steelypip.powerups.alert.Alert;
  */
 public abstract class AbsFusionBuilder implements FusionBuilder {
 	
-	public abstract @NonNull FusionFactory factory();
+	public abstract FusionFactory factory();
 		
 	static class PreLink {
 		
 		private String field;
 		private @NonNull Fusion current;
+		private Boolean allow_repeats;
 		
-		public PreLink( @NonNull FusionFactory impl, String field, String name ) {
+		public PreLink( FusionFactory impl, String field, String name, Boolean allow_repeats ) {
+			this( impl.newMutableElementFusion( name != null ? name : "" ), field, name, allow_repeats );
+		}
+		
+		public PreLink( @NonNull Fusion x, String field, String name, Boolean allow_repeats ) {
 			this.field = field;
-			this.current = impl.newMutableElementFusion( name != null ? name : "" );
+			this.current = x;
+			this.allow_repeats = allow_repeats;
+		}
+		
+		public Boolean getAllowRepeats() {
+			return this.allow_repeats;
+		}
+		
+		public void setAllowRepeats( Boolean allow_repeats ) {
+			this.allow_repeats = allow_repeats;
 		}
 
 		public String getField() {
@@ -66,7 +80,7 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 		
 	}
 	
-	private @NonNull PreLink current_link = new PreLink( this.factory(), "DUMMY FIELD", "DUMMY_NODE" );
+	private @NonNull PreLink current_link = new PreLink( this.factory(), "DUMMY FIELD", "DUMMY_NODE", null );
 	private final LinkedList< @NonNull PreLink > link_stack = new LinkedList<>();
 	//private final Conventions litf = new StdConventions();
 	
@@ -75,19 +89,25 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 	}
 
 	@Override
-	public void startTagOpen( final String field, final String name ) {
+	public void startTag( final String field, final String name, Boolean allow_repeats ) {
 		link_stack.addLast( current_link );
-		this.current_link = new PreLink( this.factory(), field, name );
+		this.current_link = new PreLink( this.factory(), field, name, allow_repeats );
 	}
 
 	@Override
-	public void startTagOpen( final String name ) {
-		this.startTagOpen( "", name );
+	public void startTag( final String field, final String name ) {
+		link_stack.addLast( current_link );
+		this.current_link = new PreLink( this.factory(), field, name, true );
 	}
 
 	@Override
-	public void startTagOpen() {
-		this.startTagOpen( null, null );
+	public void startTag( final String name ) {
+		this.startTag( "", name );
+	}
+
+	@Override
+	public void startTag() {
+		this.startTag( null, null );
 	}
 
 	@Override
@@ -95,25 +115,33 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 		this.current().addValue( key, value );
 	}
 	
-//	private void addLiteral( final @NonNull String type_value, final @NonNull String value ) {
-//		this.startTagOpen( StdLiterals.INSTANCE.getConstant() );
-//		this.add( StdLiterals.INSTANCE.getType(), type_value );
-//		this.add( StdLiterals.INSTANCE.getValue(), value );
-//		this.endTag();		
-//	}
+	@Override
+	public void addNew( @NonNull String key, @NonNull String value ) {
+		if ( ! this.current().hasAttribute( key ) ) {
+			this.current().addValue( key, value );
+		} else {
+			throw new IllegalStateException();
+		}
+	}
 	
-//	@SuppressWarnings("null")
 	@Override
 	public void addChild( final long number ) {
 		this.addChild( this.factory().newIntegerFusion( number ) );
-//		this.addLiteral( StdLiterals.INSTANCE.getInteger(), Objects.requireNonNull( Long.toString( number, 10 ) ) );
 	}
 	
-//	@SuppressWarnings("null")
+	@Override
+	public void addChild( final String field, final long number ) {
+		this.addChild( field, this.factory().newIntegerFusion( number ) );
+	}
+	
 	@Override
 	public void addChild( final double number ) {
 		this.addChild( this.factory().newFloatFusion( number ) );
-//		this.addLiteral( StdLiterals.INSTANCE.getFloat(), Objects.requireNonNull( Double.toString( number ) ) );
+	}
+	
+	@Override
+	public void addChild( final String field, final double number ) {
+		this.addChild( field, this.factory().newFloatFusion( number ) );
 	}
 	
 	@Override
@@ -125,11 +153,23 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 		}
 	}
 	
-//	@SuppressWarnings("null")
+	@Override
+	public void addChild( final String field, final @Nullable String string ) {
+		if ( string == null ) {
+			this.addNull( field );
+		} else {
+			this.addChild( field, this.factory().newStringFusion( string ) );
+		}
+	}
+	
 	@Override
 	public void addChild( final boolean bool ) {
 		this.addChild( this.factory().newBooleanFusion( bool ) );
-//		this.addLiteral( StdLiterals.INSTANCE.getBoolean(), Objects.requireNonNull( Boolean.toString( bool ) ) );
+	}
+	
+	@Override
+	public void addChild( final String field, final boolean bool ) {
+		this.addChild( field, this.factory().newBooleanFusion( bool ) );
 	}
 	
 	@Override 
@@ -141,9 +181,23 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 		}
 	}
 	
+	@Override 
+	public void addChild( final String field, final @Nullable Fusion x ) {
+		if ( x == null ) {
+			this.addNull( field );
+		} else {
+			this.current_link.getCurrent().addChild( field, x );
+		}
+	}
+	
 	@Override
 	public void addNull() {
 		this.current_link.getCurrent().addChild( this.factory().newNullFusion() );
+	}
+	
+	@Override
+	public void addNull( final String field ) {
+		this.current_link.getCurrent().addChild( field, this.factory().newNullFusion() );
 	}
 	
 	private void bindName( final @Nullable String name ) {
@@ -166,19 +220,34 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 		}
 	}
 
+	private void bindAllowRepeats( final boolean allow_repeats ) {
+		if ( this.current_link.getAllowRepeats() == null ) {
+			this.current_link.setAllowRepeats( allow_repeats );
+		} else if ( ! this.current_link.getAllowRepeats().equals(  allow_repeats ) ) {
+			throw new Alert( "Mismatched unique constraint" );							
+		}
+	}
+
 	@Override
-	public void startTagClose( final String name ) {
+	public void intermediateTag( final String name ) {
 		this.bindName( name );
 	}
 
 	@Override
-	public void startTagClose( final String field, final String name ) {
+	public void intermediateTag( final String field, final String name ) {
 		this.bindField( field );
 		this.bindName( name );
 	}
 
 	@Override
-	public void startTagClose() {
+	public void intermediateTag( final String field, final String name, Boolean allow_repeats ) {
+		this.bindField( field );
+		this.bindName( name );
+		this.bindAllowRepeats( allow_repeats );
+	}
+
+	@Override
+	public void intermediateTag() {
 	}
 	
 	@Override
@@ -189,16 +258,58 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 	
 
 	@Override
-	public void endTag( String name, String field ) {
+	public void endTag( String field, String name ) {
 		this.bindField( field );
+		this.endTag( name );
+	}
+
+	@Override
+	public void endTag( String field, String name, Boolean allow_repeats ) {
+		this.bindField( field );
+		this.bindAllowRepeats( allow_repeats );
 		this.endTag( name );
 	}
 
 	@Override
 	public void endTag() {
 		final PreLink b2 = link_stack.removeLast();
-		b2.getCurrent().addChild( this.current_link.getNonNullField(), this.current_link.getCurrent() );
+		final String field = this.current_link.getNonNullField();
+		Boolean allowed = this.current_link.getAllowRepeats();
+		if ( allowed == null ) {
+			allowed = true;
+		}
+		final boolean repeat_check = allowed || ! b2.getCurrent().hasLink( field );
+		if ( ! repeat_check ) {
+			throw new Alert( "Duplicate 'unique' field found" ).culprit( "Field", field );
+		}
+		b2.getCurrent().addChild( field, this.current_link.getCurrent() );
 		this.current_link = b2;
+	}
+	
+	@Override 
+	public void startArray( String field ) {
+		link_stack.addLast( current_link );
+		this.current_link = new PreLink( this.factory().newMutableArrayFusion(), field, "", false );
+		
+	}
+		
+	@Override 
+	public void endArray( String field ) {
+		this.bindField( field );
+		this.endTag();
+	}
+
+	@Override 
+	public void startObject( String field ) {
+		link_stack.addLast( current_link );
+		this.current_link = new PreLink( this.factory().newMutableObjectFusion(), field, "", false );
+		
+	}
+	
+	@Override 
+	public void endObject( String field ) {
+		this.bindField( field );
+		this.endTag();
 	}
 
 	@Override

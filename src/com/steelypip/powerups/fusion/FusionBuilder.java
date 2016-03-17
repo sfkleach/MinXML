@@ -49,17 +49,20 @@ public interface FusionBuilder {
 	 * element is linked to the parent element, the field is 
 	 * used for the link.
 	 * 
-	 * An implementation may permit name and field to be null, 
+	 * Name and field may be null, 
 	 * in which case they must be supplied as non-null later.
+	 * If allow_repeats is specified, repeats are allowed.
 	 * 
 	 * After this method, the next builder method should be
-	 * add or startTagClose. 
+	 * add or endTag. 
 	 * 
 	 * @param name the name of the element to be constructed (or null).
 	 * @param field the field to be used for the link to the parent (or null) 
 	 */
-	void startTagOpen( String name, String field ) throws NullPointerException;
+	void startTag( String field, String name, Boolean allow_repeats ) throws NullPointerException;
+	void startTag( String field, String name ) throws NullPointerException;
 
+	
 	
 	/**
 	 * Shorthand for this.startTagOpen( name, null )
@@ -67,13 +70,13 @@ public interface FusionBuilder {
 	 * @param name the name of the element to be constructed (or null). 
 	 */
 
-	void startTagOpen( String name );
+	void startTag( String name );
 	
 	/**
 	 * Shorthand for this.startTagOpen( null, null )
 	 */
 
-	void startTagOpen();
+	void startTag();
 	
 	/**
 	 * This method adds the attribute key=value to the start tag
@@ -84,22 +87,52 @@ public interface FusionBuilder {
 	 */
 	void add( @NonNull String key, @NonNull String value );
 	
+	/**
+	 * This method adds the attribute key=value to the start tag
+	 * that is under construction. The builder method startTagOpen must
+	 * have been the immediately previous method. This must be the first
+	 * use of that attribute key. 
+	 */
+	void addNew( @NonNull String key, @NonNull String value );
+	
+	default void add( @NonNull String key, @NonNull String value, boolean allow_repeats ) {
+		if ( allow_repeats ) {
+			this.add( key, value );
+		} else {
+			this.addNew( key, value );
+		}
+	}
+	
 	void addNull();
+	void addNull( String field );
+	
 	void addChild( long number );
+	void addChild( String field, long number );
+	
 	void addChild( double number );
+	void addChild( String field, double number );
+	
 	void addChild( @Nullable String string );
-	void addChild( boolean bool );
-	void addChild( @Nullable Fusion x ); 
+	void addChild( String field, @Nullable String string );
 
+	void addChild( boolean bool );
+	void addChild( String field, boolean bool );
+	
+	void addChild( @Nullable Fusion x ); 
+	void addChild( String field, @Nullable Fusion x ); 
+
+	void startArray( String field );
+	void endArray( String field );
+	
+	void startObject( String field );
+	void endObject( String field );
 	
 	/**
-	 * This method finishes the construction of the current start tag.
-	 * It may be followed by a call to endTag or startTagOpen. If the
-	 * tag name is not-null it must agree with the previous value. If
-	 * the previous value was null then it automatically is in agreement.
-	 * 
-	 * An implementation may choose to make startTagClose optional,
-	 * implicitly closing it when the next startTagOpen is invoked.
+	 * This method may be called at any time between startTag and 
+	 * endTag in order to provide the name
+	 * and/or field of the currently constructing element. Both
+	 * name and field may be null. If allow_repeats is specified, 
+	 * a repeated field is permitted.
 	 * 
 	 * When the element is linked to the parent element, the field is 
 	 * used for the link.
@@ -109,9 +142,10 @@ public interface FusionBuilder {
 	 * 
 	 * @param name the name of the element to be constructed (or null)
 	 */
-	void startTagClose( String name, String field );
-	void startTagClose( String name );
-	void startTagClose();
+	void intermediateTag( String name, String field, Boolean allow_repeats );
+	void intermediateTag( String name, String field );
+	void intermediateTag( String name );
+	void intermediateTag();
 	
 	/**
 	 * This method finishes the construction of the current element.
@@ -121,7 +155,8 @@ public interface FusionBuilder {
 	 * 
 	 * @param name the name of the element to be constructed (or null) 
 	 */
-	void endTag( String name, String field );
+	void endTag( String field, String name, Boolean allow_repeats );
+	void endTag( String field, String name );
 	void endTag( String name );
 	void endTag();
 	

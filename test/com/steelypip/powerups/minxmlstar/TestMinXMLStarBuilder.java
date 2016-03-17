@@ -22,7 +22,7 @@ public class TestMinXMLStarBuilder {
 
 	@Test
 	public void testBasic() {
-		this.bldr.startTagOpen( "alpha" );
+		this.bldr.startTag( "alpha" );
 		this.bldr.endTag();
 		Fusion x = this.bldr.build();
 		assertNotNull( x );

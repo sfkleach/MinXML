@@ -26,9 +26,9 @@ import org.eclipse.jdt.annotation.NonNull;
 import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.charrepeater.CharRepeater;
 import com.steelypip.powerups.charrepeater.ReaderCharRepeater;
-import com.steelypip.powerups.fusion.FlexiFusionBuilder;
 import com.steelypip.powerups.fusion.Fusion;
 import com.steelypip.powerups.fusion.FusionBuilder;
+import com.steelypip.powerups.minxson.Lookup;
 
 /**
  * This class wraps various types of input stream to
@@ -40,17 +40,16 @@ import com.steelypip.powerups.fusion.FusionBuilder;
  * readElement. Alternatively you can simply iterate 
  * over the parser.
  */
-public class FusionParser implements Iterable< Fusion > {
+public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	
-	private int level = 0;
 	private final CharRepeater cucharin;
 	
 	private boolean pending_end_tag = false;
-	private FusionBuilder parent = null;
+	private FusionBuilder builder = null;
 	private String tag_name = null;	
 	
-	public FusionParser( CharRepeater rep, FusionBuilder parent ) {
-		this.parent = parent;
+	public FusionParser( CharRepeater rep, FusionBuilder builder ) {
+		this.builder = builder;
 		this.cucharin = rep;
 	}
 
@@ -61,21 +60,33 @@ public class FusionParser implements Iterable< Fusion > {
 	 * @param builder used to construct the MinXML objects
 	 */
 	public FusionParser( Reader reader, FusionBuilder builder ) {
-		this.parent = builder;
+		this.builder = builder;
 		this.cucharin = new ReaderCharRepeater( reader );
 	}
 
 	public FusionParser( final Reader rep ) {
-		this.parent = new FlexiFusionBuilder();
+		this.builder = new JSONFusionBuilder();
 		this.cucharin = new ReaderCharRepeater( rep );
 	}
 
 	private char nextChar() {
 		return this.cucharin.nextChar();
 	}
+	
+	private boolean tryReadChar( final char ch_want ) {
+		final boolean read = this.cucharin.isNextChar( ch_want );		
+		if ( read ) {
+			this.cucharin.skipChar();
+		}
+		return read;
+	}
 		
 	private char peekChar() {
 		return this.cucharin.peekChar();
+	}
+	
+	private char peekChar( char ch ) {
+		return this.cucharin.peekChar( ch );
 	}
 	
 	/**
@@ -180,19 +191,12 @@ public class FusionParser implements Iterable< Fusion > {
 	}
 	
 	private char entityLookup( final String symbol ) {
-		if ( "lt".equals( symbol ) ) {
-			return '<';
-		} else if ( "gt".equals( symbol ) ) {
-			return '>';
-		} else if ( "amp".equals(  symbol  ) ) {
-			return '&';
-		} else if ( "quot".equals( symbol ) ) {
-			return '"';
-		} else if ( "apos".equals(  symbol ) ) {
-			return '\'';
+		Character c = Lookup.lookup( symbol );
+		if ( c != null ) {
+			return c;
 		} else {
 			throw new Alert( "Unexpected escape sequence after &" ).culprit( "Sequence", symbol );
-		}		
+		}
 	}
 	
 	private char readEscape() {
@@ -239,21 +243,27 @@ public class FusionParser implements Iterable< Fusion > {
 			final String key = this.readName();
 			
 			this.eatWhiteSpace();
+			final boolean repeat_ok = this.tryReadChar( '+' );
 			this.mustReadChar( '=' );
 			this.eatWhiteSpace();
 			final String value = this.readAttributeValue();
-			this.parent.add( key, value );
+			this.builder.add( key, value, repeat_ok );
 		}
 	}
 	
 
-	
-	private boolean read() {
+	/**
+	 * This is the core routine of the algorithm, which consumes a single tag from the
+	 * input stream. Standalong tags are expanded internally into separate open and close
+	 * tags.
+	 * @return true if it read a tag, false at end of stream.
+	 */
+	private boolean readNextTag( boolean allow_field, String field, boolean accept_repeat_field ) {
 		
 		if ( this.pending_end_tag ) {
-			this.parent.endTag( this.tag_name );
+			this.builder.endTag( this.tag_name );
 			this.pending_end_tag = false;
-			this.level -= 1;
+			this.popElement();
 			return true;
 		}
 			
@@ -263,29 +273,212 @@ public class FusionParser implements Iterable< Fusion > {
 			return false;
 		}
 		
-		this.mustReadChar( '<' );
-			
-		char ch = this.nextChar();
+		final char pch = this.peekChar( '\0' );
+		if ( Character.isLetter( pch ) ) {
+			return readLabelledTagOrSymbol();
+		} else {
+			return readUnlabelledTag( field, accept_repeat_field );
+		}
+	}
+	
+	private boolean readUnlabelledTag( String field, boolean accept_repeat_field ) {
+		final char pch = this.peekChar( '\0' );
+		if ( pch == '<' || pch == '[' || pch == '{' ) {
+			return readCoreTag( field, accept_repeat_field );
+		} else if ( Character.isDigit( pch ) || pch == '+' || pch == '-' ) {
+			return readNumber( field );
+		} else if ( pch == '"' ) {
+			return readString( field );
+		} else if ( pch == ']' ) {
+			this.mustReadChar( ']' );
+			this.popArray();
+			this.builder.endArray( "" );
+			return true;
+		} else if ( pch == '}' ) {
+			this.mustReadChar( '}' );
+			this.popObject();
+			this.builder.endObject( "" );
+			return true;
+		} else if ( Character.isLetter( pch ) ) {
+			return this.handleIdentifier( this.readName() );
+		} else {
+			throw new Alert( "Unexpected character when read tag or constant" ).culprit( "Character", pch );
+		}
+	}
+
+	private boolean readString( final String field ) {
+		final char quote_char = this.nextChar();
+		StringBuilder sofar = new StringBuilder();
+		boolean done = false;
+		while( ! done ) {
+			final char ch = this.nextChar();
+			switch ( ch ) {
+				case '"':
+				case '\'':
+					if ( ch == quote_char ) {
+						done = true;
+					} else {
+						sofar.append( ch );
+					}
+					break;
+				case '\\':
+					this.readEscapeChar( sofar );
+					break;
+				default:
+					sofar.append( ch );
+					break;
+			}
+		}
+		this.builder.addChild( field, sofar.toString() );
+		return true;
+	}
+	
+	void readEscapeChar( final StringBuilder sofar ) {
+		final char ch = this.nextChar();
+		switch ( ch ) {
+			case '\'':
+			case '"':
+			case '/':
+			case '\\':
+				sofar.append(  ch  );
+				break;
+			case 'n':
+				sofar.append( '\n' );
+				break;
+			case 'r':
+				sofar.append( '\r' );
+				break;
+			case 't':
+				sofar.append( '\t' );
+				break;
+			case 'f':
+				sofar.append( '\f' );
+				break;
+			case 'b':
+				sofar.append( '\b' );
+				break;
+			case '&':
+				sofar.append( this.readEscape() );
+				break;
+			default:
+				sofar.append( ch );
+				break;
+		}
+	}
+	
+	private boolean readNumber( final String field ) {
+		boolean is_floating_point = false;
+		StringBuilder b = new StringBuilder();
+		boolean done = false;
+		do {
+			final char ch = this.peekChar( '\0' );
+			switch ( ch ) {
+				case '-':
+				case '+':
+					break;
+				case '.':
+					is_floating_point = true;
+					break;
+				default:
+					if ( ! Character.isDigit( ch ) ) {
+						done = true;
+					}
+					break;
+			}
+			if ( done ) break;
+			b.append( ch );
+			this.cucharin.skipChar();
+		} while ( ! done );
 		
-		if ( ch == '/' ) {
-			final String end_tag = this.readName();
+		final String s = b.toString();
+		try {
+			if ( is_floating_point ) {
+				this.builder.addChild( field, Double.parseDouble( s ) );
+			} else {
+				this.builder.addChild( field, Long.parseLong( s ) );
+			}
+		} catch ( NumberFormatException e ) {
+			throw new Alert( "Malformed number" ).culprit( "Bad number", s );
+		}
+
+		return true;
+	}
+	
+	private boolean readLabelledTagOrSymbol() {
+		String field = this.readName();
+		boolean accept_repeat_field = false;
+		this.eatWhiteSpace();
+		boolean plus = this.tryReadChar( '+' );
+		boolean colon = this.tryReadChar( ':' );
+		if ( colon ) {
+			if ( plus ) {
+				accept_repeat_field = true;
+			}
 			this.eatWhiteSpace();
-			this.mustReadChar( '>' );
-			this.parent.endTag( end_tag );
-			this.level -= 1;
+			return readUnlabelledTag( field, accept_repeat_field );
+		} else if ( plus ) {
+			//	:+ is not allowed - we want to raise the alarm.
+			this.mustReadChar( ':' ); 	//	This will throw an exception (the one we want).
+			throw Alert.unreachable();	//	So compiler doesn't complain.
+		} else {
+			return handleIdentifier( field );
+		}
+	}
+
+	private boolean handleIdentifier( String identifier ) {
+		switch ( identifier ) {
+		case "null":
+			this.builder.addNull();
+			return true;
+		case "true":
+		case "false":
+			this.builder.addChild( Boolean.parseBoolean( identifier ) );
+			return true;
+		default:
+			throw new Alert( "Unrecognised identifier" ).culprit( "Identifier", identifier );
+		}
+	}
+	
+	private boolean readCoreTag( String field, boolean accept_repeat_field ) {
+		
+		if ( this.tryReadChar( '[' ) ) {
+			this.pushArray();
+			this.builder.startArray( field );
+			return true;
+		} else if ( this.tryReadChar( '{' ) ) {
+			this.pushObject();
+			this.builder.startObject( field );
+			return true;
+		}
+
+		this.mustReadChar( '<' );		
+		char ch = this.nextChar();
+		if ( ch == '/' ) {
+			this.eatWhiteSpace();
+			if ( this.tryReadChar( '>' ) ) {
+				this.builder.endTag();
+			} else {
+				final String end_tag = this.readName();
+				this.processAttributes();
+				this.eatWhiteSpace();
+				this.mustReadChar( '>' );
+				this.builder.endTag( end_tag );
+			}
+			this.popElement();
 			return true;
 		} else if ( ch == '!' || ch == '?' ) {
 			this.eatComment( ch  );
-			return this.read();
+			return this.readNextTag( false, field, accept_repeat_field );
 		} else {
 			this.cucharin.pushChar( ch );
 		}
 		
+		this.eatWhiteSpace();
 		this.tag_name = this.readName();
 		
-		this.parent.startTagOpen( this.tag_name );
+		this.builder.startTag( field, this.tag_name, accept_repeat_field );
 		this.processAttributes();
-		this.parent.startTagClose( this.tag_name );
+//		this.builder.startTagClose( this.tag_name );
 		
 		this.eatWhiteSpace();
 				
@@ -293,10 +486,10 @@ public class FusionParser implements Iterable< Fusion > {
 		if ( ch == '/' ) {
 			this.mustReadChar( '>' );
 			this.pending_end_tag = true;
-			this.level += 1;
+			this.pushElement();
 			return true;
 		} else if ( ch == '>' ) {
-			this.level += 1;
+			this.pushElement();
 			return true;
 		} else {
 			throw new Alert( "Invalid continuation" );
@@ -310,13 +503,13 @@ public class FusionParser implements Iterable< Fusion > {
 	 * @return the next element
 	 */
 	public Fusion readElement() {
-		while ( this.read() ) {
-			if ( this.level == 0 ) break;
+		while ( this.readNextTag( true, "", true ) ) {
+			if ( this.isAtTopLevel() ) break;
 		}
-		if ( this.level != 0 ) {
+		if ( ! this.isAtTopLevel() ) {
 			throw new Alert( "Unmatched tags due to encountering end of input" );
 		}
-		return parent.build();
+		return builder.build();
 	}
 	
 	/**

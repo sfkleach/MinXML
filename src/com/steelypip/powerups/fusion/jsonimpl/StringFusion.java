@@ -17,7 +17,7 @@ public class StringFusion extends AbsConstantFusion {
 
 	@Override
 	protected @NonNull String internedType() {
-		return this.constTypeInteger();
+		return this.constTypeString();
 	}
 
 	@SuppressWarnings("null")

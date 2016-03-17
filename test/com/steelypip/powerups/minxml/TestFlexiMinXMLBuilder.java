@@ -45,7 +45,7 @@ public class TestFlexiMinXMLBuilder {
 		MinXML x = builder.build();
 		assertEquals( "xxx", x.getName() );
 		assertEquals( 0, x.size() );
-		assertEquals( 0, x.getAttributes().sizeEntries() );
+		assertEquals( 0, x.getAttributes().size() );
 	}
 	
 	@Test

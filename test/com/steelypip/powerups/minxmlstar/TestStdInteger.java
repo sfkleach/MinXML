@@ -12,9 +12,7 @@ import org.junit.Test;
 
 import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.fusion.FlexiFusionFactory;
-import com.steelypip.powerups.fusion.Fusion.Attr;
 import com.steelypip.powerups.fusion.jsonimpl.IntegerFusion;
-import com.steelypip.powerups.util.StarMap;
 
 public class TestStdInteger {
 	
@@ -260,9 +258,9 @@ public class TestStdInteger {
 
 	@Test
 	public void testAttributesAsList() {
-		final @NonNull List< Attr > elist = this.one.attributesToList();
+		final @NonNull List< Map.Entry< String, String > > elist = this.one.attributesToList();
 		assertFalse( elist.isEmpty() );
-		assertSame( 2, elist.sizeEntries() );
+		assertSame( 2, elist.size() );
 	}
 
 	@Test
@@ -278,21 +276,15 @@ public class TestStdInteger {
 	public void testFirstValuesAsMap() {
 		final Map< @NonNull String, String > m1 = this.one.firstValuesToMap();
 		assertFalse( m1.isEmpty() );
-		assertSame( 2, m1.sizeEntries() );
+		assertSame( 2, m1.size() );
 		assertTrue( m1.keySet().contains( TYPE ) );
 	}
 
-	@Test
-	public void testAttributesAsStarMap() {
-		final StarMap< String, String > smap = this.zero.attributesToStarMap();
-		assertSame( INSTANCE.constTypeInteger(), smap.get( TYPE ) );
-		assertEquals( "0", smap.get( VALUE ) );
-	}
 
 	@Test
 	public void testAttributesAsPairMap() {
 		final @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > m1 = this.one.attributesToPairMap();
-		assertSame( 2, m1.sizeEntries() );
+		assertSame( 2, m1.size() );
 	}
 
 	@Test

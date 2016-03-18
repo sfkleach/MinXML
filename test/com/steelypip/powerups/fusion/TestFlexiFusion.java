@@ -1,4 +1,4 @@
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import static org.junit.Assert.*;
 
@@ -14,23 +14,20 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.steelypip.powerups.common.Pair;
-import com.steelypip.powerups.fusion.Fusion.Attr;
-import com.steelypip.powerups.hydra.OldFlexiHydra;
-import com.steelypip.powerups.util.StarMap;
-import com.steelypip.powerups.util.TreeStarMap;
 
-public class TestFlexiMinXMLStar {
+
+public class TestFlexiFusion {
 	
 	private static final @NonNull String EXAMPLE = "example";
 	private static final @NonNull String BASE_NAME = "foo";
-	OldFlexiHydra base;
-	OldFlexiHydra example;
+	FlexiFusion base;
+	FlexiFusion example;
 	
 
 	@Before
 	public void setUp() throws Exception {
-		this.base = new OldFlexiHydra( BASE_NAME );
-		this.example = new OldFlexiHydra( EXAMPLE );
+		this.base = new FlexiFusion( BASE_NAME );
+		this.example = new FlexiFusion( EXAMPLE );
 		this.example.setValue( "a1", "v1" );
 		this.example.setValue( "a2", "v2" );
 		this.example.updateValue( "a2", 1, "v2a" );
@@ -318,18 +315,18 @@ public class TestFlexiMinXMLStar {
 
 	@Test
 	public void testAttributesAsList() {
-		final @NonNull List< Attr > blist = this.base.attributesToList();
+		final @NonNull List< Map.Entry< String, String > > blist = this.base.attributesToList();
 		assertTrue( blist.isEmpty() );
-		final @NonNull List< Attr > elist = this.example.attributesToList();
+		final @NonNull List< Map.Entry< String, String > > elist = this.example.attributesToList();
 		assertFalse( elist.isEmpty() );
-		assertSame( 3, elist.sizeEntries() );
+		assertSame( 3, elist.size() );
 	}
 
 	@Test
 	public void testValuesAsList() {
-		final List< @NonNull String > blist = this.base.valuesToList( "a1" );
+		final List< String > blist = this.base.valuesToList( "a1" );
 		assertTrue( blist.isEmpty() );
-		final List< @NonNull String > elist = this.example.valuesToList( "a1" );
+		final List< String > elist = this.example.valuesToList( "a1" );
 		assertFalse( elist.isEmpty() );
 		assertSame( 1, elist.size() );
 	}
@@ -339,15 +336,7 @@ public class TestFlexiMinXMLStar {
 		final Map< @NonNull String, @NonNull String > m1 = this.base.firstValuesToMap();
 		assertTrue( m1.isEmpty() );
 		final Map< @NonNull String, @NonNull String > m2 = this.example.firstValuesToMap();
-		assertSame( 2, m2.sizeEntries() );
-	}
-
-	@Test
-	public void testAttributesAsStarMap() {
-		final StarMap< String, String > smap = this.example.attributesToStarMap();
-		assertSame( "v1", smap.get( "a1" ) );
-		assertSame( "v2", smap.get( "a2" ) );
-		assertSame( "v2a", smap.get( "a2", 1 ) );
+		assertSame( 2, m2.size() );
 	}
 
 	@Test
@@ -355,7 +344,7 @@ public class TestFlexiMinXMLStar {
 		final @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > m1 = this.base.attributesToPairMap();
 		assertTrue( m1.isEmpty() );
 		final @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > m2 = this.example.attributesToPairMap();
-		assertSame( 3, m2.sizeEntries() );
+		assertSame( 3, m2.size() );
 	}
 	
 	//	public @NonNull MinXMLStar getChild( @NonNull String field ) throws IllegalArgumentException {

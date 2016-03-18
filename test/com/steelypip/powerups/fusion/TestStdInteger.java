@@ -1,4 +1,4 @@
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion;
 
 import static org.junit.Assert.*;
 

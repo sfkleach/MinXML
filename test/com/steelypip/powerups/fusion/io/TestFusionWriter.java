@@ -1,4 +1,4 @@
-package com.steelypip.powerups.minxmlstar;
+package com.steelypip.powerups.fusion.io;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,9 +10,9 @@ import org.junit.Test;
 import com.steelypip.powerups.fusion.AbsFusionBuilder;
 import com.steelypip.powerups.fusion.FlexiFusionBuilder;
 import com.steelypip.powerups.fusion.Fusion;
-import com.steelypip.powerups.hydra.OldFlexiHydra;
+import com.steelypip.powerups.fusion.FlexiFusion;
 
-public class TestMinXMLStarWriter {
+public class TestFusionWriter {
 
 	@Before
 	public void setUp() throws Exception {
@@ -20,7 +20,7 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testName() {
-		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
+		FlexiFusion alpha = new FlexiFusion( "alpha" );
 		StringWriter w = new StringWriter();
 		alpha.print( w );
 		assertEquals( "<alpha/>", w.toString() );
@@ -28,7 +28,7 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testAttributes() {
-		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
+		FlexiFusion alpha = new FlexiFusion( "alpha" );
 		alpha.addValue( "left", "right" );
 		StringWriter w = new StringWriter();
 		alpha.print( w );
@@ -37,7 +37,7 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testAttributeWithWideChar() {
-		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
+		FlexiFusion alpha = new FlexiFusion( "alpha" );
 		alpha.addValue( "left", "é" );
 		StringWriter w = new StringWriter();
 		alpha.print( w );
@@ -46,7 +46,7 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testSeveralAttributes() {
-		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
+		FlexiFusion alpha = new FlexiFusion( "alpha" );
 		alpha.addValue( "left1", "right1" );
 		alpha.addValue( "left2", "right2" );
 		StringWriter w = new StringWriter();
@@ -56,7 +56,7 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testMultiValuedAttribute() {
-		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
+		FlexiFusion alpha = new FlexiFusion( "alpha" );
 		alpha.addValue( "left", "right1" );
 		alpha.addValue( "left", "right2" );
 		StringWriter w = new StringWriter();
@@ -66,8 +66,8 @@ public class TestMinXMLStarWriter {
 	
 	@Test
 	public void testChild() {
-		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
-		OldFlexiHydra beta = new OldFlexiHydra( "beta" );
+		FlexiFusion alpha = new FlexiFusion( "alpha" );
+		FlexiFusion beta = new FlexiFusion( "beta" );
 		alpha.addChild( beta );
 		StringWriter w = new StringWriter();
 		alpha.print( w );
@@ -76,10 +76,10 @@ public class TestMinXMLStarWriter {
 	
 	@Test
 	public void testChildren() {
-		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
-		OldFlexiHydra beta = new OldFlexiHydra( "beta" );
+		FlexiFusion alpha = new FlexiFusion( "alpha" );
+		FlexiFusion beta = new FlexiFusion( "beta" );
 		beta.addValue( "b.left", "b.right" );
-		OldFlexiHydra gamma = new OldFlexiHydra( "gamma" );
+		FlexiFusion gamma = new FlexiFusion( "gamma" );
 		alpha.addChild( beta );
 		alpha.addChild( gamma );
 		StringWriter w = new StringWriter();
@@ -89,8 +89,8 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testFieldChild() {
-		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
-		OldFlexiHydra beta = new OldFlexiHydra( "beta" );
+		FlexiFusion alpha = new FlexiFusion( "alpha" );
+		FlexiFusion beta = new FlexiFusion( "beta" );
 		beta.addValue( "b.left", "b.right" );
 		alpha.addChild( "child", beta );
 		StringWriter w = new StringWriter();
@@ -100,12 +100,12 @@ public class TestMinXMLStarWriter {
 
 	@Test
 	public void testFieldChildren() {
-		OldFlexiHydra alpha = new OldFlexiHydra( "alpha" );
-		OldFlexiHydra beta = new OldFlexiHydra( "beta" );
+		FlexiFusion alpha = new FlexiFusion( "alpha" );
+		FlexiFusion beta = new FlexiFusion( "beta" );
 		alpha.addChild( "child", beta );
-		OldFlexiHydra gamma = new OldFlexiHydra( "gamma" );
+		FlexiFusion gamma = new FlexiFusion( "gamma" );
 		alpha.addChild( "child", gamma );
-		OldFlexiHydra delta = new OldFlexiHydra( "delta" );
+		FlexiFusion delta = new FlexiFusion( "delta" );
 		alpha.addChild( "alt.child", delta );
 		StringWriter w = new StringWriter();
 		alpha.print( w );

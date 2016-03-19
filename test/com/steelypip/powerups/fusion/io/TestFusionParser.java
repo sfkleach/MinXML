@@ -1,12 +1,14 @@
 package com.steelypip.powerups.fusion.io;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import java.io.StringReader;
-import java.util.Iterator;
 import java.util.Set;
 
-import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,13 +30,6 @@ public class TestFusionParser {
 		Fusion end = p.readElement();
 		assertNull( end );		
 	}
-	
-//	Iterator< String > jitter( final String s ) {
-//		for ( int n = 1; n < s.length(); n++ ) {
-//			char before = s.charAt( n - 1 );
-//			char after = s.charAt( n );
-//		}
-//	}
 	
 	@Test
 	public void minimalElement() {
@@ -67,8 +62,7 @@ public class TestFusionParser {
 	public void attributeOnEndTag() {
 		StringReader rep = new StringReader( "<foo></foo bar='88'>" );
 		FusionParser p = new FusionParser( rep );
-		Fusion item1 = p.readElement();
-
+		p.readElement();
 		Fusion end = p.readElement();
 		assertNull( end );		
 	}
@@ -101,8 +95,8 @@ public class TestFusionParser {
 	@Test( expected=Exception.class )
 	public void repeatedBadAttribute() {
 		StringReader rep = new StringReader( "<foo bar='99' bar='88'/>" );
-		FusionParser p= new FusionParser( rep );
-		Fusion item = p.readElement();
+		FusionParser p = new FusionParser( rep );
+		p.readElement();
 	}
 
 	@Test
@@ -317,8 +311,6 @@ public class TestFusionParser {
 			assertTrue( item.isObject() );
 			assertTrue( item.hasNoAttributes() );
 			assertTrue( item.hasSizeLinks( 1 ) );
-//			Fusion f99 = item.getChild( "foo" );
-//			assertTrue( f99.isInteger() );
 			assertNull( p.readElement() );
 		}
 	}
@@ -332,8 +324,6 @@ public class TestFusionParser {
 			assertTrue( item.isObject() );
 			assertTrue( item.hasNoAttributes() );
 			assertTrue( item.hasSizeLinks( 1 ) );
-//			Fusion f99 = item.getChild( "foo" );
-//			assertTrue( f99.isInteger() );
 			assertNull( p.readElement() );
 		}
 	}
@@ -387,7 +377,5 @@ public class TestFusionParser {
 		assertTrue( item.hasAttribute( "value" ) ); 
 		assertEquals( value, item.getValue( "value" ) ); 
 	}
-
 	
-
 }

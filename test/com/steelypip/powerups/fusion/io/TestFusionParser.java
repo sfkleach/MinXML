@@ -10,6 +10,7 @@ import org.hamcrest.core.IsInstanceOf;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.fusion.Fusion;
 
 public class TestFusionParser {
@@ -335,6 +336,47 @@ public class TestFusionParser {
 //			assertTrue( f99.isInteger() );
 			assertNull( p.readElement() );
 		}
+	}
+	
+	@Test
+	public void commasForJSON() {
+		StringReader rep = new StringReader( "[ 1, 2, 3, 4 ], {}" );
+		FusionParser p = new FusionParser( rep );
+		{
+			Fusion item = p.readElement();
+			assertTrue( item.isArray() );
+			assertTrue( item.hasNoAttributes() );
+			assertTrue( item.hasSizeLinks( 4 ) );
+		}
+		{
+			Fusion item = p.readElement();
+			assertTrue( item.isObject() );
+			assertTrue( item.hasNoAttributes() );
+			assertTrue( item.hasNoLinks() );
+		}
+		assertNull( p.readElement() );
+	}
+	
+	@Test( expected = Alert.class )
+	public void badCommasForJSON() {
+		StringReader rep = new StringReader( "<foo, bar='x'/>" );
+		FusionParser p = new FusionParser( rep );
+		p.readElement();
+	}
+	
+	@Test( expected = Alert.class )
+	public void badMultipleCommasForJSON() {
+		StringReader rep = new StringReader( "[1,,2]" );
+		FusionParser p = new FusionParser( rep );
+		p.readElement();
+	}
+	
+	@Test( expected = Alert.class )
+	public void badMultipleTopLevelCommasForJSON() {
+		StringReader rep = new StringReader( "1,,2" );
+		FusionParser p = new FusionParser( rep );
+		p.readElement();
+		p.readElement();
 	}
 	
 	private void checkConstant( Fusion item, String type, String value ) {

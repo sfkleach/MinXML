@@ -158,6 +158,21 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		}
 	}
 	
+	private void eatWhiteSpaceIncludingOneComma() {
+		boolean seen_comma = false;
+		while ( this.cucharin.hasNextChar() ) {
+			final char ch = this.cucharin.nextChar();
+			if ( Character.isWhitespace( ch ) ) {
+				//	Continue.
+			} else if ( ! seen_comma && ch == ',' ) {
+				seen_comma = true;
+			} else {
+				this.cucharin.pushChar( ch );
+				return;
+			}
+		}
+	}
+	
 	private static boolean is_name_char( final char ch ) {
 		return Character.isLetterOrDigit( ch ) || ch == '-' || ch == '.';
 	}
@@ -267,7 +282,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			return true;
 		}
 			
-		this.eatWhiteSpace();
+		this.eatWhiteSpaceIncludingOneComma();
 		
 		if ( !this.cucharin.hasNextChar() ) {
 			return false;

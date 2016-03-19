@@ -115,7 +115,7 @@ public class TestFusionWriter {
 	@Test
 	public void testLiteral() {
 		AbsFusionBuilder b = new FlexiFusionBuilder();
-		b.addChild( 99 );
+		b.addInteger( 99 );
 		Fusion alpha = b.build();
 		StringWriter w = new StringWriter();
 		alpha.print( w );

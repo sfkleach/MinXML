@@ -106,17 +106,17 @@ public interface FusionBuilder {
 	void addNull();
 	void addNull( String field );
 	
-	void addChild( long number );
-	void addChild( String field, long number );
+	void addInteger( long number );
+	void addInteger( String field, long number );
 	
-	void addChild( double number );
-	void addChild( String field, double number );
+	void addFloat( double number );
+	void addFloat( String field, double number );
 	
-	void addChild( @Nullable String string );
-	void addChild( String field, @Nullable String string );
+	void addString( @Nullable String string );
+	void addString( String field, @Nullable String string );
 
-	void addChild( boolean bool );
-	void addChild( String field, boolean bool );
+	void addBoolean( boolean bool );
+	void addBoolean( String field, boolean bool );
 	
 	void addChild( @Nullable Fusion x ); 
 	void addChild( String field, @Nullable Fusion x ); 

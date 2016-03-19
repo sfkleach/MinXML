@@ -178,7 +178,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	}
 	
 	@SuppressWarnings("null")
-	private @NonNull String readName() {
+	private @NonNull String gatherName() {
 		final StringBuilder name = new StringBuilder();
 		while ( this.cucharin.hasNextChar() ) {
 			final char ch = this.cucharin.nextChar();
@@ -255,7 +255,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			this.eatWhiteSpace();
 			char c = peekChar();
 			if ( c == '/' || c == '>' ) break;
-			final String key = this.readName();
+			final String key = this.gatherName();
 			
 			this.eatWhiteSpace();
 			final boolean repeat_ok = this.tryReadChar( '+' );
@@ -290,20 +290,42 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		
 		final char pch = this.peekChar( '\0' );
 		if ( Character.isLetter( pch ) ) {
-			return readLabelledTagOrSymbol();
+			return readLabelledTagOrSymbol( true, this.gatherName() );
+		} else if ( pch == '"' || pch == '\'' ) {
+			return readLabelledTagOrSymbol( false, this.gatherString() );
 		} else {
 			return readUnlabelledTag( field, accept_repeat_field );
+		}
+	}
+	
+	private boolean readLabelledTagOrSymbol( final boolean is_identifier, final String field ) {
+		boolean accept_repeat_field = false;
+		this.eatWhiteSpace();
+		boolean plus = this.tryReadChar( '+' );
+		boolean colon = this.tryReadChar( ':' );
+		if ( colon ) {
+			if ( plus ) {
+				accept_repeat_field = true;
+			}
+			this.eatWhiteSpace();
+			return readUnlabelledTag( field, accept_repeat_field );
+		} else if ( plus ) {
+			//	:+ is not allowed - we want to raise the alarm.
+			this.mustReadChar( ':' ); 	//	This will throw an exception (the one we want).
+			throw Alert.unreachable();	//	So compiler doesn't complain.
+		} else {
+			return handleStringOrIdentifier( is_identifier, field );
 		}
 	}
 	
 	private boolean readUnlabelledTag( String field, boolean accept_repeat_field ) {
 		final char pch = this.peekChar( '\0' );
 		if ( pch == '<' || pch == '[' || pch == '{' ) {
-			return readCoreTag( field, accept_repeat_field );
+			return this.readCoreTag( field, accept_repeat_field );
 		} else if ( Character.isDigit( pch ) || pch == '+' || pch == '-' ) {
-			return readNumber( field );
-		} else if ( pch == '"' ) {
-			return readString( field );
+			return this.readNumber( field );
+		} else if ( pch == '"' || pch == '\'' ) {
+			return this.readString( field );
 		} else if ( pch == ']' ) {
 			this.mustReadChar( ']' );
 			this.popArray();
@@ -315,13 +337,13 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			this.builder.endObject( "" );
 			return true;
 		} else if ( Character.isLetter( pch ) ) {
-			return this.handleIdentifier( this.readName() );
+			return this.handleIdentifier( this.gatherName() );
 		} else {
 			throw new Alert( "Unexpected character when read tag or constant" ).culprit( "Character", pch );
 		}
 	}
 
-	private boolean readString( final String field ) {
+	private String gatherString() {
 		final char quote_char = this.nextChar();
 		StringBuilder sofar = new StringBuilder();
 		boolean done = false;
@@ -344,7 +366,11 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 					break;
 			}
 		}
-		this.builder.addChild( field, sofar.toString() );
+		return sofar.toString();
+	}
+	
+	private boolean readString( final String field ) {
+		this.builder.addString( field, this.gatherString() );
 		return true;
 	}
 	
@@ -408,9 +434,9 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		final String s = b.toString();
 		try {
 			if ( is_floating_point ) {
-				this.builder.addChild( field, Double.parseDouble( s ) );
+				this.builder.addFloat( field, Double.parseDouble( s ) );
 			} else {
-				this.builder.addChild( field, Long.parseLong( s ) );
+				this.builder.addInteger( field, Long.parseLong( s ) );
 			}
 		} catch ( NumberFormatException e ) {
 			throw new Alert( "Malformed number" ).culprit( "Bad number", s );
@@ -419,26 +445,10 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		return true;
 	}
 	
-	private boolean readLabelledTagOrSymbol() {
-		String field = this.readName();
-		boolean accept_repeat_field = false;
-		this.eatWhiteSpace();
-		boolean plus = this.tryReadChar( '+' );
-		boolean colon = this.tryReadChar( ':' );
-		if ( colon ) {
-			if ( plus ) {
-				accept_repeat_field = true;
-			}
-			this.eatWhiteSpace();
-			return readUnlabelledTag( field, accept_repeat_field );
-		} else if ( plus ) {
-			//	:+ is not allowed - we want to raise the alarm.
-			this.mustReadChar( ':' ); 	//	This will throw an exception (the one we want).
-			throw Alert.unreachable();	//	So compiler doesn't complain.
-		} else {
-			return handleIdentifier( field );
-		}
+	private boolean handleStringOrIdentifier(  final boolean is_identifier, final String x ) {
+		return is_identifier ? this.handleIdentifier( x ) : this.handleString( x );
 	}
+
 
 	private boolean handleIdentifier( String identifier ) {
 		switch ( identifier ) {
@@ -447,11 +457,16 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			return true;
 		case "true":
 		case "false":
-			this.builder.addChild( Boolean.parseBoolean( identifier ) );
+			this.builder.addBoolean( Boolean.parseBoolean( identifier ) );
 			return true;
 		default:
 			throw new Alert( "Unrecognised identifier" ).culprit( "Identifier", identifier );
 		}
+	}
+	
+	private boolean handleString( String s ) {
+		this.builder.addString( s );
+		return true;
 	}
 	
 	private boolean readCoreTag( String field, boolean accept_repeat_field ) {
@@ -473,7 +488,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			if ( this.tryReadChar( '>' ) ) {
 				this.builder.endTag();
 			} else {
-				final String end_tag = this.readName();
+				final String end_tag = this.gatherName();
 				this.processAttributes();
 				this.eatWhiteSpace();
 				this.mustReadChar( '>' );
@@ -489,7 +504,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		}
 		
 		this.eatWhiteSpace();
-		this.tag_name = this.readName();
+		this.tag_name = this.gatherName();
 		
 		this.builder.startTag( field, this.tag_name, accept_repeat_field );
 		this.processAttributes();

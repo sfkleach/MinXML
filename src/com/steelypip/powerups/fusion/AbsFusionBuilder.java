@@ -125,27 +125,27 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 	}
 	
 	@Override
-	public void addChild( final long number ) {
+	public void addInteger( final long number ) {
 		this.addChild( this.factory().newIntegerFusion( number ) );
 	}
 	
 	@Override
-	public void addChild( final String field, final long number ) {
+	public void addInteger( final String field, final long number ) {
 		this.addChild( field, this.factory().newIntegerFusion( number ) );
 	}
 	
 	@Override
-	public void addChild( final double number ) {
+	public void addFloat( final double number ) {
 		this.addChild( this.factory().newFloatFusion( number ) );
 	}
 	
 	@Override
-	public void addChild( final String field, final double number ) {
+	public void addFloat( final String field, final double number ) {
 		this.addChild( field, this.factory().newFloatFusion( number ) );
 	}
 	
 	@Override
-	public void addChild( final @Nullable String string ) {
+	public void addString( final @Nullable String string ) {
 		if ( string == null ) {
 			this.addNull();
 		} else {
@@ -154,7 +154,7 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 	}
 	
 	@Override
-	public void addChild( final String field, final @Nullable String string ) {
+	public void addString( final String field, final @Nullable String string ) {
 		if ( string == null ) {
 			this.addNull( field );
 		} else {
@@ -163,12 +163,12 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 	}
 	
 	@Override
-	public void addChild( final boolean bool ) {
+	public void addBoolean( final boolean bool ) {
 		this.addChild( this.factory().newBooleanFusion( bool ) );
 	}
 	
 	@Override
-	public void addChild( final String field, final boolean bool ) {
+	public void addBoolean( final String field, final boolean bool ) {
 		this.addChild( field, this.factory().newBooleanFusion( bool ) );
 	}
 	

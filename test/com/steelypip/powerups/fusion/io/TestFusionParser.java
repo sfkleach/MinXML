@@ -323,7 +323,7 @@ public class TestFusionParser {
 			Fusion item = p.readElement();
 			assertTrue( item.isObject() );
 			assertTrue( item.hasNoAttributes() );
-			assertTrue( item.hasSizeLinks( 1 ) );
+			assertSame( 1, item.sizeLinks() );
 			assertNull( p.readElement() );
 		}
 	}
@@ -367,6 +367,17 @@ public class TestFusionParser {
 		FusionParser p = new FusionParser( rep );
 		p.readElement();
 		p.readElement();
+	}
+	
+	@Test
+	public void objectWithJSONStringsForKeys() {
+		for ( String input : new String[] { "{ \"akey\": 0 }", "{ \'akey\': 0 }" } ) {
+			StringReader rep = new StringReader( input );
+			FusionParser p = new FusionParser( rep );
+			Fusion item = p.readElement();
+			assertTrue( item.hasLink( "akey" ) );
+			assertNull( p.readElement() );
+		}
 	}
 	
 	private void checkConstant( Fusion item, String type, String value ) {

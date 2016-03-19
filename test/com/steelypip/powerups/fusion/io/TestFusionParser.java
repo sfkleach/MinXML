@@ -380,6 +380,17 @@ public class TestFusionParser {
 		}
 	}
 	
+	@Test
+	public void elementsWithStringsForNames() {
+		for ( String input : new String[] { "<\"x y\"/>" } ) {
+			StringReader rep = new StringReader( input );
+			FusionParser p = new FusionParser( rep );
+			Fusion item = p.readElement();
+			assertSame( "x y", item.getInternedName() );
+			assertNull( p.readElement() );
+		}		
+	}
+	
 	private void checkConstant( Fusion item, String type, String value ) {
 		assertEquals( "constant", item.getInternedName() );
 		assertTrue( item.hasSizeAttributes( 2 ) );

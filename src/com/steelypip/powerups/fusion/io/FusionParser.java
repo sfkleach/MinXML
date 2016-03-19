@@ -192,6 +192,15 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		return name.toString();
 	}
 	
+	private String gatherNameOrQuotedName() {
+		final char pch = this.peekChar( '\0' ); 
+		if ( pch == '"' || pch == '\'' ) {
+			return this.gatherString();
+		} else {
+			return this.gatherName();
+		}
+	}
+	
 	private String readEscapeContent() {
 		final StringBuilder esc = new StringBuilder();
 		for (;;) {
@@ -255,7 +264,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			this.eatWhiteSpace();
 			char c = peekChar();
 			if ( c == '/' || c == '>' ) break;
-			final String key = this.gatherName();
+			final @NonNull String key = this.gatherName();
 			
 			this.eatWhiteSpace();
 			final boolean repeat_ok = this.tryReadChar( '+' );
@@ -342,6 +351,64 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			throw new Alert( "Unexpected character when read tag or constant" ).culprit( "Character", pch );
 		}
 	}
+	
+	private boolean readCoreTag( String field, boolean accept_repeat_field ) {	
+		if ( this.tryReadChar( '[' ) ) {
+			this.pushArray();
+			this.builder.startArray( field );
+			return true;
+		} else if ( this.tryReadChar( '{' ) ) {
+			this.pushObject();
+			this.builder.startObject( field );
+			return true;
+		} else if ( this.tryReadChar( '<' ) ) {
+			char ch = this.nextChar();
+			if ( ch == '/' ) {
+				this.eatWhiteSpace();
+				if ( this.tryReadChar( '>' ) ) {
+					this.builder.endTag();
+				} else {
+					final String end_tag = this.gatherName();
+					this.processAttributes();
+					this.eatWhiteSpace();
+					this.mustReadChar( '>' );
+					this.builder.endTag( end_tag );
+				}
+				this.popElement();
+				return true;
+			} else if ( ch == '!' || ch == '?' ) {
+				this.eatComment( ch  );
+				return this.readNextTag( false, field, accept_repeat_field );
+			} else {
+				this.cucharin.pushChar( ch );
+			}
+			
+			this.eatWhiteSpace();
+			this.tag_name = this.gatherNameOrQuotedName();
+			
+			this.builder.startTag( field, this.tag_name, accept_repeat_field );
+			this.processAttributes();
+			
+			this.eatWhiteSpace();					
+			ch = nextChar();
+			if ( ch == '/' ) {
+				this.mustReadChar( '>' );
+				this.pending_end_tag = true;
+				this.pushElement();
+				return true;
+			} else if ( ch == '>' ) {
+				this.pushElement();
+				return true;
+			} else {
+				throw new Alert( "Invalid continuation" );
+			}
+		} else {
+			//	TODO, not correct error message at end of file.
+			throw new Alert( "Unexpected character" ).culprit( "Expecting", "< or [ or { " ).culprit( "Actually", this.peekChar( '\0' ) ); 
+		}  
+	}
+	
+
 
 	private String gatherString() {
 		final char quote_char = this.nextChar();
@@ -467,64 +534,6 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	private boolean handleString( String s ) {
 		this.builder.addString( s );
 		return true;
-	}
-	
-	private boolean readCoreTag( String field, boolean accept_repeat_field ) {
-		
-		if ( this.tryReadChar( '[' ) ) {
-			this.pushArray();
-			this.builder.startArray( field );
-			return true;
-		} else if ( this.tryReadChar( '{' ) ) {
-			this.pushObject();
-			this.builder.startObject( field );
-			return true;
-		}
-
-		this.mustReadChar( '<' );		
-		char ch = this.nextChar();
-		if ( ch == '/' ) {
-			this.eatWhiteSpace();
-			if ( this.tryReadChar( '>' ) ) {
-				this.builder.endTag();
-			} else {
-				final String end_tag = this.gatherName();
-				this.processAttributes();
-				this.eatWhiteSpace();
-				this.mustReadChar( '>' );
-				this.builder.endTag( end_tag );
-			}
-			this.popElement();
-			return true;
-		} else if ( ch == '!' || ch == '?' ) {
-			this.eatComment( ch  );
-			return this.readNextTag( false, field, accept_repeat_field );
-		} else {
-			this.cucharin.pushChar( ch );
-		}
-		
-		this.eatWhiteSpace();
-		this.tag_name = this.gatherName();
-		
-		this.builder.startTag( field, this.tag_name, accept_repeat_field );
-		this.processAttributes();
-//		this.builder.startTagClose( this.tag_name );
-		
-		this.eatWhiteSpace();
-				
-		ch = nextChar();
-		if ( ch == '/' ) {
-			this.mustReadChar( '>' );
-			this.pending_end_tag = true;
-			this.pushElement();
-			return true;
-		} else if ( ch == '>' ) {
-			this.pushElement();
-			return true;
-		} else {
-			throw new Alert( "Invalid continuation" );
-		}
-				
 	}
 	
 	/**

@@ -10,11 +10,6 @@ public class StringFusion extends AbsConstantFusion {
 		this.string = n;
 	}
 
-//	@Override
-//	public @NonNull Fusion shallowCopy() {
-//		return new IntegerFusion( this.number );
-//	}
-
 	@Override
 	protected @NonNull String internedType() {
 		return this.constTypeString();

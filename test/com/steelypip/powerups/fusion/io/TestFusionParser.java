@@ -382,13 +382,73 @@ public class TestFusionParser {
 	
 	@Test
 	public void elementsWithStringsForNames() {
-		for ( String input : new String[] { "<\"x y\"/>" } ) {
+		for ( String input : new String[] { "<\"x y\"/>", "<'x y'/>" } ) {
 			StringReader rep = new StringReader( input );
 			FusionParser p = new FusionParser( rep );
 			Fusion item = p.readElement();
 			assertSame( "x y", item.getInternedName() );
 			assertNull( p.readElement() );
 		}		
+	}
+	
+	@Test
+	public void doubleQuotes() {
+		final String s = "\"This has a newline\\n\"";
+		StringReader rep = new StringReader( s );
+		FusionParser p = new FusionParser( rep );
+		Fusion item = p.readElement();
+		assertEquals( "This has a newline\n", item.stringValue() );
+		assertNull( p.readElement() );
+	}
+	
+	@Test
+	public void singleQuotes() {
+		final String s = "'This has an ampersand \\&amp;'";
+		StringReader rep = new StringReader( s );
+		FusionParser p = new FusionParser( rep );
+		Fusion item = p.readElement();
+		assertEquals( "This has an ampersand &", item.stringValue() );
+		assertNull( p.readElement() );
+	}
+	
+	@Test
+	public void attributeEscapes1() {
+		final String s = "<foo bar='&amp;'/>";
+		StringReader rep = new StringReader( s );
+		FusionParser p = new FusionParser( rep );
+		Fusion item = p.readElement();
+		assertEquals( "&", item.getValue( "bar" ) );
+		assertNull( p.readElement() );
+	}
+	
+	@Test
+	public void attributeEscapes2() {
+		final String s = "<foo bar:'&amp;'/>";
+		StringReader rep = new StringReader( s );
+		FusionParser p = new FusionParser( rep );
+		Fusion item = p.readElement();
+		assertEquals( "&amp;", item.getValue( "bar" ) );
+		assertNull( p.readElement() );
+	}
+	
+	@Test
+	public void testComment() {
+		final String s = "// This is a test\n99";
+		StringReader rep = new StringReader( s );
+		FusionParser p = new FusionParser( rep );
+		Fusion item = p.readElement();
+		assertSame( 99L, item.integerValue() );
+		assertNull( p.readElement() );
+	}
+	
+	@Test
+	public void testHex() {
+		final String s = "0x1F";
+		StringReader rep = new StringReader( s );
+		FusionParser p = new FusionParser( rep );
+		Fusion item = p.readElement();
+		checkConstant( item, "integer", "31" );
+		assertNull( p.readElement() );
 	}
 	
 	private void checkConstant( Fusion item, String type, String value ) {

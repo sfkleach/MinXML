@@ -19,8 +19,9 @@ import com.steelypip.powerups.common.Pair;
 import com.steelypip.powerups.common.StdPair;
 import com.steelypip.powerups.fusion.Fusion;
 import com.steelypip.powerups.fusion.LiteralConstants;
+import com.steelypip.powerups.fusion.StdJSONFeatures;
 
-public abstract class AbsConstantFusion implements Fusion, NullJSONFeatures, LiteralConstants {
+public abstract class AbsConstantFusion implements Fusion, StdJSONFeatures, LiteralConstants {
 	
 	abstract protected @NonNull String internedType();
 	

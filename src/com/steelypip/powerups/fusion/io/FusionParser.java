@@ -73,6 +73,10 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		return this.cucharin.nextChar();
 	}
 	
+	private void skipChar() {
+		this.cucharin.skipChar();
+	}
+	
 	private boolean tryReadChar( final char ch_want ) {
 		final boolean read = this.cucharin.isNextChar( ch_want );		
 		if ( read ) {
@@ -148,29 +152,55 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		}
 	}
 	
-	private void eatWhiteSpace() {
+//	private void eatWhiteSpace() {
+//		while ( this.cucharin.hasNextChar() ) {
+//			final char ch = this.cucharin.nextChar();
+//			if ( ! Character.isWhitespace( ch ) ) {
+//				this.cucharin.pushChar( ch );
+//				return;
+//			}
+//		}
+//	}
+	
+	private void eatWhiteSpace( final int allow_max_comma ) {
+		int comma_count = 0;
 		while ( this.cucharin.hasNextChar() ) {
 			final char ch = this.cucharin.nextChar();
-			if ( ! Character.isWhitespace( ch ) ) {
+			if ( ch == '#' && this.peekChar( '\0' ) == '!' && this.isAtTopLevel() ) {
+				//	Shebang - note that this is coded quite carefully to leave 
+				//	the options open for other interpretations of #.
+				this.eatUpTo( '\n' );
+			} else if ( ch == ',' && comma_count < allow_max_comma ) {
+				comma_count += 1;
+			} else if ( ch == '/' ) {
+				final char nch = this.peekChar( '\0' );
+				if ( nch == '/' ) {
+					this.eatUpTo( '\n' );
+				} else if ( nch == '*' ) {
+					for (;;) {
+						this.eatUpTo( '*' );
+						while ( this.tryReadChar( '*' ) ) {
+							//	skip.
+						}
+						if ( this.nextChar() == '/' ) break;
+					}
+				} else {
+					this.cucharin.pushChar( ch );
+					return;
+				}
+			} else if ( ! Character.isWhitespace( ch ) ) {
 				this.cucharin.pushChar( ch );
 				return;
 			}
 		}
 	}
 	
+	private void eatWhiteSpace(){
+		this.eatWhiteSpace( 0 );
+	}
+	
 	private void eatWhiteSpaceIncludingOneComma() {
-		boolean seen_comma = false;
-		while ( this.cucharin.hasNextChar() ) {
-			final char ch = this.cucharin.nextChar();
-			if ( Character.isWhitespace( ch ) ) {
-				//	Continue.
-			} else if ( ! seen_comma && ch == ',' ) {
-				seen_comma = true;
-			} else {
-				this.cucharin.pushChar( ch );
-				return;
-			}
-		}
+		this.eatWhiteSpace( 1 );
 	}
 	
 	private static boolean is_name_char( final char ch ) {
@@ -239,7 +269,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	}
 	
 	@SuppressWarnings("null")
-	private @NonNull String readAttributeValue() {
+	private @NonNull String gatherXMLAttributeValue() {
 		final StringBuilder attr = new StringBuilder();
 		final char q = this.nextChar();
 		if ( q != '"' && q != '\'' ) throw new Alert( "Attribute value not quoted" ).culprit( "Character", q );
@@ -258,7 +288,6 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		return attr.toString();
 	}	
 	
-	
 	private void processAttributes() {
 		for (;;) {
 			this.eatWhiteSpace();
@@ -268,14 +297,16 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			
 			this.eatWhiteSpace();
 			final boolean repeat_ok = this.tryReadChar( '+' );
-			this.mustReadChar( '=' );
+			final char nch = this.nextChar();
 			this.eatWhiteSpace();
-			final String value = this.readAttributeValue();
+			if ( nch != '=' && nch != ':' ) {
+				throw new Alert( "Expected = or :" ).culprit( "Received", nch );
+			}
+			final String value = nch == '=' ? this.gatherXMLAttributeValue() : this.gatherString();
 			this.builder.add( key, value, repeat_ok );
 		}
 	}
 	
-
 	/**
 	 * This is the core routine of the algorithm, which consumes a single tag from the
 	 * input stream. Standalong tags are expanded internally into separate open and close
@@ -410,7 +441,8 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	
 
 
-	private String gatherString() {
+	@SuppressWarnings("null")
+	private @NonNull String gatherString() {
 		final char quote_char = this.nextChar();
 		StringBuilder sofar = new StringBuilder();
 		boolean done = false;
@@ -474,41 +506,131 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		}
 	}
 	
-	private boolean readNumber( final String field ) {
-		boolean is_floating_point = false;
-		StringBuilder b = new StringBuilder();
-		boolean done = false;
-		do {
-			final char ch = this.peekChar( '\0' );
-			switch ( ch ) {
-				case '-':
-				case '+':
-					break;
-				case '.':
-					is_floating_point = true;
-					break;
-				default:
-					if ( ! Character.isDigit( ch ) ) {
-						done = true;
-					}
-					break;
-			}
-			if ( done ) break;
-			b.append( ch );
-			this.cucharin.skipChar();
-		} while ( ! done );
+	private void acceptNextChar( final StringBuilder b ) {
+		b.append( this.nextChar() );		
+	}
+	
+	static class NumParser {
+		FusionParser fparser;
 		
-		final String s = b.toString();
-		try {
-			if ( is_floating_point ) {
-				this.builder.addFloat( field, Double.parseDouble( s ) );
-			} else {
-				this.builder.addInteger( field, Long.parseLong( s ) );
+		StringBuilder b = new StringBuilder();
+		
+		int radix = 10;
+		boolean floating_point = false;
+		
+		public NumParser( FusionParser fparser ) {
+			super();
+			this.fparser = fparser;
+		}
+		
+		Number process() {
+			while ( this.processChar( fparser.peekChar( '\0' ) ) ) {
 			}
-		} catch ( NumberFormatException e ) {
-			throw new Alert( "Malformed number" ).culprit( "Bad number", s );
+			return convertStringToNumber( radix, floating_point, b.toString() );			
+		}
+		
+		boolean processChar( char pch ) {
+			switch ( pch ) {
+			case '.':
+				return processDot( pch );
+			case '-':
+			case '+':
+				return processSign( pch );
+			case '0':
+				return processZero( pch );
+			default:
+				return processOthers( pch );
+			}
+
 		}
 
+		void acceptNextChar( char x ) {
+			this.b.append( this.fparser.nextChar() );
+		}
+		
+		boolean isDigit( char ch ) {
+			if ( radix == 10 ) {
+				return Character.isDigit( ch );
+			} else if ( radix == 16 ) {
+				return Character.isDigit( ch ) || ( "ABCDEF".indexOf( ch ) != -1 );
+			} else if ( radix == 2 ) {
+				return ch == '0' || ch == '1';
+			} else {
+				throw new Alert( "Invalid digit" ).culprit(  "Radix", this.radix ).culprit( "Digit", ch );
+			}
+		}
+
+		private boolean processOthers( char pch ) {
+			if ( this.isDigit( pch ) ) {
+				this.acceptNextChar( pch );
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		private boolean processZero( char pch ) {
+			if ( b.length() == 0 || b.length() == 1 && ( "+-".indexOf( b.charAt( 0 ) ) != -1 ) ) {
+				this.fparser.skipChar();
+				radix = fparser.tryReadChar( 'b' ) ? 2 : this.fparser.tryReadChar( 'x' ) ? 16 : 10;
+				if ( radix == 10 ) {
+					b.append( '0' );
+				}
+			} else {
+				this.acceptNextChar( pch );
+			}
+			return true;
+		}
+
+		private boolean processSign( char pch ) {
+			if ( b.length() == 0 ) {
+				this.acceptNextChar( pch );
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		private boolean processDot( char pch ) {
+			if ( floating_point ) {
+				return false;
+			} else {
+				floating_point = true;
+				this.acceptNextChar( pch );
+				return true;
+			}
+		}
+		
+	}
+	
+	private static Number convertStringToNumber( int radix, boolean floating_point, final String numString ) {
+		try {
+			if ( floating_point ) {
+				if ( radix == 10 ) {
+					return Double.parseDouble( numString );
+				} else {
+					throw new Alert( "Floating points with non-decimal radix not supported yet" ).culprit( "Radix", radix ).culprit( "Number", numString );
+				}
+			} else {
+				return Long.parseLong( numString, radix );
+			}
+		} catch ( NumberFormatException e ) {
+			throw new Alert( "Malformed number" ).culprit( "Bad number", numString );
+		}
+	}
+	
+	private Number gatherNumber() {
+		return new NumParser( this ).process();			
+	}
+
+	
+	private boolean readNumber( final String field ) {
+		final Number number = this.gatherNumber();
+		if ( number instanceof Double ) {
+			this.builder.addFloat( field, (Double)number );
+		} else {
+			this.builder.addInteger( field, (Long)number );
+		}
 		return true;
 	}
 	

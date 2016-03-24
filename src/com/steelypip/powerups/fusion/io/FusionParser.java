@@ -152,16 +152,6 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		}
 	}
 	
-//	private void eatWhiteSpace() {
-//		while ( this.cucharin.hasNextChar() ) {
-//			final char ch = this.cucharin.nextChar();
-//			if ( ! Character.isWhitespace( ch ) ) {
-//				this.cucharin.pushChar( ch );
-//				return;
-//			}
-//		}
-//	}
-	
 	private void eatWhiteSpace( final int allow_max_comma ) {
 		int comma_count = 0;
 		while ( this.cucharin.hasNextChar() ) {
@@ -541,7 +531,6 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			default:
 				return processOthers( pch );
 			}
-
 		}
 
 		void acceptNextChar( char x ) {

@@ -1,13 +1,15 @@
 package com.steelypip.powerups.fusion;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 public class FlexiFusionBuilder extends AbsFusionBuilder {
 	
-	private @NonNull FusionFactory _factory = new FlexiFusionFactory();
+	private static FusionFactory DEFAULT_FACTORY = new FlexiFusionFactory();
+	private FusionFactory _factory; 
 	
 	@Override
-	public @NonNull FusionFactory factory() {
+	public FusionFactory factory() {
+		if ( this._factory == null ) {
+			this._factory = DEFAULT_FACTORY;
+		}
 		return this._factory;
 	}
 

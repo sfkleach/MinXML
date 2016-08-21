@@ -51,35 +51,4 @@ extends
 	
 	boolean equals( Object obj );
 	
-	
-
-	
-//	/**
-//	 * shallowCopy makes a copy of the topmost node but shares the children. The
-//	 * implementation of the new node must be at least as general as the implementation
-//	 * of this node i.e. implement all the methods that do not raise 
-//	 * {@link java.lang.UnsupportedOperationException} 
-//	 * @return a shallow copy
-//	 */
-//	@NonNull Hydra< Key, AttrValue, Field, ChildValue > shallowCopy();
-//	 
-//	/**
-//	 * deepCopy makes a copy of the topmost node and all the children. The
-//	 * implementation of the new nodes must be at least as general as the implementation
-//	 * of this node i.e. implement all the methods that do not raise 
-//	 * {@link java.lang.UnsupportedOperationException} 
-//	 * @return a deep copy
-//	 */
-//	@NonNull Hydra< Key, AttrValue, Field, ChildValue > deepCopy();
-//	
-//	public static HydraXML< ? extends Comparable< ? > > fromReader( final Reader reader ) {
-//		return new FusionParser( reader ).readElement();
-//	}
-//	
-//	public static HydraXML< Key > fromString( final String string ) {
-//		return fromReader( new StringReader( string ) );
-//	}
-	
-
-	
 }

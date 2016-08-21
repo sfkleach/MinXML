@@ -1,5 +1,5 @@
 package com.steelypip.powerups.hydra;
 
-public interface MutableHydraXML {
+public interface MutableHydra {
 
 }

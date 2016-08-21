@@ -45,7 +45,7 @@ import com.steelypip.powerups.util.MutatingMultiMap;
  * and when there are no values/children the ArrayList is not allocated; these 
  * two cases are so common that the reduction in space is (typically) significant. 
  */
-public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > implements Hydra< Key, AttrValue, Field, ChildValue >, MutableHydraXML {
+public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > implements Hydra< Key, AttrValue, Field, ChildValue >, MutableHydra {
 	
 	protected @NonNull String name;
 	protected MutatingMultiMap< Key, AttrValue > attributes = EmptyMutatingMultiMap.getInstance();
@@ -254,7 +254,7 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 		for ( Key k : this.attributes.keySet() ) {
 			int n = 0;
 			for ( AttrValue v : this.attributes.getAll( k ) ) {
-				sofar.put( new StdPair< Key, Integer >( k, n++ ), v );
+				sofar.put( new CmpPair< Key, Integer >( k, n++ ), v );
 			}
 		}
 		return sofar;

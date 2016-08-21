@@ -30,8 +30,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.EmptyIterator;
-import com.steelypip.powerups.hydra.Link;
-import com.steelypip.powerups.hydra.StdLink;
 
 /**
  * A convenience class for implementing a recursive walk of a tree

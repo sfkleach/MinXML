@@ -62,6 +62,7 @@ public class FlexiMutatingMultiMap< Key, Value > extends TreeMap< Key, List< Val
 	@Override
 	public Value getOrFail( Key key, int N ) throws IllegalArgumentException {
 		final List< Value > list = this.get( key );
+		if ( list == null ) throw new IllegalArgumentException();
 		try {
 			return list.get( N );
 		} catch ( IndexOutOfBoundsException e ) {
@@ -73,7 +74,7 @@ public class FlexiMutatingMultiMap< Key, Value > extends TreeMap< Key, List< Val
 	public Value getElse( Key key, int N, Value otherwise ) throws IllegalArgumentException {
 		final List< Value > list = this.get( key );
 		try {
-			return list.get( N );
+			return list == null ? otherwise : list.get( N );
 		} catch ( IndexOutOfBoundsException e ) {
 			return otherwise;
 		}

@@ -59,15 +59,71 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 */	
 	Value getValue( Key key, int index, Value otherwise );
 
+	/**
+	 * Sets the attribute at position index for the value associated with the given key. If this
+	 * does not have an attribute of that name or the index is out of bounds then it
+	 * throws an IllegalArgumentException.
+	 * 
+	 * @param key the attribute key being looked up
+	 * @param index the index to be updated
+	 * @return the new value to replace the old value at the index position
+	 */	
 	void updateValue( Key key, int index, Value value ) throws IllegalArgumentException, UnsupportedOperationException;
+
+	/**
+	 * Discards any existing entries with the same key and inserts a single key-value pair.
+	 * 
+	 * @param key the attribute key being changed
+	 * @param value the new value
+	 * @throws UnsupportedOperationException if this is immutable.
+	 */	
 	void setValue( Key key, Value value ) throws UnsupportedOperationException;
+	
+	/**
+	 * Discards any existing attributes associated with key and replaces them with a new
+	 * set of attributes.
+	 * @param key the key to be updated.
+	 * @param values the set of attribute values
+	 * @throws UnsupportedOperationException if this is immutable.
+	 */
 	void setAllValues( Key key, Iterable< Value > values ) throws UnsupportedOperationException;
 	
+	/**
+	 * Adds a new key-value pair onto the end of the existing pairs.
+	 * @param key the key 
+	 * @param value the value
+	 * @throws UnsupportedOperationException if this is immutable.
+	 */
 	void addValue( Key key, Value value ) throws UnsupportedOperationException;
 
+	/**
+	 * Removes the first key-value pair with a matching key. 
+	 * @param key the key to match.
+	 * @throws UnsupportedOperationException if there is no pair to remove.
+	 * @throws IndexOutOfBoundsException if this is immutable.
+	 */
 	void removeValue( Key key ) throws UnsupportedOperationException, IndexOutOfBoundsException;
+	
+	/**
+	 * Removes the Nth key-value pair with a matching key, where N = index.
+	 * @param key the key to match
+	 * @param index the index within the matching pairs
+	 * @throws UnsupportedOperationException if there is no pair to remove.
+	 * @throws IndexOutOfBoundsException if this is immutable.
+	 */
 	void removeValue( Key key, int index ) throws UnsupportedOperationException, IndexOutOfBoundsException;
+	
+	/**
+	 * Removes all key-value pairs with matching key.
+	 * @param key the key to match.
+	 * @throws UnsupportedOperationException if this is immutable.
+	 */
 	void clearAttributes( Key key ) throws UnsupportedOperationException;
+	
+	/**
+	 * Removes all key-value pairs.
+	 * @throws UnsupportedOperationException if this is immutable.
+	 */
 	void clearAllAttributes() throws UnsupportedOperationException;
 
 	/**
@@ -76,6 +132,11 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 */
 	int sizeAttributes();
 	
+	/**
+	 * Tests whether or not this has exactly n attributes
+	 * @param n the number to test against.
+	 * @return true if there are exactly n attributes
+	 */
 	default boolean hasSizeAttributes( int n ) {
 		return this.sizeAttributes() == n;
 	}
@@ -91,6 +152,10 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 		return ! this.hasNoAttributes();
 	}
 	
+	/**
+	 * Tests whether or not this has no attributes
+	 * @return true if there are no attributes.
+	 */
 	boolean hasNoAttributes();
 	
 	/**
@@ -178,21 +243,60 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 		return ! this.hasNoKeys();
 	}
 	
+	/** 
+	 * Returns the number of key-value pairs with matching key.
+	 * @param key
+	 * @return the number of key-value pairs
+	 */
 	int sizeValues( Key key );
+	
+	/** 
+	 * Tests the number of key-value pairs with matching key.
+	 * @param key the key to be matched
+	 * @param n the number expected
+	 * @return true if the number is exactly n
+	 */
 	boolean hasSizeValues( Key key, int n );
+	
+	/** 
+	 * Tests if number of key-value pairs with matching key is zero.
+	 * @param key the key to be matched
+	 * @return true if there are no matching values.
+	 */
 	default boolean hasNoValues( Key key ) {
 		return ! this.hasAttribute( key );
 	}
+	
+	/** 
+	 * Tests if number of key-value pairs with matching key is positive (i.e. >0).
+	 * @param key the key to be matched
+	 * @return true if there is at least 1 pair with a matching key.
+	 */
 	default boolean hasAnyValues( Key key ) {
 		return this.hasAttribute( key );
 	}
 
-	
+	/**
+	 * Returns the set of key of all key-value pairs as a set.
+	 * @return the set of keys.
+	 */
 	Set< Key > keysToSet();
+	
+	/**
+	 * Returns the set of key-value pairs as a list of map entries.
+	 * @return a list of entries
+	 */
 	List< Map.Entry< Key, Value > > attributesToList();
+	
+	/**
+	 * 
+	 * @param key
+	 * @return
+	 */
 	List< Value > valuesToList( Key key );
+
 	Map< Key, Value > firstValuesToMap();
-//	StarMap< Key, Value > attributesToStarMap();
+
 	Map< Pair< Key, Integer >, Value > attributesToPairMap();
 	
 }

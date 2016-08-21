@@ -1,4 +1,4 @@
-package com.steelypip.powerups.hydra;
+package com.steelypip.powerups.fusion;
 
 import org.eclipse.jdt.annotation.NonNull;
 

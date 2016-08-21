@@ -90,8 +90,8 @@ public class TestFusionWriter {
 
 	@Test
 	public void testLiteral() {
-		Fusion alpha = parse( "99", "--element" );
-		assertEquals( "<constant type=\"integer\" value=\"99\"/>", render( alpha ) );
+		Fusion alpha = parse( "99" );
+		assertEquals( "99", render( alpha ) );
 	}
 	
 

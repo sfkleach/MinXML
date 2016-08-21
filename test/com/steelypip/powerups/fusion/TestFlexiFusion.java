@@ -30,7 +30,7 @@ public class TestFlexiFusion {
 		this.example = new FlexiFusion( EXAMPLE );
 		this.example.setValue( "a1", "v1" );
 		this.example.setValue( "a2", "v2" );
-		this.example.updateValue( "a2", 1, "v2a" );
+		this.example.addValue( "a2", "v2a" );
 	}
 
 	@Test
@@ -341,9 +341,9 @@ public class TestFlexiFusion {
 
 	@Test
 	public void testAttributesAsPairMap() {
-		final @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > m1 = this.base.attributesToPairMap();
+		final Map< Pair< String, Integer >, String > m1 = this.base.attributesToPairMap();
 		assertTrue( m1.isEmpty() );
-		final @NonNull Map< Pair< @NonNull String, @NonNull Integer >, String > m2 = this.example.attributesToPairMap();
+		final Map< Pair< String, @NonNull Integer >, String > m2 = this.example.attributesToPairMap();
 		assertSame( 3, m2.size() );
 	}
 	

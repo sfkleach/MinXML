@@ -5,34 +5,34 @@ import com.steelypip.powerups.fusion.Fusion;
 public class JSONTheme implements Theme {
 	
 	@Override
-	public boolean tryRender( FusionWriter w, Fusion x ) {
+	public boolean tryRender( FusionWriter fwriter, Fusion x ) {
 		if ( x.isJSONItem() ) {
 			if ( x.isInteger() ) {
-				w.print( x.integerValue( 0 ) );
+				fwriter.print( x.integerValue( 0 ) );
 				return true;				
 			} else if ( x.isFloat() ) {
-				w.print( x.floatValue( 0 ) );
+				fwriter.print( x.floatValue( 0 ) );
 				return true;				
 			} else if ( x.isString() ) {
-				w.print( '"' );
+				fwriter.print( '"' );
 				//	TODO PRINT ESCAPED CHARACTERS
-				w.print( '"' );
+				fwriter.print( '"' );
 				return true;				
 			} else if ( x.isBoolean() ) {
-				w.print( x.booleanValue( false ) );
+				fwriter.print( x.booleanValue( false ) );
 				return true;				
 			} else if ( x.isNull() ) {
-				w.print( "null" );
+				fwriter.print( "null" );
 				return true;				
 			} else if ( x.isArray() ) {
-				w.print( '[' );
+				fwriter.print( '[' );
 				//	TODO PRINT ATTRIBUTES
-				w.print( ']' );
+				fwriter.print( ']' );
 				return true;				
 			} else if ( x.isObject() ) {
-				w.print( '{' );
+				fwriter.print( '{' );
 				//	TODO PRINT LINKS
-				w.print( '}' );
+				fwriter.print( '}' );
 				return true;				
 			} else {
 				return false;

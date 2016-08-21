@@ -34,48 +34,48 @@ public class XmlElementTheme extends ElementTheme {
 	
 			
 	@Override
-	public void doStartElement( FusionWriter starw, String name, boolean hasAttributes, boolean hasLinks ) {
-		starw.print( '<' );
+	public void doStartElement( FusionWriter fwriter, String name, boolean hasAttributes, boolean hasLinks ) {
+		fwriter.print( '<' );
 	}
 
 	@Override
-	public void doName( FusionWriter starw, String name ) {
-		starw.print( name );
+	public void doName( FusionWriter fwriter, String name ) {
+		fwriter.print( name );
 	}
 
 	@Override
-	public void doStartAttributes( FusionWriter starw, boolean hasAttributes, boolean hasLinks ) {
+	public void doStartAttributes( FusionWriter fwriter, boolean hasAttributes, boolean hasLinks ) {
 	}
 
 	@Override
-	public void doStartAttributeGroup( FusionWriter starw, String key ) {
+	public void doStartAttributeGroup( FusionWriter fwriter, String key ) {
 	}
 
 	@Override
-	public void doAttribute( FusionWriter starw, String key, String value, boolean first_in_group, boolean last_in_group ) {
-		starw.print( ' ' );
-		starw.print( key );
-		starw.print( first_in_group ? "=" : "+=" );
-		starw.print( '"' );
-		starw.renderString( value );
-		starw.print( '"' );
+	public void doAttribute( FusionWriter fwriter, String key, String value, boolean first_in_group, boolean last_in_group ) {
+		fwriter.print( ' ' );
+		fwriter.print( key );
+		fwriter.print( first_in_group ? "=" : "+=" );
+		fwriter.print( '"' );
+		fwriter.renderString( value );
+		fwriter.print( '"' );
 	}
 
 	@Override
-	public void doEndAttributeGroup( FusionWriter starw, String key ) {
+	public void doEndAttributeGroup( FusionWriter fwriter, String key ) {
 	}
 
 	@Override
-	public void doEndAttributes( FusionWriter starw, boolean hasAttributes, boolean hasLinks ) {
+	public void doEndAttributes( FusionWriter fwriter, boolean hasAttributes, boolean hasLinks ) {
 		if ( hasLinks ) {
-			starw.print( '>' );
+			fwriter.print( '>' );
 		} else {
-			starw.print( "/>" );
+			fwriter.print( "/>" );
 		}
 	}
 
 	@Override
-	public void doStartLinks( FusionWriter starw, boolean hasAttributes, boolean hasLinks ) {
+	public void doStartLinks( FusionWriter fwriter, boolean hasAttributes, boolean hasLinks ) {
 	}
 
 	@Override
@@ -83,29 +83,29 @@ public class XmlElementTheme extends ElementTheme {
 	}
 
 	@Override
-	public void doLink( FusionWriter starw, String field, Fusion child, boolean first_in_group, boolean last_in_group ) {
+	public void doLink( FusionWriter fwriter, String field, Fusion child, boolean first_in_group, boolean last_in_group ) {
 		if ( ! field.isEmpty() ) {
-			starw.print( field );
-			starw.print( first_in_group ? ":" : "+:" );
+			fwriter.print( field );
+			fwriter.print( first_in_group ? ":" : "+:" );
 		}
-		starw.print( child );
+		fwriter.print( child );
 	}
 
 
 	@Override
-	public void doEndLinkGroup( FusionWriter starw, String field ) {
+	public void doEndLinkGroup( FusionWriter fwriter, String field ) {
 	}
 
 	@Override
-	public void doEndLinks( FusionWriter starw, boolean hasAttributes, boolean hasLinks ) {
+	public void doEndLinks( FusionWriter fwriter, boolean hasAttributes, boolean hasLinks ) {
 	}
 
 	@Override
-	public void doEndElement( FusionWriter starw, String name, boolean hasAttributes, boolean hasLinks ) {
+	public void doEndElement( FusionWriter fwriter, String name, boolean hasAttributes, boolean hasLinks ) {
 		if ( hasLinks ) {
-			starw.print( "</" );
-			starw.print( name );
-			starw.print( ">" );
+			fwriter.print( "</" );
+			fwriter.print( name );
+			fwriter.print( ">" );
 		}
 	}
 

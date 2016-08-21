@@ -8,10 +8,7 @@ import java.io.StringWriter;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.steelypip.powerups.fusion.FlexiFusion;
-import com.steelypip.powerups.fusion.FlexiFusionBuilder;
 import com.steelypip.powerups.fusion.Fusion;
-import com.steelypip.powerups.fusion.FusionBuilder;
 
 public class TestFusionWriter {
 
@@ -25,9 +22,9 @@ public class TestFusionWriter {
 		return p.readElement();
 	}
 	
-	private static String render( final Fusion fusion ) {
+	private static String render( final Fusion fusion, String... options ) {
 		final StringWriter w = new StringWriter();
-		fusion.print( w );
+		fusion.print( w, options );
 		return w.toString();		
 	}
 
@@ -93,7 +90,7 @@ public class TestFusionWriter {
 
 	@Test
 	public void testLiteral() {
-		Fusion alpha = parse( "99" );
+		Fusion alpha = parse( "99", "--element" );
 		assertEquals( "<constant type=\"integer\" value=\"99\"/>", render( alpha ) );
 	}
 	

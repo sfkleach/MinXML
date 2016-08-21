@@ -12,7 +12,7 @@ public interface Theme {
 
 				@Override
 				public boolean tryRender( FusionWriter w, Fusion x ) {
-					return this.tryRender( w, x ) || alternative.tryRender( w, x );
+					return Theme.this.tryRender( w, x ) || alternative.tryRender( w, x );
 				}
 				
 			};

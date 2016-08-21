@@ -73,8 +73,8 @@ import com.steelypip.powerups.fusion.Fusion;
 public class FusionWriter {
 
 	final PrintWriter pw;
-	final Indenter indenter;
-	final Theme theme;
+	Indenter indenter;
+	Theme theme;
 	
 	public FusionWriter( PrintWriter pw, IndenterFactory indenter_factory, Theme theme ) {
 		this.pw = pw;
@@ -83,7 +83,7 @@ public class FusionWriter {
 	}
 	
 	private static NullIndenter.Factory DEFAULT_INDENT_FACTORY = new NullIndenter.Factory();
-	private static Theme DEFAULT_THEME = new XmlElementTheme();
+	private static Theme DEFAULT_THEME = new JSONTheme().compose( new XmlElementTheme() );
 	
 	public FusionWriter( PrintWriter pw ) {
 		this( pw, DEFAULT_INDENT_FACTORY, DEFAULT_THEME );
@@ -99,6 +99,18 @@ public class FusionWriter {
 	
 	public Indenter getIndenter() {
 		return indenter;
+	}
+	
+	public Theme getTheme() {
+		return theme;
+	}
+
+	public void setTheme( Theme theme ) {
+		this.theme = theme;
+	}
+
+	public void setIndenterFactory( IndenterFactory indenterf ) {
+		this.indenter = indenterf.newIndenter( this.pw );
 	}
 
 	public void print( Fusion x ) {
@@ -139,6 +151,18 @@ public class FusionWriter {
 	}
 
 	public void print( String s ) {
+		pw.print( s );
+	}
+
+	public void print( long s ) {
+		pw.print( s );
+	}
+
+	public void print( double s ) {
+		pw.print( s );
+	}
+
+	public void print( boolean s ) {
 		pw.print( s );
 	}
 

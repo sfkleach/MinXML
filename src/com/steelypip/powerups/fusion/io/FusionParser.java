@@ -496,9 +496,9 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		}
 	}
 	
-	private void acceptNextChar( final StringBuilder b ) {
-		b.append( this.nextChar() );		
-	}
+//	private void acceptNextChar( final StringBuilder b ) {
+//		b.append( this.nextChar() );		
+//	}
 	
 	static class NumParser {
 		FusionParser fparser;

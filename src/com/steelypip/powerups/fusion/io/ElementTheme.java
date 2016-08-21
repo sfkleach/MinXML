@@ -2,8 +2,6 @@ package com.steelypip.powerups.fusion.io;
 
 import java.util.List;
 
-import org.eclipse.jdt.annotation.NonNull;
-
 import com.steelypip.powerups.fusion.Fusion;
 
 /**
@@ -50,11 +48,11 @@ public abstract class ElementTheme implements Theme {
 		this.doName( fwriter, name );
 		
 		this.doStartAttributes( fwriter, has_any_attributes, has_any_links );
-		for ( @NonNull String key : x.keysToSet() ) {
+		for ( String key : x.keysToSet() ) {
 			this.doStartAttributeGroup( fwriter, key );
-			final List< @NonNull String > values = x.valuesToList( key );
+			final List< String > values = x.valuesToList( key );
 			int n = 0;
-			for ( @NonNull String value : values ) {
+			for ( String value : values ) {
 				n += 1;
 				this.doAttribute( fwriter, key, value,  n == 1, n == values.size() );
 			}
@@ -63,11 +61,11 @@ public abstract class ElementTheme implements Theme {
 		this.doEndAttributes( fwriter, has_any_attributes, has_any_links );
 		
 		this.doStartLinks( fwriter, has_any_attributes, has_any_links );
-		for ( @NonNull String field : x.fieldsToSet() ) {
-			final @NonNull List< @NonNull Fusion > children = x.childrenToList( field );
+		for ( String field : x.fieldsToSet() ) {
+			final List< Fusion > children = x.childrenToList( field );
 			this.doStartLinkGroup( fwriter, field );
 			int n = 0;
-			for ( @NonNull Fusion child : children) {
+			for ( Fusion child : children) {
 				n += 1;
 				this.doLink( fwriter, field, child, n == 1, n == children.size() );
 			}

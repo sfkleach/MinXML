@@ -20,7 +20,6 @@ package com.steelypip.powerups.fusion.io;
 
 import java.io.PrintWriter;
 import java.io.Writer;
-import java.util.Locale;
 
 import com.steelypip.powerups.common.Indenter;
 import com.steelypip.powerups.common.IndenterFactory;

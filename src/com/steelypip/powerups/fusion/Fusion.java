@@ -3,12 +3,10 @@ package com.steelypip.powerups.fusion;
 import java.io.PrintWriter;
 import java.io.Writer;
 
-import com.steelypip.powerups.common.IndenterFactory;
 import com.steelypip.powerups.common.NullIndenter;
 import com.steelypip.powerups.common.StdIndenter;
 import com.steelypip.powerups.fusion.io.FusionWriter;
 import com.steelypip.powerups.fusion.io.JSONTheme;
-import com.steelypip.powerups.fusion.io.Theme;
 import com.steelypip.powerups.fusion.io.XmlElementTheme;
 import com.steelypip.powerups.hydra.Hydra;
 

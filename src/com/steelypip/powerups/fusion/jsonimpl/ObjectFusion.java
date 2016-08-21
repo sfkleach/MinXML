@@ -247,7 +247,6 @@ public class ObjectFusion implements Fusion, NullJSONFeatures, LiteralConstants 
 		}
 	}
 
-	@SuppressWarnings("unused")
 	@Override
 	public void addChild( String field, Fusion value ) throws UnsupportedOperationException {
 		if ( this.map.get( field ) == null ) {
@@ -262,7 +261,6 @@ public class ObjectFusion implements Fusion, NullJSONFeatures, LiteralConstants 
 		this.addChild( this.defaultField(), value );
 	}
 
-	@SuppressWarnings("unused")
 	@Override
 	public void removeChild( String field ) throws UnsupportedOperationException, IndexOutOfBoundsException {
 		if ( this.map.get( field ) != null ) {
@@ -342,7 +340,6 @@ public class ObjectFusion implements Fusion, NullJSONFeatures, LiteralConstants 
 		return this.map.get( field ) == null;
 	}
 
-	@SuppressWarnings("null")
 	@Override
 	public Set< String > fieldsToSet() {
 		return this.map.keySet();

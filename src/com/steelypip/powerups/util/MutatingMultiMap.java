@@ -54,6 +54,8 @@ public interface MutatingMultiMap< K, V > extends Iterable< Map.Entry< K, V > >{
 			return true;
 		} catch ( IllegalArgumentException _e ) {
 			return false;
+		} catch ( IndexOutOfBoundsException _e ) {
+			return false;
 		}
 	}
 

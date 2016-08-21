@@ -34,16 +34,13 @@ import com.steelypip.powerups.util.MutatingMultiMap;
 
 /**
  * This implementation provides a full implementation of all the
- * mandatory and optional methods of the MinXML interface. It aims
+ * mandatory and optional methods of the Hydra interface. It aims
  * to strike a balance between fast access, update and reasonable
  * compactness in the most important cases. 
  * 
- * 
- * A TreeMap is used to track attributes/links and an ArrayList to track 
- * values/children; these provide good performance at the expense of space. 
- * However, when there are no attributes/children the TreeMap is not allocated 
- * and when there are no values/children the ArrayList is not allocated; these 
- * two cases are so common that the reduction in space is (typically) significant. 
+ * The in-place mutating multi-maps are used to provide implementations
+ * that constantly adjust themselves to provide a good balance of
+ * speed and compactness.
  */
 public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > implements Hydra< Key, AttrValue, Field, ChildValue >, MutableHydra {
 	

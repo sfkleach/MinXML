@@ -10,6 +10,9 @@ import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.Pair;
 
+/**
+ * The purpose of this class is to be a non-null initial object. It does not support any operation at all.
+ */
 public class BadHydra< Key extends Comparable< Key >, Value, Field extends Comparable< Field >, Child  > implements Hydra< Key, Value, Field, Child > {
 
 	@Override
@@ -322,11 +325,6 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 		throw new IllegalStateException();
 	}
 
-//	@Override
-//	public StarMap< Field, Child > linksToStarMap() {
-//		throw new IllegalStateException();
-//	}
-
 	@Override
 	public Map< Pair< Field, Integer >, Child > linksToPairMap() {
 		throw new IllegalStateException();
@@ -336,17 +334,5 @@ public class BadHydra< Key extends Comparable< Key >, Value, Field extends Compa
 	public Iterator< Map.Entry< Field, Child > > iterator() {
 		throw new IllegalStateException();
 	}
-
-//	@Override
-//	public Hydra< Key, Value, Field, Child > shallowCopy() {
-//		throw new IllegalStateException();
-//	}
-//
-//	@Override
-//	public Hydra< Key, Value, Field, Child > deepCopy() {
-//		throw new IllegalStateException();
-//	}
-	
-
 
 }

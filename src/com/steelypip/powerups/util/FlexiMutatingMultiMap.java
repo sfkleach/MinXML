@@ -154,6 +154,7 @@ public class FlexiMutatingMultiMap< Key, Value > extends TreeMap< Key, List< Val
 		List< Value > list = this.get( key );
 		if ( list == null ) {
 			list = new ArrayList<>();
+			this.put( key, list );
 		} else {
 			list.clear();
 		}

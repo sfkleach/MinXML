@@ -18,13 +18,7 @@
  */
 package com.steelypip.powerups.hydra;
 
-import java.io.PrintWriter;
-import java.io.Writer;
 import java.util.Map;
-
-import com.steelypip.powerups.common.StdIndenter;
-import com.steelypip.powerups.fusion.io.FusionWriter;
-import com.steelypip.powerups.fusion.io.XmlElementTheme;
 
 /**
  * MinXMLStar is a multi-valued extension of MinXML that, in its 

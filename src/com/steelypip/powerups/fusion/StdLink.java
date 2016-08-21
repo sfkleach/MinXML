@@ -2,7 +2,8 @@ package com.steelypip.powerups.fusion;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-public class StdLink< Field extends Comparable< Field >, ChildValue > implements Link< Field, ChildValue > {
+
+class StdLink< Field extends Comparable< Field >, ChildValue > implements Link< Field, ChildValue > {
 	
 	@NonNull Field field;
 	int fieldIndex;

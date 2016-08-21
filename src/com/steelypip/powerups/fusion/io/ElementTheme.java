@@ -39,43 +39,43 @@ import com.steelypip.powerups.fusion.Fusion;
 public abstract class ElementTheme implements Theme {
 	
 	@Override
-	public boolean tryRender( FusionWriter starw, Fusion x ) {
+	public boolean tryRender( FusionWriter fwriter, Fusion x ) {
 		
 		final String name = x.getName();
 		final boolean has_any_attributes = x.hasAnyAttributes();
 		final boolean has_any_links = x.hasAnyLinks();
 		
-		starw.getIndenter().indent();
-		this.doStartElement( starw, name, has_any_attributes, has_any_links );
-		this.doName( starw, name );
+		fwriter.getIndenter().indent();
+		this.doStartElement( fwriter, name, has_any_attributes, has_any_links );
+		this.doName( fwriter, name );
 		
-		this.doStartAttributes( starw, has_any_attributes, has_any_links );
+		this.doStartAttributes( fwriter, has_any_attributes, has_any_links );
 		for ( @NonNull String key : x.keysToSet() ) {
-			this.doStartAttributeGroup( starw, key );
+			this.doStartAttributeGroup( fwriter, key );
 			final List< @NonNull String > values = x.valuesToList( key );
 			int n = 0;
 			for ( @NonNull String value : values ) {
 				n += 1;
-				this.doAttribute( starw, key, value,  n == 1, n == values.size() );
+				this.doAttribute( fwriter, key, value,  n == 1, n == values.size() );
 			}
-			this.doEndAttributeGroup( starw, key );
+			this.doEndAttributeGroup( fwriter, key );
 		}
-		this.doEndAttributes( starw, has_any_attributes, has_any_links );
+		this.doEndAttributes( fwriter, has_any_attributes, has_any_links );
 		
-		this.doStartLinks( starw, has_any_attributes, has_any_links );
+		this.doStartLinks( fwriter, has_any_attributes, has_any_links );
 		for ( @NonNull String field : x.fieldsToSet() ) {
 			final @NonNull List< @NonNull Fusion > children = x.childrenToList( field );
-			this.doStartLinkGroup( starw, field );
+			this.doStartLinkGroup( fwriter, field );
 			int n = 0;
 			for ( @NonNull Fusion child : children) {
 				n += 1;
-				this.doLink( starw, field, child, n == 1, n == children.size() );
+				this.doLink( fwriter, field, child, n == 1, n == children.size() );
 			}
-			this.doEndLinkGroup( starw, field );
+			this.doEndLinkGroup( fwriter, field );
 		}
-		this.doEndLinks( starw, has_any_attributes, has_any_links ); 
+		this.doEndLinks( fwriter, has_any_attributes, has_any_links ); 
 		
-		this.doEndElement( starw, name, has_any_attributes, has_any_links );
+		this.doEndElement( fwriter, name, has_any_attributes, has_any_links );
 		
 		return true;
 	}

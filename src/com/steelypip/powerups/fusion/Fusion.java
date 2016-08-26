@@ -2,6 +2,7 @@ package com.steelypip.powerups.fusion;
 
 import java.io.PrintWriter;
 import java.io.Writer;
+import java.util.Map;
 
 import com.steelypip.powerups.common.NullIndenter;
 import com.steelypip.powerups.common.StdIndenter;
@@ -12,6 +13,39 @@ import com.steelypip.powerups.hydra.Hydra;
 
 public interface Fusion extends Hydra< String, String, String, Fusion >, JSONFeatures {
 
+	/**
+	 * Returns an unfrozen copy of an element that shares the children.
+	 * @return an unfrozen copy
+	 */
+	default Fusion shallowCopy() {
+		final Fusion f = new FlexiFusion( this.getInternedName() );
+		for ( Map.Entry< String, String > a : this.attributesToIterable() ) {
+			f.addValue( a.getKey(), a.getValue() );
+		}
+		for ( Map.Entry< String, Fusion > a : this.fieldsIterable() ) {
+			f.addChild( a.getKey(), a.getValue() );
+		}
+		return f;
+	}
+	
+	/**
+	 * A programmer directed promise that no further modifications will be
+	 * made to this object. The implementation is encouraged but not required
+	 * to detect any further modifications. In the event that a broken promise
+	 * is detected, the effect will be a thrown UnsupportedOperationException.
+	 */
+	void freeze();
+	
+	/**
+	 * Returns an frozen copy of an element that shares the children.
+	 * @return a copy that has had freeze applied.
+	 */
+	default Fusion frozenCopy() {
+		final Fusion f = this.shallowCopy();
+		f.freeze();
+		return f;
+	}
+		
 	default String defaultField() {
 		return "";
 	}

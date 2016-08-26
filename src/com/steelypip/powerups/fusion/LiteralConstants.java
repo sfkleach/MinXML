@@ -3,7 +3,10 @@ package com.steelypip.powerups.fusion;
 import org.eclipse.jdt.annotation.NonNull;
 
 /**
- * Must return INTERNED values.
+ * This interface provides overrideable values for creating 
+ * element names and attributes of literal constants
+ * 
+ * Must return INTERNED values for fast comparison.
  */
 public interface LiteralConstants {
 	

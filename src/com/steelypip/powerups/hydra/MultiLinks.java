@@ -1,5 +1,6 @@
 package com.steelypip.powerups.hydra;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -77,6 +78,12 @@ public interface MultiLinks< Field extends Comparable< Field >, Value > {
 
 	Set< Field > fieldsToSet();
 	List< Map.Entry< Field, Value > > linksToList();
+	default Iterator< Map.Entry< Field, Value > > fieldsIterator() {
+		return this.fieldsIterable().iterator();
+	}
+	default Iterable< Map.Entry< Field, Value > > fieldsIterable() {
+		return this.linksToList();
+	}
 	List< Value > childrenToList( Field field );
 	Map< Field, Value > firstChildrenToMap();
 //	StarMap< Field, Value > linksToStarMap();

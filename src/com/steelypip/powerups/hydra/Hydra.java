@@ -41,9 +41,7 @@ extends
 	/**
 	 * This method signals that there will be no further updates to an element, at least for a while, 
 	 * and the implementation should consider this a good opportunity to compact the space used
-	 * by this element and all child elements, including any shared elements. Implementations
-	 * must be clear on whether any subsequent updates are allowed or forbidden. If subsequent updates
-	 * are forbidden, the implementation must throw an {@link IllegalStateException}.
+	 * by this element and all child elements, including any shared elements. 
 	 */
 	default void trimToSize() {
 		//	Skip.

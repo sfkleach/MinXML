@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -408,11 +409,6 @@ public abstract class AbsConstantFusion implements Fusion, StdJSONFeatures, Lite
 		return new EmptyMap<>();
 	}
 
-//	@Override
-//	public StarMap< String, Fusion > linksToStarMap() {
-//		return null;
-//	}
-
 	@Override
 	public Map< Pair< String, Integer >, Fusion > linksToPairMap() {
 		return new EmptyMap<>();
@@ -422,5 +418,15 @@ public abstract class AbsConstantFusion implements Fusion, StdJSONFeatures, Lite
 	public Iterator< Map.Entry< String, Fusion > > iterator() {
 		return new EmptyIterator<>();
 	}
-		
+
+	@Override
+	public Iterator< Entry< String, Fusion > > fieldsIterator() {
+		return new EmptyIterator< Map.Entry< String, Fusion > >();
+	}
+
+	@Override
+	public void freeze() {
+	}
+
+
 }

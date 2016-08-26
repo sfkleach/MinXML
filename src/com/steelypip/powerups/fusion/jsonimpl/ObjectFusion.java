@@ -397,7 +397,9 @@ public class ObjectFusion implements Fusion, NullJSONFeatures, LiteralConstants 
 	public boolean isObject() {
 		return true;
 	}
-	
-	
 
+	@Override
+	public void freeze() {
+	}
+	
 }

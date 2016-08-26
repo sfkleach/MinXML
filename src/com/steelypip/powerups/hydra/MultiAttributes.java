@@ -1,5 +1,6 @@
 package com.steelypip.powerups.hydra;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,6 +81,16 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	void setValue( Key key, Value value ) throws UnsupportedOperationException;
 	
 	/**
+	 * From a key-value Map.Entry, discards any existing entries with the same key and inserts a single key-value pair.
+	 * 
+	 * @param e the key-value entry
+	 * @throws UnsupportedOperationException if this is immutable.
+	 */	
+	default void setValue( Map.Entry< Key, Value > e ) throws UnsupportedOperationException {
+		this.setValue( e.getKey(), e.getValue() );
+	}
+	
+	/**
 	 * Discards any existing attributes associated with key and replaces them with a new
 	 * set of attributes.
 	 * @param key the key to be updated.
@@ -89,6 +100,18 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	void setAllValues( Key key, Iterable< Value > values ) throws UnsupportedOperationException;
 	
 	/**
+	 * Iterates over map-entries and setting key-value pairs, discarding any existing attributes associated with key.
+	 * If there are repetitions of the key, the last update is the one that takes effect.
+	 * @param entries the set of key-value pairs.
+	 * @throws UnsupportedOperationException if this is immutable.
+	 */
+	default void setAllValues( Iterable< Map.Entry< Key, Value > > entries ) throws UnsupportedOperationException {
+		for ( Map.Entry< Key, Value > e : entries ) {
+			this.setValue( e );
+		}
+	}
+	
+	/**
 	 * Adds a new key-value pair onto the end of the existing pairs.
 	 * @param key the key 
 	 * @param value the value
@@ -96,6 +119,27 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 */
 	void addValue( Key key, Value value ) throws UnsupportedOperationException;
 
+	/**
+	 * Adds a new key-value pair onto the end of the existing pairs using 
+	 * a Map.Entry to supply the key and value.
+	 * @param e the key-value pair 
+	 * @throws UnsupportedOperationException if this is immutable.
+	 */
+	default void addValue( Map.Entry< Key, Value > e ) throws UnsupportedOperationException {
+		this.addValue( e.getKey(), e.getValue() );
+	}
+
+	/**
+	 * Iterates over map-entries and setting key-value pairs, adding them into the multi-map.
+	 * @param entries the set of key-value pairs.
+	 * @throws UnsupportedOperationException if this is immutable.
+	 */
+	default void addAllValues( Iterable< Map.Entry< Key, Value > > entries ) throws UnsupportedOperationException {
+		for ( Map.Entry< Key, Value > e : entries ) {
+			this.addValue( e );
+		}
+	}
+	
 	/**
 	 * Removes the first key-value pair with a matching key. 
 	 * @param key the key to match.
@@ -287,6 +331,21 @@ public interface MultiAttributes< Key extends Comparable< Key >, Value > {
 	 * @return a list of entries
 	 */
 	List< Map.Entry< Key, Value > > attributesToList();
+	
+	/**
+	 * Returns an iterable for the set of key-value pairs .
+	 * @return an iterable over the key-value pairs.
+	 */
+	default Iterable< Map.Entry< Key, Value > > attributesToIterable() {
+		return this.attributesToList();
+	}
+	
+	/**
+	 * Returns an iterator over the list of attribute entries.
+	 */
+	default Iterator< Map.Entry< Key, Value > > attributesIterator() {
+		return this.attributesToIterable().iterator();
+	}
 	
 	/**
 	 * 

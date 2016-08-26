@@ -489,5 +489,20 @@ public class EvolvingProxyFusion implements Fusion {
 	public Map< Pair< String, Integer >, String > attributesToPairMap() {
 		return fusion.attributesToPairMap();
 	}
+
+	@Override
+	public Iterator< Entry< String, String > > attributesIterator() {
+		return fusion.attributesIterator();
+	}
+
+	@Override
+	public Iterator< Entry< String, Fusion > > fieldsIterator() {
+		return fusion.fieldsIterator();
+	}
+
+	@Override
+	public void freeze() {
+		this.fusion.freeze();
+	}
 	
 }

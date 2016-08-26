@@ -36,6 +36,7 @@ import com.steelypip.powerups.alert.Alert;
 public abstract class AbsFusionBuilder implements FusionBuilder {
 	
 	public abstract FusionFactory factory();
+	public abstract boolean isMakingMutable();
 		
 	static class PreLink {
 		
@@ -200,54 +201,35 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 		this.current_link.getCurrent().addChild( field, this.factory().newNullFusion() );
 	}
 	
-	private void bindName( final @Nullable String name ) {
+	@Override
+	public void bindName( final @Nullable String name ) {
 		if ( name != null ) {
 			if ( this.current().hasName( "" ) ) {
 				this.current().setName( name );
-			} else if ( ! this.current().hasName( name ) ) {
+			} else if ( name != null && ! this.current().hasName( name ) ) {
 				throw new Alert( "Mismatched tags" ).culprit( "Expected", this.current().getName() ).culprit( "Actual", name );				
 			}
 		}		
 	}
 	
-	private void bindField( final @Nullable String field ) {
+	@Override
+	public void bindField( final @Nullable String field ) {
 		if ( field != null ) {
 			if ( this.current_link.getField() == null ) {
 				this.current_link.setField( field );
-			} else if ( ! this.current_link.getField().equals( field ) ) {
+			} else if ( field != null && ! this.current_link.getField().equals( field ) ) {
 				throw new Alert( "Mismatched fields" ).culprit( "Expected", this.current_link.getField() ).culprit( "Actual", field );				
 			}
 		}
 	}
 
-	private void bindAllowRepeats( final boolean allow_repeats ) {
+	@Override
+	public void bindAllowRepeats( final Boolean allow_repeats ) {
 		if ( this.current_link.getAllowRepeats() == null ) {
 			this.current_link.setAllowRepeats( allow_repeats );
-		} else if ( ! this.current_link.getAllowRepeats().equals(  allow_repeats ) ) {
+		} else if ( allow_repeats != null && ! this.current_link.getAllowRepeats().equals(  allow_repeats ) ) {
 			throw new Alert( "Mismatched unique constraint" );							
 		}
-	}
-
-	@Override
-	public void intermediateTag( final String name ) {
-		this.bindName( name );
-	}
-
-	@Override
-	public void intermediateTag( final String field, final String name ) {
-		this.bindField( field );
-		this.bindName( name );
-	}
-
-	@Override
-	public void intermediateTag( final String field, final String name, Boolean allow_repeats ) {
-		this.bindField( field );
-		this.bindName( name );
-		this.bindAllowRepeats( allow_repeats );
-	}
-
-	@Override
-	public void intermediateTag() {
 	}
 	
 	@Override
@@ -282,7 +264,11 @@ public abstract class AbsFusionBuilder implements FusionBuilder {
 		if ( ! repeat_check ) {
 			throw new Alert( "Duplicate 'unique' field found" ).culprit( "Field", field );
 		}
-		b2.getCurrent().addChild( field, this.current_link.getCurrent() );
+		final Fusion child = this.current_link.getCurrent();
+		if ( !this.isMakingMutable() ) {
+			child.freeze();
+		}
+		b2.getCurrent().addChild( field, child );
 		this.current_link = b2;
 	}
 	

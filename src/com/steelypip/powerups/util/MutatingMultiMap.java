@@ -245,8 +245,10 @@ public interface MutatingMultiMap< K, V > extends Iterable< Map.Entry< K, V > >{
 		return this.entriesToList().stream().map( ( Map.Entry< K, V > p ) -> p.getValue() ).collect( Collectors.toList() );
 	}
 	
+	MutatingMultiMap< K, V > freezeByMutation();
+	
 	default MutatingMultiMap< K, V > trimToSize() {
 		return this;
 	}
-	
+
 }

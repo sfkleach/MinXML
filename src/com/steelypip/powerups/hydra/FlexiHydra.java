@@ -28,7 +28,6 @@ import org.eclipse.jdt.annotation.NonNull;
 
 import com.steelypip.powerups.common.CmpPair;
 import com.steelypip.powerups.common.Pair;
-import com.steelypip.powerups.common.StdPair;
 import com.steelypip.powerups.util.EmptyMutatingMultiMap;
 import com.steelypip.powerups.util.MutatingMultiMap;
 
@@ -62,24 +61,6 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 	public FlexiHydra( final String name ) {
 		this.name = name.intern(); 
 	}
-	
-//	@SuppressWarnings("null")
-//	public TreeMap< Key, ArrayList< AttrValue > > getNonNullAttributes() {
-//		if ( this.attributes == null ) {
-//			this.attributes = new TreeMap<>();
-//		}
-//		return this.attributes;
-//	}
-//
-//	@SuppressWarnings("null")
-//	public TreeMap< Field, ArrayList< ChildValue > > getNonNullLinks() {
-//		if ( this.links == null ) {
-//			this.links = new TreeMap<>();
-//		}
-//		return this.links;
-//	}
-	
-
 
 	//////////////////////////////////////////////////////////////////////////////////
 	//	Overrides that avoid allocating the TreeMap
@@ -90,6 +71,12 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 		this.attributes = this.attributes.trimToSize();
 		this.links = this.links.trimToSize();
 	}
+	
+	public void freeze() {
+		this.attributes = this.attributes.freezeByMutation();
+		this.links = this.links.freezeByMutation();
+	}
+		
 
 	@Override
 	public @NonNull String getInternedName() {
@@ -410,12 +397,6 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 		return sofar;
 	}
 
-//	@SuppressWarnings("null")
-//	@Override
-//	public StarMap< Field, ChildValue > linksToStarMap() {
-//		return new TreeStarMap<>( this.links.entriesAsList() );
-//	}
-
 	@Override
 	public Map< Pair< Field, Integer >, ChildValue > linksToPairMap() {
 		final Map< Pair< Field, Integer >, ChildValue > sofar = new TreeMap<>();
@@ -457,49 +438,5 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 		this.addChild( this.defaultField(), value );
 	}
 
-//	/**
-//	 * Creates a copy of the top-level node of the given element.
-//	 * @param element the element to copy
-//	 * @return the copy
-//	 */
-//	public static FlexiHydraXML shallowCopy( Fusion element ) {
-//		return copy( true, element );	
-//	}
-//		
-//	public static FlexiHydraXML deepCopy( Fusion element ) {
-//		return copy( false, element );
-//	}
-//	
-//	private static FlexiHydraXML copy( final boolean shallow, Fusion element ) {
-//		final FlexiHydraXML result = new FlexiHydraXML( element.getName() );
-//		assignAttributes( element, result );
-//		assignLinks( shallow, element, result );
-//		return result;		
-//	}
-//
-//	private static void assignLinks( boolean shallow, Fusion element, final FlexiHydraXML result ) {
-//		for ( Fusion.Link key_value : element.linksToList() ) {
-//			String field = key_value.getField();
-//			Fusion child = key_value.getChild();
-//			result.addChild( field, shallow ? child : FlexiHydraXML.deepCopy( child ) );
-//		}
-//	}
-//
-//	private static void assignAttributes( Fusion element, final FlexiHydraXML result ) {
-//		for ( Fusion.Attribute key_value : element.attributesToList() ) {
-//			String key = key_value.getKey();
-//			String value = key_value.getValue();
-//			result.addValue( key, value );
-//		}
-//	}
-
-//	@Override
-//	public Fusion shallowCopy() {
-//		return copy( true, this );
-//	}
-//
-//	@Override
-//	public Fusion deepCopy() {
-//		return copy( false, this );
-//	}
+	
 }

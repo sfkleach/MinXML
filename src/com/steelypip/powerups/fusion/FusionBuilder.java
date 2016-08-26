@@ -22,7 +22,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * This interface linearises the construction of a MinXMLStar
+ * This interface linearises the construction of a Fusion
  * tree. Start tags are constructed with at least two calls:
  * startTagOpen and startTagClose. In between these two calls
  * there can be any number of adds, which set up the 
@@ -58,6 +58,7 @@ public interface FusionBuilder {
 	 * 
 	 * @param name the name of the element to be constructed (or null).
 	 * @param field the field to be used for the link to the parent (or null) 
+	 * @param allow_repeats 
 	 */
 	void startTag( String field, String name, Boolean allow_repeats ) throws NullPointerException;
 	void startTag( String field, String name ) throws NullPointerException;
@@ -75,13 +76,12 @@ public interface FusionBuilder {
 	/**
 	 * Shorthand for this.startTagOpen( null, null )
 	 */
-
 	void startTag();
 	
 	/**
 	 * This method adds the attribute key=value to the start tag
-	 * that is under construction. The builder method startTagOpen must
-	 * have been the immediately previous method.
+	 * that is under construction. 
+	 * 
 	 * @param key the attribute key 
 	 * @param value the attribute value
 	 */
@@ -89,12 +89,21 @@ public interface FusionBuilder {
 	
 	/**
 	 * This method adds the attribute key=value to the start tag
-	 * that is under construction. The builder method startTagOpen must
-	 * have been the immediately previous method. This must be the first
-	 * use of that attribute key. 
+	 * that is under construction. There must be no previous
+	 * attributes with the same key.
+	 * 
+	 * @param key the attribute key
+	 * @param value the attribute value
 	 */
 	void addNew( @NonNull String key, @NonNull String value );
 	
+	/**
+	 * This method adds the attribute key=value to the start tag
+	 * that is under construction. This must be the first
+	 * use of that attribute key. The boolean allow_repeats determines
+	 * whether or not there may already be an attribute with the
+	 * same key.
+	 */
 	default void add( @NonNull String key, @NonNull String value, boolean allow_repeats ) {
 		if ( allow_repeats ) {
 			this.add( key, value );
@@ -103,6 +112,10 @@ public interface FusionBuilder {
 		}
 	}
 	
+	/**
+	 * Adds a child element that corresponds to the null JSON value into the
+	 * element under construction. The field defaults to  
+	 */
 	void addNull();
 	void addNull( String field );
 	
@@ -130,22 +143,35 @@ public interface FusionBuilder {
 	/**
 	 * This method may be called at any time between startTag and 
 	 * endTag in order to provide the name
-	 * and/or field of the currently constructing element. Both
-	 * name and field may be null. If allow_repeats is specified, 
-	 * a repeated field is permitted.
+	 * the currently constructing element. If the value of
+	 * name is null, this method has no effect.
+	 * 
+	 * @param name the name of the element to be constructed (or null)
+	 */
+	void bindName( String name );
+	
+	/**
+	 * This method may be called at any time between startTag and 
+	 * endTag in order to provide the field
+	 * of the currently constructing element. If the value
+	 * of field is null, this method has no effect.
 	 * 
 	 * When the element is linked to the parent element, the field is 
 	 * used for the link.
 	 * 
-	 * An implementation may permit name and field to be null, 
-	 * in which case they must be supplied as non-null elsewhere.
+	 * @param name the name of the element to be constructed (or null)
+	 */
+	void bindField( String field );
+	
+	/**
+	 * This method may be called at any time between startTag and 
+	 * endTag in order to provide the allow_repeats. If it is specified, 
+	 * a repeated field is permitted. If the value is null the method
+	 * has no effect.
 	 * 
 	 * @param name the name of the element to be constructed (or null)
 	 */
-	void intermediateTag( String name, String field, Boolean allow_repeats );
-	void intermediateTag( String name, String field );
-	void intermediateTag( String name );
-	void intermediateTag();
+	void bindAllowRepeats( Boolean allow_repeats );
 	
 	/**
 	 * This method finishes the construction of the current element.

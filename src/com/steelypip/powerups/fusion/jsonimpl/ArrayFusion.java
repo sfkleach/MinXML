@@ -10,6 +10,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.eclipse.jdt.annotation.NonNull;
+import org.eclipse.jdt.annotation.Nullable;
 
 import com.steelypip.powerups.common.CmpPair;
 import com.steelypip.powerups.common.EmptyList;
@@ -562,7 +563,9 @@ public class ArrayFusion implements Fusion, NullJSONFeatures, LiteralConstants {
 			
 		};
 	}
-	
 
+	@Override
+	public void freeze() {
+	}
 	
 }

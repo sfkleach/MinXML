@@ -32,11 +32,11 @@ import com.steelypip.powerups.minxson.Lookup;
 
 /**
  * This class wraps various types of input stream to
- * create a MinXML parser. An optional MinXMLBuilder can
- * be supplied, which gives control over the MinXML
+ * create a Fusion parser. An optional FusionBuilder can
+ * be supplied, which gives control over the Fusion
  * implementation that is actually constructed.
  * 
- * MinXML elements are read off the stream using
+ * Fusion elements are read off the stream using
  * readElement. Alternatively you can simply iterate 
  * over the parser.
  */
@@ -48,6 +48,13 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	private FusionBuilder builder = null;
 	private String tag_name = null;	
 	
+	/**
+	 * Constructs a parser from a {@link com.steelypip.powerups.charrepeater.CharRepeater} and a
+	 * FusionBuilder. Character repeaters are streams with unlimited pushback.
+	 *  
+	 * @param rep the input source
+	 * @param builder used to construct the Fusion objects
+	 */
 	public FusionParser( CharRepeater rep, FusionBuilder builder ) {
 		this.builder = builder;
 		this.cucharin = rep;
@@ -55,15 +62,23 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 
 	/**
 	 * Constructs a parser from a {@link java.io.Reader} and a
-	 * MinXMLBuilder. 
+	 * FusionBuilder.
+	 *  
 	 * @param reader the input source
-	 * @param builder used to construct the MinXML objects
+	 * @param builder used to construct the Fusion objects
 	 */
 	public FusionParser( Reader reader, FusionBuilder builder ) {
 		this.builder = builder;
 		this.cucharin = new ReaderCharRepeater( reader );
 	}
 
+	/**
+	 * Constructs a parser from a {@link java.io.Reader} and 
+	 * supplies a default builder that optimises for JSON-like
+	 * structures.
+	 *  
+	 * @param reader the input source
+	 */
 	public FusionParser( final Reader rep ) {
 		this.builder = new JSONFusionBuilder();
 		this.cucharin = new ReaderCharRepeater( rep );

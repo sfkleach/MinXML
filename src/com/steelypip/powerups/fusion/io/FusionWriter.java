@@ -27,7 +27,7 @@ import com.steelypip.powerups.common.NullIndenter;
 import com.steelypip.powerups.fusion.Fusion;
 
 /**
- * Prints out a MinXMLStar object to a {@link java.io.PrintWriter}. It can
+ * Prints out a Fusion object to a {@link java.io.PrintWriter}. It can
  * be a simple-all-on-one-line or an elaborate pretty-printer depending
  * on the Indenter, and look like XML or JSON depending on the Theme that
  * is supplied.

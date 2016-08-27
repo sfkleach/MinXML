@@ -207,7 +207,7 @@ public abstract class AbsHydraXMLBuilder implements HydraXMLBuilder {
 		if ( ! repeat_check ) {
 			throw new Alert( "Duplicate 'unique' field found" ).culprit( "Field", field );
 		}
-		final HydraXML child = this.current_link.getCurrent();
+		final HydraXML child = this.factory().release( this.current_link.getCurrent() );
 		if ( !this.isMakingMutable() ) {
 			child.freeze();
 		}

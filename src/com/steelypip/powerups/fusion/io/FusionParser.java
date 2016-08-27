@@ -43,6 +43,8 @@ import com.steelypip.powerups.minxson.Lookup;
  */
 public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	
+	private static final int MAX_CHARACTER_ENTITY_LENGTH = 32;
+
 	private final CharRepeater cucharin;
 	
 	private boolean pending_end_tag = false;
@@ -243,7 +245,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			final char ch = this.nextChar();
 			if ( ch == ';' ) break;
 			esc.append( ch );
-			if ( esc.length() > 4 ) {
+			if ( esc.length() > MAX_CHARACTER_ENTITY_LENGTH ) {
 				throw new Alert( "Malformed escape" ).culprit( "Sequence", esc );
 			}
 		}

@@ -174,6 +174,41 @@ public class TestHydraXMLParser {
 		p.readElement();
 	}
 	
+	@Test
+	public void numericEntitiesEscape() {
+		StringReader rep = new StringReader( "<foo bar='&#32;'/>" );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		HydraXML item = p.readElement();
+		assertEquals( " ", item.getValue( "bar" ) );
+	}
+	
+	@Test( expected = Alert.class )
+	public void badNumericEntitiesEscape() {
+		StringReader rep = new StringReader( "<foo bar='&#32zzz;'/>" );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		p.readElement();
+	}
+	
+	@Test( expected = Alert.class )
+	public void badField() {
+		StringReader rep = new StringReader( "<foo>wow$<bar/></foo>" );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		p.readElement();
+	}
+	
+	@Test( expected = Alert.class )
+	public void badMultipleFields() {
+		StringReader rep = new StringReader( "<foo>wow+:<bar/>wow+<gort/></foo>" );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		p.readElement();
+	}
+	
+	@Test( expected = Alert.class )
+	public void badMultipleAttributes() {
+		StringReader rep = new StringReader( "<foo wow+'y' />" );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		p.readElement();
+	}
 	
 	@Test
 	public void elementsWithStringsForNames() {
@@ -227,7 +262,7 @@ public class TestHydraXMLParser {
 	}
 	
 	@Test
-	public void testComment() {
+	public void testEOLComment() {
 		final String s = "// This is a test\n<foo/>";
 		StringReader rep = new StringReader( s );
 		HydraXMLParser p = new HydraXMLParser( rep );
@@ -236,5 +271,65 @@ public class TestHydraXMLParser {
 		assertNull( p.readElement() );
 	}
 	
+	@Test
+	public void testLongComment() {
+		final String s = "/* This is a test */<foo/>";
+		StringReader rep = new StringReader( s );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		HydraXML item = p.readElement();
+		assertTrue( item.hasName( "foo" ) );
+		assertNull( p.readElement() );
+	}
+	
+	@Test
+	public void testXMLStyleComment() {
+		final String s = "<!-- This is a test --><foo/>";
+		StringReader rep = new StringReader( s );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		HydraXML item = p.readElement();
+		assertTrue( item.hasName( "foo" ) );
+		assertNull( p.readElement() );
+	}
+	
+	@Test
+	public void testShebangStyleComment() {
+		final String s = "#! This is a test\n <foo/>";
+		StringReader rep = new StringReader( s );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		HydraXML item = p.readElement();
+		assertTrue( item.hasName( "foo" ) );
+		assertNull( p.readElement() );
+	}
+	
+	@Test
+	public void testIterator() {
+		final String s = "<foo/><foo/>";
+		StringReader rep = new StringReader( s );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		int n = 0;
+		for ( HydraXML x : p ) {
+			n += 1;
+			assertTrue( x.hasName( "foo" ) );
+		}
+		assertSame( 2, n );
+	}
+	
+	@Test
+	public void discardProlog() {
+		final String s = "<! splatter ratter ><foo/>";
+		StringReader rep = new StringReader( s );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		HydraXML item = p.readElement();		
+		assertTrue( item.hasName( "foo" ) );
+	}
+
+	@Test
+	public void testStringEscapeCharacters() {
+		final String s = "<foo alpha:'\\'\\r\\t\\f\\b\\&eacute;\"\\a'/>";
+		StringReader rep = new StringReader( s );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		HydraXML item = p.readElement();		
+		assertEquals( "'\r\t\f\bé\"a", item.getValue( "alpha" ) );
+	}
 
 }

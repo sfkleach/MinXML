@@ -40,6 +40,8 @@ import com.steelypip.powerups.minxson.Lookup;
  */
 public class HydraXMLParser extends LevelTracker implements Iterable< HydraXML > {
 	
+	private static final int MAX_CHARACTER_ENTITY_LENGTH = 32;
+
 	private final CharRepeater cucharin;
 	
 	private boolean pending_end_tag = false;
@@ -125,8 +127,9 @@ public class HydraXMLParser extends LevelTracker implements Iterable< HydraXML >
 	}
 	
 	private void eatUpTo( final char stop_char ) {
-		final char not_stop_char = ( stop_char != '\0' ? '\0' : '_' );
-		while ( this.cucharin.nextChar( not_stop_char ) != stop_char ) {
+		for (;;) {
+			final char nch = this.cucharin.nextChar( '\0' );
+			if ( nch == '\0' || nch == stop_char ) break;
 		}		
 	}
 	
@@ -161,16 +164,13 @@ public class HydraXMLParser extends LevelTracker implements Iterable< HydraXML >
 		}
 	}
 	
-	private void eatWhiteSpace( final int allow_max_comma ) {
-		int comma_count = 0;
+	private void eatWhiteSpace() {
 		while ( this.cucharin.hasNextChar() ) {
 			final char ch = this.cucharin.nextChar();
 			if ( ch == '#' && this.peekChar( '\0' ) == '!' && this.isAtTopLevel() ) {
 				//	Shebang - note that this is coded quite carefully to leave 
 				//	the options open for other interpretations of #.
 				this.eatUpTo( '\n' );
-			} else if ( ch == ',' && comma_count < allow_max_comma ) {
-				comma_count += 1;
 			} else if ( ch == '/' ) {
 				final char nch = this.peekChar( '\0' );
 				if ( nch == '/' ) {
@@ -193,15 +193,7 @@ public class HydraXMLParser extends LevelTracker implements Iterable< HydraXML >
 			}
 		}
 	}
-	
-	private void eatWhiteSpace(){
-		this.eatWhiteSpace( 0 );
-	}
-	
-	private void eatWhiteSpaceIncludingOneComma() {
-		this.eatWhiteSpace( 1 );
-	}
-	
+		
 	private static boolean is_name_char( final char ch ) {
 		return Character.isLetterOrDigit( ch ) || ch == '-' || ch == '.';
 	}
@@ -236,7 +228,7 @@ public class HydraXMLParser extends LevelTracker implements Iterable< HydraXML >
 			final char ch = this.nextChar();
 			if ( ch == ';' ) break;
 			esc.append( ch );
-			if ( esc.length() > 4 ) {
+			if ( esc.length() > MAX_CHARACTER_ENTITY_LENGTH ) {
 				throw new Alert( "Malformed escape" ).culprit( "Sequence", esc );
 			}
 		}
@@ -321,7 +313,7 @@ public class HydraXMLParser extends LevelTracker implements Iterable< HydraXML >
 			return true;
 		}
 			
-		this.eatWhiteSpaceIncludingOneComma();
+		this.eatWhiteSpace();
 		
 		if ( !this.cucharin.hasNextChar() ) {
 			return false;

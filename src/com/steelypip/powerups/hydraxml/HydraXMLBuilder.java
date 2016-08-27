@@ -22,24 +22,8 @@ import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * This interface linearises the construction of a Fusion
- * tree. Start tags are constructed with at least two calls:
- * startTagOpen and startTagClose. In between these two calls
- * there can be any number of adds, which set up the 
- * attributes.
- * 
- * Note that startTagOpen, startTagClose and endTag all
- * take the element name as a parameter. When using this 
- * interface with an unknown implementation the same (equals) 
- * element name should be supplied for all three calls that 
- * construct a particular element.
- * 
- * However an implementation may elect to allow the
- * element name to be null on one or more of these calls
- * (or even all!). All non-null values should be
- * the same and that must be the final value of the 
- * element name.
- *
+ * This interface linearises the construction of a HydraXML
+ * tree. 
  */
 public interface HydraXMLBuilder {
 
@@ -70,11 +54,12 @@ public interface HydraXMLBuilder {
 	 * 
 	 * @param name the name of the element to be constructed (or null). 
 	 */
-
 	void startTag( String name );
 	
 	/**
-	 * Shorthand for this.startTagOpen( null, null )
+	 * This method constructs a startTag with unknown name, field and
+	 * repeat field. These can be added at any point between the startTag
+	 * and endTag calls using the bindXXX methods.
 	 */
 	void startTag();
 	
@@ -111,34 +96,10 @@ public interface HydraXMLBuilder {
 			this.addNew( key, value );
 		}
 	}
-	
-//	/**
-//	 * Adds a child element that corresponds to the null JSON value into the
-//	 * element under construction. The field defaults to  
-//	 */
-//	void addNull();
-//	void addNull( String field );
-//	
-//	void addInteger( long number );
-//	void addInteger( String field, long number );
-//	
-//	void addFloat( double number );
-//	void addFloat( String field, double number );
-//	
-//	void addString( @Nullable String string );
-//	void addString( String field, @Nullable String string );
-//
-//	void addBoolean( boolean bool );
-//	void addBoolean( String field, boolean bool );
-	
+
 	void addChild( @Nullable HydraXML x ); 
 	void addChild( String field, @Nullable HydraXML x ); 
 
-//	void startArray( String field );
-//	void endArray( String field );
-//	
-//	void startObject( String field );
-//	void endObject( String field );
 	
 	/**
 	 * This method may be called at any time between startTag and 

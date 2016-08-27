@@ -16,16 +16,13 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.fusion.io;
+package com.steelypip.powerups.hydraxml;
 
 import java.io.PrintWriter;
 import java.io.Writer;
 
 import com.steelypip.powerups.common.IndenterFactory;
 import com.steelypip.powerups.common.NullIndenter;
-import com.steelypip.powerups.fusion.Fusion;
-import com.steelypip.powerups.hydraxml.Theme;
-import com.steelypip.powerups.hydraxml.ThemeableWriter;
 
 /**
  * Prints out a Fusion object to a {@link java.io.PrintWriter}. It can
@@ -70,24 +67,24 @@ import com.steelypip.powerups.hydraxml.ThemeableWriter;
  *  	CHILDREN ::= CHILD | '(' CHILD+ ')'
  *  however it shares the literal printing with the JSON theme.
  */
-public class FusionWriter extends ThemeableWriter< Fusion > {
+public class HydraXMLWriter extends ThemeableWriter< HydraXML > {
 
-	public FusionWriter( PrintWriter pw, IndenterFactory indenter_factory, Theme< Fusion > theme ) {
+	public HydraXMLWriter( PrintWriter pw, IndenterFactory indenter_factory, Theme< HydraXML > theme ) {
 		super( pw, indenter_factory, theme );
 	}
 	
 	private static NullIndenter.Factory DEFAULT_INDENT_FACTORY = new NullIndenter.Factory();
-	private static Theme< Fusion > DEFAULT_THEME = new JSONTheme().compose( new FusionXmlElementTheme() );
+	private static Theme< HydraXML > DEFAULT_THEME = new HydraXmlElementTheme();
 	
-	public FusionWriter( PrintWriter pw ) {
+	public HydraXMLWriter( PrintWriter pw ) {
 		this( pw, DEFAULT_INDENT_FACTORY, DEFAULT_THEME );
 	}
 	
-	public FusionWriter( PrintWriter pw, IndenterFactory indenter_factory ) {
+	public HydraXMLWriter( PrintWriter pw, IndenterFactory indenter_factory ) {
 		super( pw, indenter_factory, DEFAULT_THEME );
 	}
 	
-	public FusionWriter( Writer w ) {
+	public HydraXMLWriter( Writer w ) {
 		this( new PrintWriter( w ) );
 	}
 

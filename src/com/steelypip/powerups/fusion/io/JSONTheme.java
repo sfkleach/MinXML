@@ -1,11 +1,13 @@
 package com.steelypip.powerups.fusion.io;
 
 import com.steelypip.powerups.fusion.Fusion;
+import com.steelypip.powerups.hydraxml.Theme;
+import com.steelypip.powerups.hydraxml.ThemeableWriter;
 
-public class JSONTheme implements Theme {
-	
+public class JSONTheme implements Theme< Fusion > {
+
 	@Override
-	public boolean tryRender( FusionWriter fwriter, Fusion x ) {
+	public boolean tryRender( ThemeableWriter< Fusion > fwriter, Fusion x ) {
 		if ( x.isJSONItem() ) {
 			if ( x.isInteger() ) {
 				fwriter.print( x.integerValue( 0 ) );

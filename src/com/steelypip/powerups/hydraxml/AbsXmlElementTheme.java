@@ -1,6 +1,4 @@
-package com.steelypip.powerups.fusion.io;
-
-import com.steelypip.powerups.fusion.Fusion;
+package com.steelypip.powerups.hydraxml;
 
 /**
  * 		<		doStartElement( String name, boolean hasAttributes, boolean hasLinks )
@@ -28,31 +26,29 @@ import com.steelypip.powerups.fusion.Fusion;
  *		</NAME>	doEndElement( String name, boolean hasAttributes, boolean hasLinks )
  *
  */
-public class XmlElementTheme extends ElementTheme {
-	
-	final static XmlElementTheme INSTANCE = new XmlElementTheme();
-	
+public abstract class AbsXmlElementTheme< U > extends AbsElementTheme< U > {
+		
 			
 	@Override
-	public void doStartElement( FusionWriter fwriter, String name, boolean hasAttributes, boolean hasLinks ) {
+	public void doStartElement( ThemeableWriter< U > fwriter, String name, boolean hasAttributes, boolean hasLinks ) {
 		fwriter.print( '<' );
 	}
 
 	@Override
-	public void doName( FusionWriter fwriter, String name ) {
+	public void doName( ThemeableWriter< U > fwriter, String name ) {
 		fwriter.print( name );
 	}
 
 	@Override
-	public void doStartAttributes( FusionWriter fwriter, boolean hasAttributes, boolean hasLinks ) {
+	public void doStartAttributes( ThemeableWriter< U > fwriter, boolean hasAttributes, boolean hasLinks ) {
 	}
 
 	@Override
-	public void doStartAttributeGroup( FusionWriter fwriter, String key ) {
+	public void doStartAttributeGroup( ThemeableWriter< U > fwriter, String key ) {
 	}
 
 	@Override
-	public void doAttribute( FusionWriter fwriter, String key, String value, boolean first_in_group, boolean last_in_group ) {
+	public void doAttribute( ThemeableWriter< U > fwriter, String key, String value, boolean first_in_group, boolean last_in_group ) {
 		fwriter.print( ' ' );
 		fwriter.print( key );
 		fwriter.print( first_in_group ? "=" : "+=" );
@@ -62,11 +58,11 @@ public class XmlElementTheme extends ElementTheme {
 	}
 
 	@Override
-	public void doEndAttributeGroup( FusionWriter fwriter, String key ) {
+	public void doEndAttributeGroup( ThemeableWriter< U > fwriter, String key ) {
 	}
 
 	@Override
-	public void doEndAttributes( FusionWriter fwriter, boolean hasAttributes, boolean hasLinks ) {
+	public void doEndAttributes( ThemeableWriter< U > fwriter, boolean hasAttributes, boolean hasLinks ) {
 		if ( hasLinks ) {
 			fwriter.print( '>' );
 		} else {
@@ -75,15 +71,15 @@ public class XmlElementTheme extends ElementTheme {
 	}
 
 	@Override
-	public void doStartLinks( FusionWriter fwriter, boolean hasAttributes, boolean hasLinks ) {
+	public void doStartLinks( ThemeableWriter< U > fwriter, boolean hasAttributes, boolean hasLinks ) {
 	}
 
 	@Override
-	public void doStartLinkGroup( FusionWriter starw, String field ) {
+	public void doStartLinkGroup( ThemeableWriter< U > starw, String field ) {
 	}
 
 	@Override
-	public void doLink( FusionWriter fwriter, String field, Fusion child, boolean first_in_group, boolean last_in_group ) {
+	public void doLink( ThemeableWriter< U > fwriter, String field, U child, boolean first_in_group, boolean last_in_group ) {
 		if ( ! field.isEmpty() ) {
 			fwriter.print( field );
 			fwriter.print( first_in_group ? ":" : "+:" );
@@ -93,15 +89,15 @@ public class XmlElementTheme extends ElementTheme {
 
 
 	@Override
-	public void doEndLinkGroup( FusionWriter fwriter, String field ) {
+	public void doEndLinkGroup( ThemeableWriter< U > fwriter, String field ) {
 	}
 
 	@Override
-	public void doEndLinks( FusionWriter fwriter, boolean hasAttributes, boolean hasLinks ) {
+	public void doEndLinks( ThemeableWriter< U > fwriter, boolean hasAttributes, boolean hasLinks ) {
 	}
 
 	@Override
-	public void doEndElement( FusionWriter fwriter, String name, boolean hasAttributes, boolean hasLinks ) {
+	public void doEndElement( ThemeableWriter< U > fwriter, String name, boolean hasAttributes, boolean hasLinks ) {
 		if ( hasLinks ) {
 			fwriter.print( "</" );
 			fwriter.print( name );

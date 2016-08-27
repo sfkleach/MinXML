@@ -1,4 +1,4 @@
-package com.steelypip.powerups.fusion;
+package com.steelypip.powerups.hydraxml;
 
 import java.io.PrintWriter;
 import java.io.Writer;
@@ -6,22 +6,20 @@ import java.util.Map;
 
 import com.steelypip.powerups.common.NullIndenter;
 import com.steelypip.powerups.common.StdIndenter;
-import com.steelypip.powerups.fusion.io.FusionWriter;
-import com.steelypip.powerups.fusion.io.FusionXmlElementTheme;
-import com.steelypip.powerups.fusion.io.JSONTheme;
 import com.steelypip.powerups.hydra.Hydra;
-public interface Fusion extends Hydra< String, String, String, Fusion >, JSONFeatures {
+
+public interface HydraXML extends Hydra< String, String, String, HydraXML > {
 
 	/**
 	 * Returns an unfrozen copy of an element that shares the children.
 	 * @return an unfrozen copy
 	 */
-	default Fusion shallowCopy() {
-		final Fusion f = new FlexiFusion( this.getInternedName() );
+	default HydraXML shallowCopy() {
+		final HydraXML f = new FlexiHydraXML( this.getInternedName() );
 		for ( Map.Entry< String, String > a : this.attributesToIterable() ) {
 			f.addValue( a.getKey(), a.getValue() );
 		}
-		for ( Map.Entry< String, Fusion > a : this.fieldsIterable() ) {
+		for ( Map.Entry< String, HydraXML > a : this.fieldsIterable() ) {
 			f.addChild( a.getKey(), a.getValue() );
 		}
 		return f;
@@ -39,8 +37,8 @@ public interface Fusion extends Hydra< String, String, String, Fusion >, JSONFea
 	 * Returns an frozen copy of an element that shares the children.
 	 * @return a copy that has had freeze applied.
 	 */
-	default Fusion frozenCopy() {
-		final Fusion f = this.shallowCopy();
+	default HydraXML frozenCopy() {
+		final HydraXML f = this.shallowCopy();
 		f.freeze();
 		return f;
 	}
@@ -56,7 +54,7 @@ public interface Fusion extends Hydra< String, String, String, Fusion >, JSONFea
 	 * @param pw the {@link PrintWriter} to use.
 	 */
 	default void print( PrintWriter pw, String ... options ) {
-		FusionWriter fw = new FusionWriter( pw );
+		HydraXMLWriter fw = new HydraXMLWriter( pw );
 		for ( String c : options ) {
 			switch ( c ) {
 			case "--pretty":
@@ -65,11 +63,8 @@ public interface Fusion extends Hydra< String, String, String, Fusion >, JSONFea
 			case "--plain":
 				fw.setIndenterFactory( new NullIndenter.Factory() );
 				break;
-			case "--json":
-				fw.setTheme( new JSONTheme().compose( new FusionXmlElementTheme() ) );
-				break;
 			case "--element":
-				fw.setTheme( new FusionXmlElementTheme() );
+				fw.setTheme( new HydraXmlElementTheme() );
 				break;
 			default:
 				throw new RuntimeException( "Unknown option" );
@@ -78,9 +73,6 @@ public interface Fusion extends Hydra< String, String, String, Fusion >, JSONFea
 		fw.print( this );
 	}
 
-//	default void print( PrintWriter pw ) {
-//		new FusionWriter( pw ).print( this );
-//	}
 	
 	/**
 	 * Renders the element to the supplied {@link java.io.Writer}.
@@ -99,7 +91,7 @@ public interface Fusion extends Hydra< String, String, String, Fusion >, JSONFea
 	 * @param pw the {@link PrintWriter} to use.
 	 */
 	default void prettyPrint( PrintWriter pw, String ... options ) {
-		new FusionWriter( pw, new StdIndenter.Factory(), new FusionXmlElementTheme() ).print( this );
+		new HydraXMLWriter( pw, new StdIndenter.Factory(), new HydraXmlElementTheme() ).print( this );
 	}
 	
 	/**
@@ -110,7 +102,7 @@ public interface Fusion extends Hydra< String, String, String, Fusion >, JSONFea
 	 * @param w the {@link Writer} to use.
 	 */
 	default void prettyPrint( Writer w ) {
-		new FusionWriter( new PrintWriter( w, true ), new StdIndenter.Factory(), new FusionXmlElementTheme() ).print( this );
+		new HydraXMLWriter( new PrintWriter( w, true ), new StdIndenter.Factory(), new HydraXmlElementTheme() ).print( this );
 	}
 
 

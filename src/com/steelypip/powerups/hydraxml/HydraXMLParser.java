@@ -16,7 +16,7 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.fusion.io;
+package com.steelypip.powerups.hydraxml;
 
 import java.io.Reader;
 import java.util.Iterator;
@@ -26,9 +26,6 @@ import org.eclipse.jdt.annotation.NonNull;
 import com.steelypip.powerups.alert.Alert;
 import com.steelypip.powerups.charrepeater.CharRepeater;
 import com.steelypip.powerups.charrepeater.ReaderCharRepeater;
-import com.steelypip.powerups.fusion.Fusion;
-import com.steelypip.powerups.fusion.FusionBuilder;
-import com.steelypip.powerups.hydraxml.LevelTracker;
 import com.steelypip.powerups.minxson.Lookup;
 
 /**
@@ -41,12 +38,12 @@ import com.steelypip.powerups.minxson.Lookup;
  * readElement. Alternatively you can simply iterate 
  * over the parser.
  */
-public class FusionParser extends LevelTracker implements Iterable< Fusion > {
+public class HydraXMLParser extends LevelTracker implements Iterable< HydraXML > {
 	
 	private final CharRepeater cucharin;
 	
 	private boolean pending_end_tag = false;
-	private FusionBuilder builder = null;
+	private HydraXMLBuilder builder = null;
 	private String tag_name = null;	
 	
 	/**
@@ -56,7 +53,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	 * @param rep the input source
 	 * @param builder used to construct the Fusion objects
 	 */
-	public FusionParser( CharRepeater rep, FusionBuilder builder ) {
+	public HydraXMLParser( CharRepeater rep, HydraXMLBuilder builder ) {
 		this.builder = builder;
 		this.cucharin = rep;
 	}
@@ -68,7 +65,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	 * @param reader the input source
 	 * @param builder used to construct the Fusion objects
 	 */
-	public FusionParser( Reader reader, FusionBuilder builder ) {
+	public HydraXMLParser( Reader reader, HydraXMLBuilder builder ) {
 		this.builder = builder;
 		this.cucharin = new ReaderCharRepeater( reader );
 	}
@@ -80,17 +77,13 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	 *  
 	 * @param reader the input source
 	 */
-	public FusionParser( final Reader rep ) {
-		this.builder = new JSONFusionBuilder();
+	public HydraXMLParser( final Reader rep ) {
+		this.builder = new FlexiHydraXMLBuilder();
 		this.cucharin = new ReaderCharRepeater( rep );
 	}
 
 	private char nextChar() {
 		return this.cucharin.nextChar();
-	}
-	
-	private void skipChar() {
-		this.cucharin.skipChar();
 	}
 	
 	private boolean tryReadChar( final char ch_want ) {
@@ -340,7 +333,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		} else if ( pch == '"' || pch == '\'' ) {
 			return readLabelledTagOrSymbol( false, this.gatherString() );
 		} else {
-			return readUnlabelledTag( field, accept_repeat_field );
+			return readCoreTag( field, accept_repeat_field );
 		}
 	}
 	
@@ -354,51 +347,20 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 				accept_repeat_field = true;
 			}
 			this.eatWhiteSpace();
-			return readUnlabelledTag( field, accept_repeat_field );
+			return readCoreTag( field, accept_repeat_field );
 		} else if ( plus ) {
 			//	:+ is not allowed - we want to raise the alarm.
 			this.mustReadChar( ':' ); 	//	This will throw an exception (the one we want).
 			throw Alert.unreachable();	//	So compiler doesn't complain.
 		} else {
-			return handleStringOrIdentifier( is_identifier, field );
+			//	TODO, not correct error message at end of file.
+			throw new Alert( "Unexpected character" ).culprit( "Character", this.peekChar( '\0' ) );
 		}
 	}
-	
-	private boolean readUnlabelledTag( String field, boolean accept_repeat_field ) {
-		final char pch = this.peekChar( '\0' );
-		if ( pch == '<' || pch == '[' || pch == '{' ) {
-			return this.readCoreTag( field, accept_repeat_field );
-		} else if ( Character.isDigit( pch ) || pch == '+' || pch == '-' ) {
-			return this.readNumber( field );
-		} else if ( pch == '"' || pch == '\'' ) {
-			return this.readString( field );
-		} else if ( pch == ']' ) {
-			this.mustReadChar( ']' );
-			this.popArray();
-			this.builder.endArray( "" );
-			return true;
-		} else if ( pch == '}' ) {
-			this.mustReadChar( '}' );
-			this.popObject();
-			this.builder.endObject( "" );
-			return true;
-		} else if ( Character.isLetter( pch ) ) {
-			return this.handleIdentifier( this.gatherName() );
-		} else {
-			throw new Alert( "Unexpected character when read tag or constant" ).culprit( "Character", pch );
-		}
-	}
+
 	
 	private boolean readCoreTag( String field, boolean accept_repeat_field ) {	
-		if ( this.tryReadChar( '[' ) ) {
-			this.pushArray();
-			this.builder.startArray( field );
-			return true;
-		} else if ( this.tryReadChar( '{' ) ) {
-			this.pushObject();
-			this.builder.startObject( field );
-			return true;
-		} else if ( this.tryReadChar( '<' ) ) {
+		if ( this.tryReadChar( '<' ) ) {
 			char ch = this.nextChar();
 			if ( ch == '/' ) {
 				this.eatWhiteSpace();
@@ -441,7 +403,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			}
 		} else {
 			//	TODO, not correct error message at end of file.
-			throw new Alert( "Unexpected character" ).culprit( "Expecting", "< or [ or { " ).culprit( "Actually", this.peekChar( '\0' ) ); 
+			throw new Alert( "Unexpected character" ).hint( "Expecting <" ).culprit( "Found", this.peekChar( '\0' ) ); 
 		}  
 	}
 	
@@ -474,10 +436,6 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		return sofar.toString();
 	}
 	
-	private boolean readString( final String field ) {
-		this.builder.addString( field, this.gatherString() );
-		return true;
-	}
 	
 	void readEscapeChar( final StringBuilder sofar ) {
 		final char ch = this.nextChar();
@@ -511,164 +469,13 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 				break;
 		}
 	}
-	
-//	private void acceptNextChar( final StringBuilder b ) {
-//		b.append( this.nextChar() );		
-//	}
-	
-	static class NumParser {
-		FusionParser fparser;
 		
-		StringBuilder b = new StringBuilder();
-		
-		int radix = 10;
-		boolean floating_point = false;
-		
-		public NumParser( FusionParser fparser ) {
-			super();
-			this.fparser = fparser;
-		}
-		
-		Number process() {
-			while ( this.processChar( fparser.peekChar( '\0' ) ) ) {
-			}
-			return convertStringToNumber( radix, floating_point, b.toString() );			
-		}
-		
-		boolean processChar( char pch ) {
-			switch ( pch ) {
-			case '.':
-				return processDot( pch );
-			case '-':
-			case '+':
-				return processSign( pch );
-			case '0':
-				return processZero( pch );
-			default:
-				return processOthers( pch );
-			}
-		}
-
-		void acceptNextChar( char x ) {
-			this.b.append( this.fparser.nextChar() );
-		}
-		
-		boolean isDigit( char ch ) {
-			if ( radix == 10 ) {
-				return Character.isDigit( ch );
-			} else if ( radix == 16 ) {
-				return Character.isDigit( ch ) || ( "ABCDEF".indexOf( ch ) != -1 );
-			} else if ( radix == 2 ) {
-				return ch == '0' || ch == '1';
-			} else {
-				throw new Alert( "Invalid digit" ).culprit(  "Radix", this.radix ).culprit( "Digit", ch );
-			}
-		}
-
-		private boolean processOthers( char pch ) {
-			if ( this.isDigit( pch ) ) {
-				this.acceptNextChar( pch );
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		private boolean processZero( char pch ) {
-			if ( b.length() == 0 || b.length() == 1 && ( "+-".indexOf( b.charAt( 0 ) ) != -1 ) ) {
-				this.fparser.skipChar();
-				radix = fparser.tryReadChar( 'b' ) ? 2 : this.fparser.tryReadChar( 'x' ) ? 16 : 10;
-				if ( radix == 10 ) {
-					b.append( '0' );
-				}
-			} else {
-				this.acceptNextChar( pch );
-			}
-			return true;
-		}
-
-		private boolean processSign( char pch ) {
-			if ( b.length() == 0 ) {
-				this.acceptNextChar( pch );
-				return true;
-			} else {
-				return false;
-			}
-		}
-
-		private boolean processDot( char pch ) {
-			if ( floating_point ) {
-				return false;
-			} else {
-				floating_point = true;
-				this.acceptNextChar( pch );
-				return true;
-			}
-		}
-		
-	}
-	
-	private static Number convertStringToNumber( int radix, boolean floating_point, final String numString ) {
-		try {
-			if ( floating_point ) {
-				if ( radix == 10 ) {
-					return Double.parseDouble( numString );
-				} else {
-					throw new Alert( "Floating points with non-decimal radix not supported yet" ).culprit( "Radix", radix ).culprit( "Number", numString );
-				}
-			} else {
-				return Long.parseLong( numString, radix );
-			}
-		} catch ( NumberFormatException e ) {
-			throw new Alert( "Malformed number" ).culprit( "Bad number", numString );
-		}
-	}
-	
-	private Number gatherNumber() {
-		return new NumParser( this ).process();			
-	}
-
-	
-	private boolean readNumber( final String field ) {
-		final Number number = this.gatherNumber();
-		if ( number instanceof Double ) {
-			this.builder.addFloat( field, (Double)number );
-		} else {
-			this.builder.addInteger( field, (Long)number );
-		}
-		return true;
-	}
-	
-	private boolean handleStringOrIdentifier(  final boolean is_identifier, final String x ) {
-		return is_identifier ? this.handleIdentifier( x ) : this.handleString( x );
-	}
-
-
-	private boolean handleIdentifier( String identifier ) {
-		switch ( identifier ) {
-		case "null":
-			this.builder.addNull();
-			return true;
-		case "true":
-		case "false":
-			this.builder.addBoolean( Boolean.parseBoolean( identifier ) );
-			return true;
-		default:
-			throw new Alert( "Unrecognised identifier" ).culprit( "Identifier", identifier );
-		}
-	}
-	
-	private boolean handleString( String s ) {
-		this.builder.addString( s );
-		return true;
-	}
-	
 	/**
 	 * Read an element off the input stream or null if the stream is
 	 * exhausted.
 	 * @return the next element
 	 */
-	public Fusion readElement() {
+	public HydraXML readElement() {
 		while ( this.readNextTag( true, "", true ) ) {
 			if ( this.isAtTopLevel() ) break;
 		}
@@ -682,17 +489,17 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 	 * Returns an iterator that reads elements off sequentially
 	 * from this parser.
 	 */
-	public Iterator< Fusion > iterator() {
-		return new Iterator< Fusion >() {
+	public Iterator< HydraXML > iterator() {
+		return new Iterator< HydraXML >() {
 
 			@Override
 			public boolean hasNext() {
-				return FusionParser.this.hasNext();
+				return HydraXMLParser.this.hasNext();
 			}
 
 			@Override
-			public Fusion next() {
-				return FusionParser.this.readElement();
+			public HydraXML next() {
+				return HydraXMLParser.this.readElement();
 			}
 
 			@Override

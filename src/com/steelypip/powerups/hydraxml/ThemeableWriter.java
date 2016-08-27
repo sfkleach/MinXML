@@ -16,19 +16,18 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.fusion.io;
+package com.steelypip.powerups.hydraxml;
 
 import java.io.PrintWriter;
 import java.io.Writer;
 
+import com.steelypip.powerups.common.Indenter;
 import com.steelypip.powerups.common.IndenterFactory;
 import com.steelypip.powerups.common.NullIndenter;
 import com.steelypip.powerups.fusion.Fusion;
-import com.steelypip.powerups.hydraxml.Theme;
-import com.steelypip.powerups.hydraxml.ThemeableWriter;
 
 /**
- * Prints out a Fusion object to a {@link java.io.PrintWriter}. It can
+ * Prints out an object to a {@link java.io.PrintWriter}. It can
  * be a simple-all-on-one-line or an elaborate pretty-printer depending
  * on the Indenter, and look like XML or JSON depending on the Theme that
  * is supplied.
@@ -70,25 +69,99 @@ import com.steelypip.powerups.hydraxml.ThemeableWriter;
  *  	CHILDREN ::= CHILD | '(' CHILD+ ')'
  *  however it shares the literal printing with the JSON theme.
  */
-public class FusionWriter extends ThemeableWriter< Fusion > {
+public class ThemeableWriter< T > {
 
-	public FusionWriter( PrintWriter pw, IndenterFactory indenter_factory, Theme< Fusion > theme ) {
-		super( pw, indenter_factory, theme );
+	final PrintWriter pw;
+	Indenter indenter;
+	Theme< T > theme;
+	
+	public ThemeableWriter( PrintWriter pw, IndenterFactory indenter_factory, Theme< T > theme ) {
+		this.pw = pw;
+		this.indenter = indenter_factory.newIndenter( pw );
+		this.theme = theme;
 	}
 	
 	private static NullIndenter.Factory DEFAULT_INDENT_FACTORY = new NullIndenter.Factory();
-	private static Theme< Fusion > DEFAULT_THEME = new JSONTheme().compose( new FusionXmlElementTheme() );
-	
-	public FusionWriter( PrintWriter pw ) {
-		this( pw, DEFAULT_INDENT_FACTORY, DEFAULT_THEME );
+		
+	public ThemeableWriter( PrintWriter pw, Theme< T > theme ) {
+		this( pw, DEFAULT_INDENT_FACTORY, theme );
 	}
 	
-	public FusionWriter( PrintWriter pw, IndenterFactory indenter_factory ) {
-		super( pw, indenter_factory, DEFAULT_THEME );
+	public ThemeableWriter( Writer w, Theme< T > theme ) {
+		this( new PrintWriter( w ), theme );
 	}
 	
-	public FusionWriter( Writer w ) {
-		this( new PrintWriter( w ) );
+	PrintWriter getPrintWriter() {
+		return this.pw;
+	}
+	
+	public Indenter getIndenter() {
+		return indenter;
+	}
+	
+	public Theme< T > getTheme() {
+		return theme;
+	}
+
+	public void setTheme( Theme< T > theme ) {
+		this.theme = theme;
+	}
+
+	public void setIndenterFactory( IndenterFactory indenterf ) {
+		this.indenter = indenterf.newIndenter( this.pw );
+	}
+
+	public void print( T x ) {
+		if ( ! this.theme.tryRender( this, x ) ) {
+			throw new IllegalStateException( "Canont render this item" );
+		}
+	}
+	
+	void renderString( final String v ) {
+		for ( int n = 0; n < v.length(); n++ ) {
+			final char ch = v.charAt( n );
+			if ( ch == '"' ) {
+				pw.print( "&quot;" );
+			} else if ( ch == '\'' ) {
+				pw.print(  "&apos;" );
+			} else if ( ch == '<' ) {
+				pw.print( "&lt;" );
+			} else if ( ch == '>' ) {
+				pw.print( "&gt;" );
+			} else if ( ch == '&' ) {
+				pw.print( "&amp;" );
+			} else if ( ' ' <= ch && ch <= '~' ) {
+				pw.print( ch );
+			} else {
+				pw.print( "&#" );
+				pw.print( (int)ch );
+				pw.print( ';' );
+			}
+		}
+	}
+
+	public void flush() {
+		pw.flush();
+	}
+
+	public void print( char c ) {
+		pw.print( c );
+	}
+
+	public void print( String s ) {
+		pw.print( s );
+	}
+
+	public void print( long s ) {
+		pw.print( s );
+	}
+
+	public void print( double s ) {
+		pw.print( s );
+	}
+
+	public void print( boolean s ) {
+		pw.print( s );
 	}
 
 }

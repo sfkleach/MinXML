@@ -1,4 +1,4 @@
-package com.steelypip.powerups.fusion.io;
+package com.steelypip.powerups.hydraxml;
 
 import java.util.ArrayDeque;
 
@@ -17,7 +17,7 @@ public class LevelTracker {
 	
 	ArrayDeque< Context > contexts = new ArrayDeque<>();
 	
-	boolean isAtTopLevel() {
+	public boolean isAtTopLevel() {
 		return contexts.isEmpty();
 	}
 	
@@ -28,27 +28,27 @@ public class LevelTracker {
 		}
 	}
 	
-	void popElement() {
+	protected void popElement() {
 		pop( Context.ELEMENT );
 	}
 	
-	void pushElement() {
+	protected void pushElement() {
 		contexts.add( Context.ELEMENT );
 	}
 	
-	void popArray() {
+	protected void popArray() {
 		pop( Context.ARRAY );
 	}
 	
-	void pushArray() {
+	protected void pushArray() {
 		contexts.add( Context.ARRAY );
 	}
 	
-	void popObject() {
+	protected void popObject() {
 		pop( Context.OBJECT );
 	}
 	
-	void pushObject() {
+	protected void pushObject() {
 		contexts.add( Context.OBJECT );
 	}
 	

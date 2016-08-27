@@ -167,205 +167,10 @@ public class TestHydraXMLParser {
 	}
 
 
-//	@Test
-//	public void integerLiteral() {
-//		StringReader rep = new StringReader( "6" );
-//		HydraXMLParser p = new HydraXMLParser( rep );
-//		HydraXML item = p.readElement();
-//		assertNotNull( item );
-//		checkConstant( item, "integer", "6" );
-//		HydraXML end = p.readElement();
-//		assertNull( end );		
-//	}
-	
-//	@Test
-//	public void floatLiteral() {
-//		StringReader rep = new StringReader( "-0.1" );
-//		HydraXMLParser p = new HydraXMLParser( rep );
-//		HydraXML item = p.readElement();
-//		assertNotNull( item );
-//		checkConstant( item, "float", "-0.1" );
-//		HydraXML end = p.readElement();
-//		assertNull( end );
-//	}
-//	
-//	@Test
-//	public void stringLiteral() {
-//		StringReader rep = new StringReader( "\"foo\"" );
-//		HydraXMLParser p = new HydraXMLParser( rep );
-//		HydraXML item = p.readElement();
-//		checkConstant( item, "string", "foo" );
-//	}
-//
-//	@Test
-//	public void nullLiteral() {
-//		StringReader rep = new StringReader( "null" );
-//		HydraXMLParser p = new HydraXMLParser( rep );
-//		HydraXML item = p.readElement();
-//		checkConstant( item, "null", "null" );
-//	}
-//
-//	@Test
-//	public void booleanLiteral() {
-//		StringReader rep = new StringReader( "true false" );
-//		HydraXMLParser p = new HydraXMLParser( rep );
-//		HydraXML item = p.readElement();
-//		checkConstant( item, "boolean", "true" );
-//		item = p.readElement();
-//		checkConstant( item, "boolean", "false" );
-//		assertNull( p.readElement() );
-//	}
-//	
-//	@Test
-//	public void emptyArray() {
-//		for ( String input : new String[] { "[]", "[ ]" } ) {
-//			StringReader rep = new StringReader( input );
-//			HydraXMLParser p = new HydraXMLParser( rep );
-//			HydraXML item = p.readElement();
-//			assertTrue( item.isArray() );
-//			assertTrue( item.hasNoAttributes() );
-//			assertTrue( item.hasNoLinks() );
-//	//		item = p.readElement();
-//	//		checkConstant( item, "boolean", "false" );
-//			assertNull( p.readElement() );
-//		}
-//	}
-	
-//	@Test
-//	public void nonEmptyArray() {
-//		for ( String input : new String[] { "[1]", " [ 1 ] ", "[<foo/>]", "[ < foo /> ]" } ) {
-//			StringReader rep = new StringReader( input );
-//			HydraXMLParser p = new HydraXMLParser( rep );
-//			HydraXML item = p.readElement();
-//			assertTrue( item.isArray() );
-//			assertTrue( item.hasNoAttributes() );
-//			assertTrue( item.hasSizeLinks( 1 ) );
-//			assertNull( p.readElement() );
-//		}
-//	}
-//	
-//	@Test
-//	public void emptyObject() {
-//		for ( String input : new String[] { "{}", " {  } " } ) {
-//			StringReader rep = new StringReader( input );
-//			HydraXMLParser p = new HydraXMLParser( rep );
-//			HydraXML item = p.readElement();
-//			assertTrue( item.isObject() );
-//			assertTrue( item.hasNoAttributes() );
-//			assertTrue( item.hasNoLinks() );
-//			assertNull( p.readElement() );
-//		}
-//	}
-//	
-//	@Test
-//	public void integerInObject() {
-//		for ( String input : new String[] { "{foo:99}", " { foo : 99 } " } ) {
-//			StringReader rep = new StringReader( input );
-//			HydraXMLParser p = new HydraXMLParser( rep );
-//			HydraXML item = p.readElement();
-//			assertTrue( item.isObject() );
-//			assertTrue( item.hasNoAttributes() );
-//			assertTrue( item.hasSizeLinks( 1 ) );
-////			Fusion f99 = item.getChild( "foo" );
-////			assertTrue( f99.isInteger() );
-//			assertNull( p.readElement() );
-//		}
-//	}
-	
-//	@Test
-//	public void booleanInObject() {
-//		for ( String input : new String[] { "{foo:true}" } ) {
-//			StringReader rep = new StringReader( input );
-//			HydraXMLParser p = new HydraXMLParser( rep );
-//			HydraXML item = p.readElement();
-//			assertTrue( item.isObject() );
-//			assertTrue( item.hasNoAttributes() );
-//			assertTrue( item.hasSizeLinks( 1 ) );
-////			Fusion f99 = item.getChild( "foo" );
-////			assertTrue( f99.isInteger() );
-//			assertNull( p.readElement() );
-//		}
-//	}
-//	
-//	@Test
-//	public void nullInObject() {
-//		for ( String input : new String[] { "{foo:null}" } ) {
-//			StringReader rep = new StringReader( input );
-//			HydraXMLParser p = new HydraXMLParser( rep );
-//			HydraXML item = p.readElement();
-//			assertTrue( item.isObject() );
-//			assertTrue( item.hasNoAttributes() );
-//			assertTrue( item.hasSizeLinks( 1 ) );
-////			Fusion f99 = item.getChild( "foo" );
-////			assertTrue( f99.isInteger() );
-//			assertNull( p.readElement() );
-//		}
-//	}
-//	
-//	@Test
-//	public void decimalInObject() {
-//		for ( String input : new String[] { "{foo:0.2}" } ) {
-//			StringReader rep = new StringReader( input );
-//			HydraXMLParser p = new HydraXMLParser( rep );
-//			HydraXML item = p.readElement();
-//			assertTrue( item.isObject() );
-//			assertTrue( item.hasNoAttributes() );
-//			assertTrue( item.hasSizeLinks( 1 ) );
-//			assertNull( p.readElement() );
-//		}
-//	}
-	
-//	@Test
-//	public void stringInObject() {
-//		for ( String input : new String[] { "{foo:\"bar\"}" } ) {
-//			StringReader rep = new StringReader( input );
-//			HydraXMLParser p = new HydraXMLParser( rep );
-//			HydraXML item = p.readElement();
-//			assertTrue( item.isObject() );
-//			assertTrue( item.hasNoAttributes() );
-//			assertSame( 1, item.sizeLinks() );
-//			assertNull( p.readElement() );
-//		}
-//	}
-	
-//	@Test
-//	public void commasForJSON() {
-//		StringReader rep = new StringReader( "[ 1, 2, 3, 4 ], {}" );
-//		HydraXMLParser p = new HydraXMLParser( rep );
-//		{
-//			HydraXML item = p.readElement();
-//			assertTrue( item.isArray() );
-//			assertTrue( item.hasNoAttributes() );
-//			assertTrue( item.hasSizeLinks( 4 ) );
-//		}
-//		{
-//			HydraXML item = p.readElement();
-//			assertTrue( item.isObject() );
-//			assertTrue( item.hasNoAttributes() );
-//			assertTrue( item.hasNoLinks() );
-//		}
-//		assertNull( p.readElement() );
-//	}
-	
 	@Test( expected = Alert.class )
 	public void badCommasForJSON() {
 		StringReader rep = new StringReader( "<foo, bar='x'/>" );
 		HydraXMLParser p = new HydraXMLParser( rep );
-		p.readElement();
-	}
-	
-	@Test( expected = Alert.class )
-	public void badMultipleCommasForJSON() {
-		StringReader rep = new StringReader( "[1,,2]" );
-		HydraXMLParser p = new HydraXMLParser( rep );
-		p.readElement();
-	}
-	
-	@Test( expected = Alert.class )
-	public void badMultipleTopLevelCommasForJSON() {
-		StringReader rep = new StringReader( "1,,2" );
-		HydraXMLParser p = new HydraXMLParser( rep );
-		p.readElement();
 		p.readElement();
 	}
 	
@@ -381,25 +186,25 @@ public class TestHydraXMLParser {
 		}		
 	}
 	
-//	@Test
-//	public void doubleQuotes() {
-//		final String s = "\"This has a newline\\n\"";
-//		StringReader rep = new StringReader( s );
-//		HydraXMLParser p = new HydraXMLParser( rep );
-//		HydraXML item = p.readElement();
-//		assertEquals( "This has a newline\n", item.stringValue() );
-//		assertNull( p.readElement() );
-//	}
+	@Test
+	public void doubleQuotes() {
+		final String s = "<foo data:\"This has a newline\\n\"/>";
+		StringReader rep = new StringReader( s );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		HydraXML item = p.readElement();
+		assertEquals( "This has a newline\n", item.getValue( "data" ) );
+		assertNull( p.readElement() );
+	}
 	
-//	@Test
-//	public void singleQuotes() {
-//		final String s = "'This has an ampersand \\&amp;'";
-//		StringReader rep = new StringReader( s );
-//		HydraXMLParser p = new HydraXMLParser( rep );
-//		HydraXML item = p.readElement();
-//		assertEquals( "This has an ampersand &", item.stringValue() );
-//		assertNull( p.readElement() );
-//	}
+	@Test
+	public void singleQuotes() {
+		final String s = "<foo data:'This has an ampersand \\&amp;'/>";
+		StringReader rep = new StringReader( s );
+		HydraXMLParser p = new HydraXMLParser( rep );
+		HydraXML item = p.readElement();
+		assertEquals( "This has an ampersand &", item.getValue( "data" ) );
+		assertNull( p.readElement() );
+	}
 	
 	@Test
 	public void attributeEscapes1() {
@@ -431,24 +236,5 @@ public class TestHydraXMLParser {
 		assertNull( p.readElement() );
 	}
 	
-//	@Test
-//	public void testHex() {
-//		final String s = "0x1F";
-//		StringReader rep = new StringReader( s );
-//		HydraXMLParser p = new HydraXMLParser( rep );
-//		HydraXML item = p.readElement();
-//		checkConstant( item, "integer", "31" );
-//		assertNull( p.readElement() );
-//	}
-	
-//	private void checkConstant( Fusion item, String type, String value ) {
-//		assertEquals( "constant", item.getInternedName() );
-//		assertTrue( item.hasSizeAttributes( 2 ) );
-//		assertTrue( item.hasAttribute( "type" ) ); 
-//		assertEquals( type, item.getValue( "type" ) ); 
-//		assertTrue( item.hasAttribute( "value" ) ); 
-//		assertEquals( value, item.getValue( "value" ) ); 
-//	}
-	
-	
+
 }

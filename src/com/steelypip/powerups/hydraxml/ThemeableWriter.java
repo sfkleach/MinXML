@@ -24,50 +24,12 @@ import java.io.Writer;
 import com.steelypip.powerups.common.Indenter;
 import com.steelypip.powerups.common.IndenterFactory;
 import com.steelypip.powerups.common.NullIndenter;
-import com.steelypip.powerups.fusion.Fusion;
 
 /**
  * Prints out an object to a {@link java.io.PrintWriter}. It can
  * be a simple-all-on-one-line or an elaborate pretty-printer depending
  * on the Indenter, and look like XML or JSON depending on the Theme that
  * is supplied.
- * 
- * The base theme is XML and for 0 children it looks like
- * 		< NAME KEY (=|+=) VALUE ... /> 
- * and for 1+ children
- * 		< NAME KEY=VALUE ... > [FIELD (=|+=)] CHILD ... </ NAME >
- * If the field name is omitted it is assumed to be "" and the
- * binding assumed to be +=. 
- * 
- * The JSON theme differs on "array" and "object" elements. When
- * when NAME is "array" and there are no attibutes, prefer
- * 		[ CHILD, ... ]
- * and when the NAME is "object" and there are no attributes and all
- * fields are single-valued, prefer
- * 		{ FIELD: CHILD, ... }
- * Note that in this case the field will be double-quoted.
- * 
- * The JSON theme also differs on literals:
- * 	When the name is "constant" and the only attributes are "type" whose
- *  value is "integer", "value" and optionally "radix", print as a literal
- *  integer - including transinteger values +/- infinity and nullity.
- *  When the name is "constant" and the only attributes are "type" whose
- *  value is "float", "value" and optionally "radix", print as a literal
- *  floating point number - including transreal values +/- infinity and nullity.
- * 	When the name is "constant" and the only attributes are "type" whose
- * 	value is "string" and "value", print as a double-quoted literal string. 
- * 	When the name is "constant" and the only attributes are "type" whose
- * 	value is "boolean" and "value", print as a boolean.
- *  When the name is "constant" and the only attributes are "type" whose
- *  value is "null" and optionally "value" whose value must be null, print
- *  as null.
- *  
- *  The FUSION theme differs from the XML by using the following format
- *  	< NAME KEY=VALUES ... FIELD:CHILDREN ... />
- *  where
- *  	VALUES ::= VALUE | '(' VALUE+ ')'
- *  	CHILDREN ::= CHILD | '(' CHILD+ ')'
- *  however it shares the literal printing with the JSON theme.
  */
 public class ThemeableWriter< T > {
 

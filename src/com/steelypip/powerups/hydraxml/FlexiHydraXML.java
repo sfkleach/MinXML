@@ -5,7 +5,7 @@ import org.eclipse.jdt.annotation.NonNull;
 import com.steelypip.powerups.hydra.FlexiHydra;
 
 /** 
- * An all-round implementation of a mutable Fusion class that implements all methods
+ * An all-round implementation of a mutable HydraXML class that implements all methods
  * at reasonable cost and at reasonable performance. 
  */
 public class FlexiHydraXML extends FlexiHydra< String, String, String, HydraXML > implements HydraXML {

@@ -30,11 +30,11 @@ import com.steelypip.powerups.minxson.Lookup;
 
 /**
  * This class wraps various types of input stream to
- * create a Fusion parser. An optional FusionBuilder can
- * be supplied, which gives control over the Fusion
+ * create a HydraXML parser. An optional HydraXMLBuilder can
+ * be supplied, which gives control over the HydraXML
  * implementation that is actually constructed.
  * 
- * Fusion elements are read off the stream using
+ * HydraXML elements are read off the stream using
  * readElement. Alternatively you can simply iterate 
  * over the parser.
  */
@@ -50,10 +50,10 @@ public class HydraXMLParser extends LevelTracker implements Iterable< HydraXML >
 	
 	/**
 	 * Constructs a parser from a {@link com.steelypip.powerups.charrepeater.CharRepeater} and a
-	 * FusionBuilder. Character repeaters are streams with unlimited pushback.
+	 * HydraXMLBuilder. Character repeaters are streams with unlimited pushback.
 	 *  
 	 * @param rep the input source
-	 * @param builder used to construct the Fusion objects
+	 * @param builder used to construct the HydraXML objects
 	 */
 	public HydraXMLParser( CharRepeater rep, HydraXMLBuilder builder ) {
 		this.builder = builder;
@@ -62,10 +62,10 @@ public class HydraXMLParser extends LevelTracker implements Iterable< HydraXML >
 
 	/**
 	 * Constructs a parser from a {@link java.io.Reader} and a
-	 * FusionBuilder.
+	 * HydraXMLBuilder.
 	 *  
 	 * @param reader the input source
-	 * @param builder used to construct the Fusion objects
+	 * @param builder used to construct the HydraXML objects
 	 */
 	public HydraXMLParser( Reader reader, HydraXMLBuilder builder ) {
 		this.builder = builder;

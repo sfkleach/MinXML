@@ -1,4 +1,4 @@
-package com.steelypip.powerups.hydra;
+package com.steelypip.powerups.hydranode;
 
 import java.util.Iterator;
 import java.util.List;
@@ -14,7 +14,7 @@ import com.steelypip.powerups.common.Pair;
 /**
  * The purpose of this class is to be a non-null initial object. It does not support any operation at all.
  */
-public class BadHydra< Key extends Comparable< Key >, Value, Field extends Comparable< Field >, Child  > implements Hydra< Key, Value, Field, Child > {
+public class BadHydraNode< Key extends Comparable< Key >, Value, Field extends Comparable< Field >, Child  > implements HydraNode< Key, Value, Field, Child > {
 
 	@Override
 	public @NonNull String getName() {

@@ -16,7 +16,7 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.hydra;
+package com.steelypip.powerups.hydranode;
 
 import java.util.Map;
 
@@ -30,7 +30,7 @@ import java.util.Map;
  * 
  * @author Stephen Leach
  */
-public interface Hydra< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > 
+public interface HydraNode< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > 
 extends 
 	Named, 
 	MultiAttributes< Key, AttrValue >, 

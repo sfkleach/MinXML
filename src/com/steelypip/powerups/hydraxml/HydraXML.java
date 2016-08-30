@@ -6,9 +6,9 @@ import java.util.Map;
 
 import com.steelypip.powerups.common.NullIndenter;
 import com.steelypip.powerups.common.StdIndenter;
-import com.steelypip.powerups.hydra.Hydra;
+import com.steelypip.powerups.hydranode.HydraNode;
 
-public interface HydraXML extends Hydra< String, String, String, HydraXML > {
+public interface HydraXML extends HydraNode< String, String, String, HydraXML > {
 
 	/**
 	 * Returns an unfrozen copy of an element that shares the children.

@@ -1,4 +1,4 @@
-package com.steelypip.powerups.hydra;
+package com.steelypip.powerups.hydranode;
 
 import java.util.Iterator;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.steelypip.powerups.hydra;
+package com.steelypip.powerups.hydranode;
 
 import org.eclipse.jdt.annotation.NonNull;
 import org.eclipse.jdt.annotation.Nullable;

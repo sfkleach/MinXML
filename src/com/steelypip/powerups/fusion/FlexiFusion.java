@@ -2,13 +2,13 @@ package com.steelypip.powerups.fusion;
 
 import org.eclipse.jdt.annotation.NonNull;
 
-import com.steelypip.powerups.hydra.FlexiHydra;
+import com.steelypip.powerups.hydranode.FlexiHydraNode;
 
 /** 
  * An all-round implementation of a mutable Fusion class that implements all methods
  * at reasonable cost and at reasonable performance. 
  */
-public class FlexiFusion extends FlexiHydra< String, String, String, Fusion > implements Fusion, StdJSONFeatures {
+public class FlexiFusion extends FlexiHydraNode< String, String, String, Fusion > implements Fusion, StdJSONFeatures {
 
 	public FlexiFusion( @NonNull String name ) {
 		super( name );

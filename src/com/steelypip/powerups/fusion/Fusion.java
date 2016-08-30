@@ -9,8 +9,8 @@ import com.steelypip.powerups.common.StdIndenter;
 import com.steelypip.powerups.fusion.io.FusionWriter;
 import com.steelypip.powerups.fusion.io.FusionXmlElementTheme;
 import com.steelypip.powerups.fusion.io.JSONTheme;
-import com.steelypip.powerups.hydra.Hydra;
-public interface Fusion extends Hydra< String, String, String, Fusion >, JSONFeatures {
+import com.steelypip.powerups.hydranode.HydraNode;
+public interface Fusion extends HydraNode< String, String, String, Fusion >, JSONFeatures {
 
 	/**
 	 * Returns an unfrozen copy of an element that shares the children.

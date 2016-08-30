@@ -1,6 +1,6 @@
 package com.steelypip.powerups.fusion;
 
-import com.steelypip.powerups.hydra.Named;
+import com.steelypip.powerups.hydranode.Named;
 
 public interface StdJSONFeatures extends JSONFeatures, LiteralConstants, Named {
 	

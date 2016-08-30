@@ -16,7 +16,7 @@
  * along with MinXML for Java.  If not, see <http://www.gnu.org/licenses/>.
  *  
  */
-package com.steelypip.powerups.hydra;
+package com.steelypip.powerups.hydranode;
 
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +41,7 @@ import com.steelypip.powerups.util.MutatingMultiMap;
  * that constantly adjust themselves to provide a good balance of
  * speed and compactness.
  */
-public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > implements Hydra< Key, AttrValue, Field, ChildValue >, MutableHydra {
+public abstract class FlexiHydraNode< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > implements HydraNode< Key, AttrValue, Field, ChildValue > {
 	
 	protected @NonNull String name;
 	protected MutatingMultiMap< Key, AttrValue > attributes = EmptyMutatingMultiMap.getInstance();
@@ -58,7 +58,7 @@ public abstract class FlexiHydra< Key extends Comparable< Key >, AttrValue, Fiel
 	 * @param name the name of the element
 	 */
 	@SuppressWarnings("null")
-	public FlexiHydra( final String name ) {
+	public FlexiHydraNode( final String name ) {
 		this.name = name.intern(); 
 	}
 

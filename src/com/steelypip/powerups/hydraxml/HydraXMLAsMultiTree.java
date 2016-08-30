@@ -3,7 +3,7 @@ package com.steelypip.powerups.hydraxml;
 import java.util.List;
 import java.util.Map.Entry;
 
-public interface HydraXMLAsMultiTree {
+public interface HydraXMLAsMultiTree extends AsMultiTree< String, HydraXML > {
 
 	default Iterable< Entry< String, HydraXML > > entries( HydraXML v ) {
 		return v;

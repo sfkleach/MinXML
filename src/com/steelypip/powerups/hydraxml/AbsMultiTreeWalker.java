@@ -32,13 +32,8 @@ import com.steelypip.powerups.common.StdPair;
  *	A convenience class that implements a recursive
  * 	walk over a MinXMLStar tree. 
  */
-public abstract class AbsMultiTreeWalker< Key, Value > {
-		
-	protected abstract Iterable< Map.Entry< Key, Value > > entries( Value v );
-	protected abstract Key defaultKey();
-	protected abstract Value badValue();
-	protected abstract List< Map.Entry< Key, Value > > linksToList( Value v );
-
+public abstract class AbsMultiTreeWalker< Key, Value > implements AsMultiTree< Key, Value > {
+	
 	
 	/**
 	 * startWalk is called at the start of the tree-walk of the subject and its children. 

@@ -3,7 +3,9 @@ package com.steelypip.powerups.fusion;
 import java.util.List;
 import java.util.Map.Entry;
 
-public interface FusionAsMultiTree {
+import com.steelypip.powerups.hydraxml.AsMultiTree;
+
+public interface FusionAsMultiTree extends AsMultiTree< String, Fusion > {
 
 		default Iterable< Entry< String, Fusion > > entries( Fusion v ) {
 			return v;

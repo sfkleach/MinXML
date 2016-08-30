@@ -35,10 +35,10 @@ import com.steelypip.powerups.common.EmptyIterator;
  */
 public abstract class AbsMultiTreeSearcher< Key, Value > {
 
-	protected abstract Key defaultKey();
-	protected abstract Value badValue();
-	protected abstract Iterable< Map.Entry< Key, Value > > entries( Value v );
-	protected abstract List< Map.Entry< Key, Value > > linksToList( Value v );
+	public abstract Key defaultKey();
+	public abstract Value badValue();
+	public abstract Iterable< Map.Entry< Key, Value > > entries( Value v );
+	public abstract List< Map.Entry< Key, Value > > linksToList( Value v );
 
 	/**
 	 * startSearch is called at the start of the tree-walk of the subject and its children. 

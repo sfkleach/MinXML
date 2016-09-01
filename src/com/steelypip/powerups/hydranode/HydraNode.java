@@ -20,16 +20,6 @@ package com.steelypip.powerups.hydranode;
 
 import java.util.Map;
 
-/**
- * MinXMLStar is a multi-valued extension of MinXML that, in its 
- * turn, is a cleaner, leaner, cut-down version of XML with only the
- * absolute essentials. An MinXMLStar object is a single element that 
- * represents a tree of nodes, where each node is a named, multi-valued 
- * dictionary. The MinXMLStar interface defines a standard interface 
- * for all classes representing MinXMLStar elements.
- * 
- * @author Stephen Leach
- */
 public interface HydraNode< Key extends Comparable< Key >, AttrValue, Field extends Comparable< Field >, ChildValue > 
 extends 
 	Named, 

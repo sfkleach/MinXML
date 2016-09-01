@@ -311,10 +311,10 @@ public class BadHydraNode< Key extends Comparable< Key >, Value, Field extends C
 		throw new UnsupportedOperationException();
 	}
 
-	@Override
-	public List< Map.Entry< Field, Child > > linksToList() {
-		throw new UnsupportedOperationException();
-	}
+//	@Override
+//	public List< Map.Entry< Field, Child > > linksToList() {
+//		throw new UnsupportedOperationException();
+//	}
 
 	@Override
 	public List< Child > childrenToList( Field field ) {
@@ -342,7 +342,12 @@ public class BadHydraNode< Key extends Comparable< Key >, Value, Field extends C
 	}
 
 	@Override
-	public Iterator< Entry< Field, Child > > fieldsIterator() {
+	public Iterator< Entry< Field, Child > > linksIterator() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Iterable< Entry< Field, Child > > linksToIterable() {
 		throw new UnsupportedOperationException();
 	}
 	

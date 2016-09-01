@@ -418,7 +418,7 @@ public abstract class FlexiHydraNode< Key extends Comparable< Key >, AttrValue, 
 	}
 
 	@Override
-	public List< Map.Entry< Field, ChildValue > > linksToList() {
+	public List< Map.Entry< Field, ChildValue > > linksToIterable() {
 		return this.links.entriesToList();
 	}
 

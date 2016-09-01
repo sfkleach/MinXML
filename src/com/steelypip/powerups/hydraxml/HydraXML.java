@@ -8,6 +8,19 @@ import com.steelypip.powerups.common.NullIndenter;
 import com.steelypip.powerups.common.StdIndenter;
 import com.steelypip.powerups.hydranode.HydraNode;
 
+/**
+ * HydraXML is a multi-valued extension of MinXML that, in its 
+ * turn, is a cleaner, leaner, cut-down version of XML with only the
+ * absolute essentials. An HydraXML object is a single node or 'element' that 
+ * represents a multi-valued tree of elements, where each element is a named, multi-valued 
+ * dictionary. The HydraXML interface defines a standard interface 
+ * for all classes representing HydraXML elements.
+ * 
+ * HydraXML elements support freezing and unfreezing via freeze, shallowCopy
+ * and frozenCopy. Freezing is a promise from the programmer that no
+ * further updates will be applied; it is advisory insofar that the
+ * implementation can ignore a freeze. 
+ */
 public interface HydraXML extends HydraNode< String, String, String, HydraXML > {
 
 	/**
@@ -19,7 +32,7 @@ public interface HydraXML extends HydraNode< String, String, String, HydraXML > 
 		for ( Map.Entry< String, String > a : this.attributesToIterable() ) {
 			f.addValue( a.getKey(), a.getValue() );
 		}
-		for ( Map.Entry< String, HydraXML > a : this.fieldsIterable() ) {
+		for ( Map.Entry< String, HydraXML > a : this.linksToIterable() ) {
 			f.addChild( a.getKey(), a.getValue() );
 		}
 		return f;
@@ -30,11 +43,15 @@ public interface HydraXML extends HydraNode< String, String, String, HydraXML > 
 	 * made to this object. The implementation is encouraged but not required
 	 * to detect any further modifications. In the event that a broken promise
 	 * is detected, the effect will be a thrown UnsupportedOperationException.
+	 * 
+	 * There is no unfreeze counterpart, in order that implementations are
+	 * encouraged to take advantage of store sharing.
 	 */
 	void freeze();
 	
 	/**
-	 * Returns an frozen copy of an element that shares the children.
+	 * Returns an frozen copy of an element that shares the children of
+	 * the original element.
 	 * @return a copy that has had freeze applied.
 	 */
 	default HydraXML frozenCopy() {

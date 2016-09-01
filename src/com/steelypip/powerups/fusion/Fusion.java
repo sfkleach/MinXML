@@ -21,7 +21,7 @@ public interface Fusion extends HydraNode< String, String, String, Fusion >, JSO
 		for ( Map.Entry< String, String > a : this.attributesToIterable() ) {
 			f.addValue( a.getKey(), a.getValue() );
 		}
-		for ( Map.Entry< String, Fusion > a : this.fieldsIterable() ) {
+		for ( Map.Entry< String, Fusion > a : this.linksToIterable() ) {
 			f.addChild( a.getKey(), a.getValue() );
 		}
 		return f;

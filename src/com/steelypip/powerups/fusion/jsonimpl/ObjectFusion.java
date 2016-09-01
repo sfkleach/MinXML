@@ -346,7 +346,7 @@ public class ObjectFusion implements Fusion, NullJSONFeatures, LiteralConstants 
 	}
 
 	@Override
-	public List< Map.Entry< String, Fusion > > linksToList() {
+	public Iterable< Map.Entry< String, Fusion > > linksToIterable() {
 		return new ArrayList<>( this.map.entrySet() );
 	}
 

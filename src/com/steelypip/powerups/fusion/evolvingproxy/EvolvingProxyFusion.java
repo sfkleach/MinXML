@@ -366,8 +366,8 @@ public class EvolvingProxyFusion implements Fusion {
 		return fusion.fieldsToSet();
 	}
 
-	public List< Entry< String, Fusion > > linksToList() {
-		return fusion.linksToList();
+	public Iterable< Entry< String, Fusion > > linksToIterable() {
+		return fusion.linksToIterable();
 	}
 
 	public void print( Writer w ) {
@@ -496,8 +496,8 @@ public class EvolvingProxyFusion implements Fusion {
 	}
 
 	@Override
-	public Iterator< Entry< String, Fusion > > fieldsIterator() {
-		return fusion.fieldsIterator();
+	public Iterator< Entry< String, Fusion > > linksIterator() {
+		return fusion.linksIterator();
 	}
 
 	@Override

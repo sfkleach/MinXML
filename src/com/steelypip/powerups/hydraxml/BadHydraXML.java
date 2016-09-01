@@ -278,7 +278,7 @@ public class BadHydraXML implements HydraXML {
 	}
 
 	@Override
-	public List< Entry< String, HydraXML > > linksToList() {
+	public List< Entry< String, HydraXML > > linksToIterable() {
 		throw new UnsupportedOperationException();
 	}
 

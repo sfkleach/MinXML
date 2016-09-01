@@ -17,7 +17,7 @@ public class FlexiHydraXML extends FlexiHydraNode< String, String, String, Hydra
 	public FlexiHydraXML( HydraXML hx ) {
 		this( hx.getInternedName() );
 		this.attributes = this.attributes.addAllEntries( hx.attributesToList() );
-		this.links = this.links.addAllEntries( hx.linksToList() );
+		this.links = this.links.addAllEntries( hx.linksToIterable() );
 	}
 	
 

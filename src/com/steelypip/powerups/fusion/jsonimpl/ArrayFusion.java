@@ -493,7 +493,7 @@ public class ArrayFusion implements Fusion, NullJSONFeatures, LiteralConstants {
 	}
 
 	@Override
-	public List< Map.Entry< String, Fusion > > linksToList() {
+	public Iterable< Map.Entry< String, Fusion > > linksToIterable() {
 		final List< Map.Entry< String, Fusion > > list = new ArrayList<>();
 		for ( Fusion f : this.children ) {
 			list.add( new StdPair< String, Fusion >( this.defaultField(), f ) );

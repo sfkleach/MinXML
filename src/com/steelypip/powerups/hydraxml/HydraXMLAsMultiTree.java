@@ -19,8 +19,8 @@ public interface HydraXMLAsMultiTree extends AsMultiTree< String, HydraXML > {
 		return bad_value;
 	}
 
-	default List< Entry< String, HydraXML > > linksToList( HydraXML v ) {
-		return v.linksToList();
+	default Iterable< Entry< String, HydraXML > > linksToIterable( HydraXML v ) {
+		return v.linksToIterable();
 	}	
 	
 }

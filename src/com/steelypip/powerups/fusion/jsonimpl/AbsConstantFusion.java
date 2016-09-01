@@ -395,7 +395,7 @@ public abstract class AbsConstantFusion implements Fusion, StdJSONFeatures, Lite
 	}
 
 	@Override
-	public List< Map.Entry< String, Fusion > > linksToList() {
+	public Iterable< Map.Entry< String, Fusion > > linksToIterable() {
 		return new EmptyList<>();
 	}
 
@@ -420,7 +420,7 @@ public abstract class AbsConstantFusion implements Fusion, StdJSONFeatures, Lite
 	}
 
 	@Override
-	public Iterator< Entry< String, Fusion > > fieldsIterator() {
+	public Iterator< Entry< String, Fusion > > linksIterator() {
 		return new EmptyIterator< Map.Entry< String, Fusion > >();
 	}
 

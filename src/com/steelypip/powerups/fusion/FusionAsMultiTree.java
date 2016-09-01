@@ -1,6 +1,5 @@
 package com.steelypip.powerups.fusion;
 
-import java.util.List;
 import java.util.Map.Entry;
 
 import com.steelypip.powerups.hydraxml.AsMultiTree;
@@ -21,8 +20,8 @@ public interface FusionAsMultiTree extends AsMultiTree< String, Fusion > {
 			return bad_value;
 		}
 
-		default List< Entry< String, Fusion > > linksToList( Fusion v ) {
-			return v.linksToList();
+		default Iterable< Entry< String, Fusion > > linksToIterable( Fusion v ) {
+			return v.linksToIterable();
 		}	
 		
 }

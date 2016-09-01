@@ -17,7 +17,7 @@ public class FlexiFusion extends FlexiHydraNode< String, String, String, Fusion 
 	public FlexiFusion( Fusion fusion ) {
 		this( fusion.getInternedName() );
 		this.attributes = this.attributes.addAllEntries( fusion.attributesToList() );
-		this.links = this.links.addAllEntries( fusion.linksToList() );
+		this.links = this.links.addAllEntries( fusion.linksToIterable() );
 	}
 	
 

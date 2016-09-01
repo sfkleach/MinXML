@@ -15,7 +15,8 @@ public interface Named {
 	default public @NonNull String getName() { return this.getInternedName(); }
 	
 	/**
-	 * Returns the interned name of a MinXML element.
+	 * Returns the interned name of a MinXML element. Guaranteed to be a non-null
+	 * interned string.
 	 * 
 	 * @return interned version of the element name
 	 */
@@ -23,16 +24,16 @@ public interface Named {
 	
 	
 	/**
-	 * Returns true if the name of the element is the same as
-	 * given string. Equivalent to this.getName() == name. Note
+	 * Returns true if the name of the element is equal to the
+	 * given string. Equivalent to this.getName().equals( name ). Note
 	 * that although the name may never be null, we allow
 	 * testing against null for convenience even though that
-	 * test will always be false. 
+	 * test will always be false.
 	 * 
 	 * @param name the name we are checking
 	 * @return true if the element has that name
 	 */
-	default boolean hasName( @Nullable String name ) { return this.getInternedName().equals( name ); }
+	default boolean hasName( @Nullable String name ) { return this.getName().equals( name ); }
 	
 	/**
 	 * Changes the name of the element to the given string. Note

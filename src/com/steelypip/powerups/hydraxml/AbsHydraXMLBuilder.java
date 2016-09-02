@@ -128,11 +128,7 @@ public abstract class AbsHydraXMLBuilder implements HydraXMLBuilder {
 
 	@Override 
 	public void addChild( final @Nullable HydraXML x ) {
-//		if ( x == null ) {
-//			this.addNull();
-//		} else {
-			this.current_link.getCurrent().addChild( x );
-//		}
+		this.current_link.getCurrent().addChild( x );
 	}
 	
 	@Override 

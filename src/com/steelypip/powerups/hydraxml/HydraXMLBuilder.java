@@ -35,10 +35,7 @@ public interface HydraXMLBuilder {
 	 * 
 	 * Name and field may be null, 
 	 * in which case they must be supplied as non-null later.
-	 * If allow_repeats is specified, repeats are allowed.
-	 * 
-	 * After this method, the next builder method should be
-	 * add or endTag. 
+	 * If allow_repeats is specified, repeats are allowed. 
 	 * 
 	 * @param name the name of the element to be constructed (or null).
 	 * @param field the field to be used for the link to the parent (or null) 
@@ -97,6 +94,11 @@ public interface HydraXMLBuilder {
 		}
 	}
 
+	/**
+	 * This method adds a child to the element under construction.
+	 * The field name defaults to the value of defaultKey() for the 
+	 * element under construction - which will normally be "".
+	 */
 	void addChild( @Nullable HydraXML x ); 
 	void addChild( String field, @Nullable HydraXML x ); 
 
@@ -140,11 +142,38 @@ public interface HydraXMLBuilder {
 	 * previous value. If the previous value is null then it is automatically
 	 * in agreement. 
 	 * 
-	 * @param name the name of the element to be constructed (or null) 
+	 * @param name the name of the element to be constructed (or null)
+	 * @param field the field name under which the constructed element will be linked.
+	 * @param allow_repeats true if it is OK if there are multiple elements added under this name. 
 	 */
 	void endTag( String field, String name, Boolean allow_repeats );
+
+	/**
+	 * This method finishes the construction of the current element.
+	 * If the tag-name is non-null then it must be in agreement with the
+	 * previous value. If the previous value is null then it is automatically
+	 * in agreement. 
+	 * 
+	 * @param field the field name under which the constructed element will be linked.
+	 * @param name the name of the element to be constructed (or null) 
+	 */
 	void endTag( String field, String name );
+
+	/**
+	 * This method finishes the construction of the current element.
+	 * If the tag-name is non-null then it must be in agreement with the
+	 * previous value. If the previous value is null then it is automatically
+	 * in agreement. 
+	 * 
+	 * @param name the name of the element to be constructed (or null) 
+	 */
 	void endTag( String name );
+	
+	/**
+	 * This method finishes the construction of the current element.
+	 * 
+	 * @param name the name of the element to be constructed (or null) 
+	 */
 	void endTag();
 	
 	/**
@@ -154,6 +183,5 @@ public interface HydraXMLBuilder {
 	 * @return the constructed tree
 	 */
 	HydraXML build();
-
 
 }

@@ -347,10 +347,6 @@ public class TestFlexiFusion {
 		assertSame( 3, m2.size() );
 	}
 	
-	//	public @NonNull MinXMLStar getChild( @NonNull String field ) throws IllegalArgumentException {
-	//	public @NonNull MinXMLStar getChild( @NonNull String field, int index ) throws IllegalArgumentException {
-	//	public @Nullable MinXMLStar getChild( @NonNull String field, @Nullable MinXMLStar otherwise ) {
-	//	public @Nullable MinXMLStar getChild( @NonNull String field, int index, @Nullable MinXMLStar otherwise ) {
 	@Test
 	public void testGetChild() {
 //		this.example.getChild( )

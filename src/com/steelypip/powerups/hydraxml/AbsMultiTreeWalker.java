@@ -30,7 +30,7 @@ import com.steelypip.powerups.common.StdPair;
 
 /**
  *	A convenience class that implements a recursive
- * 	walk over a MinXMLStar tree. 
+ * 	walk over a HydraXML tree. 
  */
 public abstract class AbsMultiTreeWalker< Key, Value > implements AsMultiTree< Key, Value > {
 	
@@ -39,7 +39,7 @@ public abstract class AbsMultiTreeWalker< Key, Value > implements AsMultiTree< K
 	 * startWalk is called at the start of the tree-walk of the subject and its children. 
 	 * It will be called once for each node in the tree.
 	 * 
-	 * @param subject the MinXML element to be visited
+	 * @param subject the HydraXML element to be visited
 	 */
 	public abstract void startWalk( Key field, Value subject );
 	
@@ -52,7 +52,7 @@ public abstract class AbsMultiTreeWalker< Key, Value > implements AsMultiTree< K
 	 * endWalk is called at the end of the tree-walk of the subject and its children.
 	 * It will be called once for each node in the tree.
 	 * 
-	 * @param subject the MinXML element to be visited
+	 * @param subject the HydraXML element to be visited
 	 */
 	public abstract void endWalk( Key field, Value subject );
 

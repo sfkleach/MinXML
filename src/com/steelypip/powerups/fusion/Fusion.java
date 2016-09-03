@@ -78,9 +78,6 @@ public interface Fusion extends HydraNode< String, String, String, Fusion >, JSO
 		fw.print( this );
 	}
 
-//	default void print( PrintWriter pw ) {
-//		new FusionWriter( pw ).print( this );
-//	}
 	
 	/**
 	 * Renders the element to the supplied {@link java.io.Writer}.

@@ -21,7 +21,7 @@ import java.util.Set;
  *				doStartLinkGroup( String field )
  *		FIELD	doField( String field )
  *		:		doLinkBinding( boolean first_in_group, boolean last_in_group )
- *		VALUE	doChild( MinXMLStar child )
+ *		VALUE	doChild( HydraXML child )
  *		...		//	 repeat previous 3 steps
  *				doEndLinkGroup( String field )
  *		...		// repeat

@@ -23,12 +23,9 @@ import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * This interface linearises the construction of a Fusion
- * tree. Start tags are constructed with at least two calls:
- * startTagOpen and startTagClose. In between these two calls
- * there can be any number of adds, which set up the 
- * attributes.
+ * tree. 
  * 
- * Note that startTagOpen, startTagClose and endTag all
+ * Note that startTag and endTag both
  * take the element name as a parameter. When using this 
  * interface with an unknown implementation the same (equals) 
  * element name should be supplied for all three calls that 
@@ -61,12 +58,19 @@ public interface FusionBuilder {
 	 * @param allow_repeats 
 	 */
 	void startTag( String field, String name, Boolean allow_repeats ) throws NullPointerException;
+
+	/**
+	 * A convenience method that invokes startTag( field, name, true )
+	 * 
+	 * @param name the name of the element to be constructed (or null).
+	 * @param field the field to be used for the link to the parent (or null) 
+	 */
 	void startTag( String field, String name ) throws NullPointerException;
 
 	
 	
 	/**
-	 * Shorthand for this.startTagOpen( name, null )
+	 * Shorthand for this.startTag( name, null, true )
 	 * 
 	 * @param name the name of the element to be constructed (or null). 
 	 */
@@ -74,7 +78,7 @@ public interface FusionBuilder {
 	void startTag( String name );
 	
 	/**
-	 * Shorthand for this.startTagOpen( null, null )
+	 * Shorthand for this.startTag( null, null, true )
 	 */
 	void startTag();
 	
@@ -174,6 +178,37 @@ public interface FusionBuilder {
 	void bindAllowRepeats( Boolean allow_repeats );
 	
 	/**
+	 * This method finishes the construction of the current element and
+	 * supplied field, name and allow_repeats. The field defines the
+	 * how the element under construction will be linked it its parent.
+	 * The allow_repeats specifies if repeated entries to the same field
+	 * is permitted.
+	 * If the tag-name is non-null then it must be in agreement with the
+	 * previous value. If the previous value is null then it is automatically
+	 * in agreement. 
+	 * 
+	 * @param field the field name under which this element will be linked to its parent.
+	 * @param name the name of the element to be constructed (or null).
+	 * @param allow_repeats can are multiple entries for a single field allowed?
+	 */
+	void endTag( String field, String name, Boolean allow_repeats );
+
+	
+	/**
+	 * This method finishes the construction of the current element and
+	 * supplied field, name and allow_repeats. The field defines the
+	 * how the element under construction will be linked it its parent.
+	 * If the tag-name is non-null then it must be in agreement with the
+	 * previous value. If the previous value is null then it is automatically
+	 * in agreement. 
+	 * 
+	 * @param field the field name under which this element will be linked to its parent.
+	 * @param name the name of the element to be constructed (or null).
+	 */
+	void endTag( String field, String name );
+
+	
+	/**
 	 * This method finishes the construction of the current element.
 	 * If the tag-name is non-null then it must be in agreement with the
 	 * previous value. If the previous value is null then it is automatically
@@ -181,9 +216,12 @@ public interface FusionBuilder {
 	 * 
 	 * @param name the name of the element to be constructed (or null) 
 	 */
-	void endTag( String field, String name, Boolean allow_repeats );
-	void endTag( String field, String name );
 	void endTag( String name );
+
+	
+	/**
+	 * This method finishes the construction of the current element.
+	 */
 	void endTag();
 	
 	/**

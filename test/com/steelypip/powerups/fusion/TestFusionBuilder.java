@@ -11,7 +11,7 @@ import com.steelypip.powerups.fusion.FlexiFusionBuilder;
 import com.steelypip.powerups.fusion.Fusion;
 import com.steelypip.powerups.fusion.FusionBuilder;
 
-public class TestMinXMLStarBuilder {
+public class TestFusionBuilder {
 	
 	FusionBuilder bldr;
 

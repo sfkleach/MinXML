@@ -40,6 +40,13 @@ public class TestFusionParser {
 	}
 
 	@Test
+	public void testHTMLCharacterEntity() {
+		StringReader rep = new StringReader( "<foo a='&copy;'/>" );
+		FusionParser p = new FusionParser( rep );
+		assertEquals( "©", p.readElement().getValue( "a" ) );
+	}
+
+	@Test
 	public void minimalStandaloneElement() {
 		StringReader rep = new StringReader( "<foo/>" );
 		checkSimpleElement( new FusionParser( rep ) );

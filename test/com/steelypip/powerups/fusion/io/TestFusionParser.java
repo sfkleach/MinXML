@@ -47,6 +47,20 @@ public class TestFusionParser {
 	}
 
 	@Test
+	public void testJSONCharacterEntity() {
+		StringReader rep = new StringReader( "<foo a:'\\&copy;'/>" );
+		FusionParser p = new FusionParser( rep );
+		assertEquals( "©", p.readElement().getValue( "a" ) );
+	}
+
+	@Test
+	public void testJSONStyleAttribute() {
+		StringReader rep = new StringReader( "<foo '\\&copy;' = 'yes'/>" );
+		FusionParser p = new FusionParser( rep );
+		assertEquals( "yes", p.readElement().getValue( "©" ) );
+	}
+
+	@Test
 	public void minimalStandaloneElement() {
 		StringReader rep = new StringReader( "<foo/>" );
 		checkSimpleElement( new FusionParser( rep ) );

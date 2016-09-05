@@ -230,7 +230,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 		return name.toString();
 	}
 	
-	private String gatherNameOrQuotedName() {
+	private @NonNull String gatherNameOrQuotedName() {
 		final char pch = this.peekChar( '\0' ); 
 		if ( pch == '"' || pch == '\'' ) {
 			return this.gatherString();
@@ -301,7 +301,7 @@ public class FusionParser extends LevelTracker implements Iterable< Fusion > {
 			this.eatWhiteSpace();
 			char c = peekChar();
 			if ( c == '/' || c == '>' ) break;
-			final @NonNull String key = this.gatherName();
+			final @NonNull String key = this.gatherNameOrQuotedName();
 			
 			this.eatWhiteSpace();
 			final boolean repeat_ok = this.tryReadChar( '+' );

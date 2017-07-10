@@ -47,6 +47,12 @@ class MinXML:
 		self.children = []
 		self.children.extend( kids )
 
+	def getChildren( self ):
+		return self.children
+
+	def getAttributes( self ):
+		return self.attributes
+
 	def clear( self ):
 		self.children.clear()
 
@@ -104,11 +110,17 @@ class MinXML:
 	def __len__( self ):
 		return len( self.children )
 
+	def __not__( self ):
+		return not( self.children )
+
 	def getFirst( self ):
 		return self.children[ 0 ]
 
 	def getChild( self, n ):
 		return self.children[ n ]
+
+	def setChild( self, n, value ):
+		self.children[ n ] = value
 
 	def getLast( self ):
 		return self.children[ -1 ]

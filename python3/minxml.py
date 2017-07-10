@@ -10,24 +10,6 @@ def _is_simple_char( ch ):
 	else:
 		return ch.isprintable()
 
-# This funcction is disgusting - it is an attempt to convert a
-# character into its unicode codepoint value. There must be
-# a direct way of doing this; alas I couldn't find it while disconnected
-# from the internet.
-def _character2codepoint( ch ):
-	b = ch.encode( 'utf-32' )
-	return b[4] + 256 * ( b[5] + 256 * ( b[6] + 256 * b[7] ) )
-
-def _codepoint2character( n ):
-	b0 = n & 255
-	n <<= 8
-	b1 = n & 255
-	n <<= 8
-	b2 = n & 255
-	n <<= 8
-	b3 = n & 255
-	return bytes( [b0,b1,b2,b3] ).decode( 'utf-32' )
-
 def _escape_char( ch ):
 	if ch == '"':
 		return "&quot;"
@@ -42,7 +24,7 @@ def _escape_char( ch ):
 	elif _is_simple_char( ch ):
 		return ch
 	else:
-		return '&#' + str( _character2codepoint( ch ) ) + ';'
+		return '&#' + str( ord( ch ) ) + ';'
 
 # Helper function.
 def _minxml_escape( text ):
@@ -59,8 +41,7 @@ def _minxml_escape( text ):
 class MinXML:
 	"""An implementation of Minimal XML - a clean subset of XML"""
 
-	def __init__(self, typename, *kids):
-		super(MinXML, self).__init__()
+	def __init__( self, typename, *kids ):
 		self.typename = typename
 		self.attributes = {}
 		self.children = []
@@ -71,6 +52,9 @@ class MinXML:
 
 	def getName( self ):
 		return self.typename
+
+	def setName( self, _name ):
+		self.typename = _name
 
 	def hasName( self, name ):
 		return self.typename == name
@@ -105,8 +89,8 @@ class MinXML:
 
 	def __str__( self ):
 		sofar = []
-		self.strlist( list )
-		return ''.join( list )
+		self.strlist( sofar )
+		return ''.join( sofar )
 
 	def add( self, minx ):
 		self.children.append( minx )
@@ -152,8 +136,11 @@ class Builder():
 		self.element_stack = []
 
 	def startTagOpen( self, name = None ):
+		self.startTag( name or '' )
+
+	def startTag( self, _name ):
 		self.element_stack.append( self.current_element )
-		self.current_element = MinXML( name or "" )
+		self.current_element = MinXML( _name )		
 
 	def put( self, key, value ):
 		self.current_element.put( key, value )
@@ -161,12 +148,15 @@ class Builder():
 	def _bindName( self, name ):
 		if name:
 			if self.current_element.hasName( "" ):
-				self.current_element.setName( name );
+				self.current_element.setName( name )
 			elif not self.current_element.hasName( name ):
 				raise Exception( "Mismatched tags", { "Expected": self.current_element.getName(), "Actual": name } )
 
 	def startTagClose( self, name = None ):
 		self._bindName( name )
+
+	def add( self, _child ):
+		self.current_element.add( _child )
 
 	def endTag( self, name = None ):
 		self._bindName( name )
@@ -317,7 +307,7 @@ def _readEscape( cucharin ):
 	if len( esc ) >= 2 and esc[0] == '#':
 		try:
 			n = str( esc[1:] )
-			return _codepoint2character( n )
+			return chr( n )
 		except ValueError:
 			raise Exception( "Unexpected numeric sequence after &#", { "Sequence": esc } )
 	else:
@@ -448,6 +438,9 @@ class Parser():
 		if self.level != 0:
 			raise Exception( "Unmatched tags due to encountering end of input" );
 		return self.parent.build()	
+
+def readMinXML( fileobj ):
+	return Parser( fileobj ).readElement()
 
 ################################################################################
 

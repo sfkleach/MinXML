@@ -1,14 +1,12 @@
+#!/usr/bin/python3
 ################################################################################
 # 	Utilities
 ################################################################################
 
-def _is_simple_char( ch ):
-	if ch == ' ':
-		return true
-	elif ch.isspace():
-		return false
-	else:
-		return ch.isprintable()
+class MinXMLError( Exception ):
+	def __init__( self, *args, **kwargs ):
+		super().__init__( *args, **kwargs )
+
 
 def _escape_char( ch ):
 	if ch == '"':
@@ -21,7 +19,7 @@ def _escape_char( ch ):
 		return "&gt;" 
 	elif ch == '&':
 		return "&amp;" 
-	elif _is_simple_char( ch ):
+	elif ' ' <= ch and ch <= '~':
 		return ch
 	else:
 		return '&#' + str( ord( ch ) ) + ';'
@@ -69,7 +67,7 @@ class MinXML:
 	def start_tag( self, list ):
 		list.append( '<' )
 		list.append( self.typename )
-		for ( k, v ) in self.attributes.items():
+		for ( k, v ) in sorted( self.attributes.items() ):
 			list.append( ' ' )
 			list.append( k )
 			list.append( '="' )
@@ -110,7 +108,13 @@ class MinXML:
 	def __len__( self ):
 		return len( self.children )
 
+	def __iter__( self ):
+		return iter( self.children )
+
 	def __not__( self ):
+		return not( self.children )
+
+	def isEmpty( self ):
 		return not( self.children )
 
 	def getFirst( self ):
@@ -162,7 +166,7 @@ class Builder():
 			if self.current_element.hasName( "" ):
 				self.current_element.setName( name )
 			elif not self.current_element.hasName( name ):
-				raise Exception( "Mismatched tags", { "Expected": self.current_element.getName(), "Actual": name } )
+				raise MinXMLError( "Mismatched tags", { "Expected": self.current_element.getName(), "Actual": name } )
 
 	def startTagClose( self, name = None ):
 		self._bindName( name )
@@ -201,7 +205,7 @@ class Source():
 			return ch
 		if otherwise != None:
 			return otherwise
-		raise Exception( "Unexpected end of file" ) 
+		raise MinXMLError( "Unexpected end of file" ) 
 
 	def fetch_and_cache( self, otherwise ):
 		self.prev = self.fetch( otherwise )
@@ -217,7 +221,7 @@ class Source():
 
 	def pushChar( self, ch ):
 		if self.prev:
-			raise Exception( "No room to push another character", { 'Pushing': ch } )
+			raise MinXMLError( "No room to push another character", { 'Pushing': ch } )
 		else:
 			self.prev = ch
 
@@ -270,13 +274,13 @@ class Source():
 	def mustReadChar( self, ch ):
 		actual = self.nextChar()
 		if actual != ch:
-			raise Exception( "Unexpected character", { 'Wanted': ch, 'Actual': actual } )
+			raise MinXMLError( "Unexpected character", { 'Wanted': ch, 'Actual': actual } )
 	
 def _readAttributeValue( cucharin ):
 	attr = []
 	q = cucharin.nextChar()
 	if q != '"' and q != '\'':
-		raise Exception( "Attribute value not quoted", { "Character": q } )
+		raise MinXMLError( "Attribute value not quoted", { "Character": q } )
 	while True:
 		ch = cucharin.nextChar()
 		if ch == q:
@@ -285,7 +289,7 @@ def _readAttributeValue( cucharin ):
 			attr.append( _readEscape( cucharin ) )
 		else:
 			if ch == '<':
-				raise Exception( "Forbidden character in attribute value", { "Character": ch } )
+				raise MinXMLError( "Forbidden character in attribute value", { "Character": ch } )
 			attr.append( ch )
 	return ''.join( attr )
 
@@ -297,7 +301,7 @@ def _readEscapeContent( cucharin ):
 			break;
 		esc.append( ch )
 		if len( esc ) > 4:
-			raise Exception( "Malformed escape", { "Sequence so far": esc } )
+			raise MinXMLError( "Malformed escape", { "Sequence so far": esc } )
 	return ''.join( esc )
 
 _entity_table = {
@@ -318,10 +322,10 @@ def _readEscape( cucharin ):
 	esc = _readEscapeContent( cucharin )
 	if len( esc ) >= 2 and esc[0] == '#':
 		try:
-			n = str( esc[1:] )
+			n = int( esc[1:] )
 			return chr( n )
 		except ValueError:
-			raise Exception( "Unexpected numeric sequence after &#", { "Sequence": esc } )
+			raise MinXMLError( "Unexpected numeric sequence after &#", { "Sequence": esc } )
 	else:
 		return _entityLookup( esc )
 
@@ -350,7 +354,7 @@ def _eatComment( cucharin, ch ):
 					break
 				else:
 					if count_minuses >= 2:
-						raise Exception( "Invalid XML comment (while in body of comment)", { "Character following --": nch } )
+						raise MinXMLError( "Invalid XML comment (while in body of comment)", { "Character following --": nch } )
 					count_minuses = 0
 		else:
 			# <! ...... >
@@ -439,17 +443,24 @@ class Parser():
 			self.level += 1
 			return True
 		else:
-			raise Exception( "Invalid continuation" )
+			raise MinXMLError( "Invalid continuation" )
 
-	# Read an element off the input stream or null if the stream is
-	# exhausted.
-	# @return the next element
 	def readElement( self ):
+		'''Read an element off the input stream or None if the stream is exhausted.
+		Returns the next element'''
 		while self.readSingleTag() and self.level != 0:
 			pass
 		if self.level != 0:
-			raise Exception( "Unmatched tags due to encountering end of input" );
-		return self.parent.build()	
+			raise MinXMLError( "Unmatched tags due to encountering end of input" );
+		return self.parent.build()
+
+	def __iter__( self ):
+		while True:
+			e = self.readElement()
+			if None == e:
+				raise StopIteration
+			yield e
+
 
 def readMinXML( fileobj ):
 	return Parser( fileobj ).readElement()

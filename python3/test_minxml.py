@@ -16,39 +16,28 @@ def testBasic():
     assert 2 == len( x )
     assert "yyy" == x[0].getName()
     
-    # @Test
-    # public void testPrintingEmpty() {
-    #     FlexiMinXML x = new FlexiMinXML( "xxx" );
-    #     assertEquals( "<xxx/>", x.toString() );
-    # }
+def testPrintingEmpty():
+    x = MinXML( "xxx" );
+    assert "<xxx/>" == str( x )
 
-    # @Test
-    # public void testPrintingAttributes() {
-    #     FlexiMinXML x = new FlexiMinXML( "xxx" );
-    #     x.putAttribute( "alpha", "001" );
-    #     x.putAttribute( "beta", "002" );
-    #     assertEquals( "<xxx alpha=\"001\" beta=\"002\"/>", x.toString() );
-    # }
+def testPrintingAttributes():
+    x = MinXML( "xxx" )
+    x.put( "alpha", "001" )
+    x.put( "beta", "002" )
+    assert "<xxx alpha=\"001\" beta=\"002\"/>" == str( x )
 
-    # @Test
-    # public void testPrintingNonAscii() {
-    #     FlexiMinXML x = new FlexiMinXML( "xxx" );
-    #     x.putAttribute( "nonascii", "\u00FF" );
-    #     assertEquals( "<xxx nonascii=\"&#255;\"/>", x.toString() );
-    # }
+def testPrintingNonAscii():
+    x = MinXML( "xxx" )
+    x.put( "nonascii", "\u00FF" )
+    assert "<xxx nonascii=\"&#255;\"/>" == str( x )
 
-    # @Test
-    # public void testPrintingSpecialCharacters() {
-    #     FlexiMinXML x = new FlexiMinXML( "xxx" );
-    #     x.putAttribute( "special", "<>&'\"" );
-    #     assertEquals( "<xxx special=\"&lt;&gt;&amp;&apos;&quot;\"/>", x.toString() );
-    # }
+def testPrintingSpecialCharacters():
+    x = MinXML( "xxx" )
+    x.put( "special", "<>&'\"" )
+    assert "<xxx special=\"&lt;&gt;&amp;&apos;&quot;\"/>" == str( x )
 
-    # @Test
-    # public void testPrintingChildren() {
-    #     FlexiMinXML x = new FlexiMinXML( "xxx" );
-    #     x.add( new FlexiMinXML( "yyy" ) );
-    #     x.add( new FlexiMinXML( "zzz" ) );
-    #     assertEquals( "<xxx><yyy/><zzz/></xxx>", x.toString() );
-    # }
-
+def testPrintingChildren():
+    x = MinXML( "xxx" )
+    x.add( MinXML( "yyy" ) )
+    x.add( MinXML( "zzz" ) )
+    assert "<xxx><yyy/><zzz/></xxx>" == str( x )

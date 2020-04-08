@@ -143,7 +143,7 @@ public class MinXMLParser implements Iterable< MinXML > {
 	}
 	
 	private static boolean is_name_char( final char ch ) {
-		return Character.isLetterOrDigit( ch ) || ch == '-' || ch == '.';
+		return Character.isLetterOrDigit( ch ) || ch == '-' || ch == '.' || ch == '_';
 	}
 	
 	private String readName() {

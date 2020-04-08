@@ -176,5 +176,16 @@ public class TestMinXMLParser {
 		);
 		assertEquals( "author", m.getName() );
 	}
+	
+	@Test
+	public void testUnderscoresInName( ) {
+		MinXML m = (
+				new MinXMLParser( new StringReader( 
+					"<author-record author-name='Jo Smith'/>"
+				) ).readElement()
+			);
+		assertEquals( "author-record", m.getName() );
+		assertTrue( m.hasAttribute( "author-name" ));
+	}
 			
 }

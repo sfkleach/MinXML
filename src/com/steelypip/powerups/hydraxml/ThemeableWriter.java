@@ -75,7 +75,7 @@ public class ThemeableWriter< T > {
 
 	public void print( T x ) {
 		if ( ! this.theme.tryRender( this, x ) ) {
-			throw new IllegalStateException( "Canont render this item" );
+			throw new IllegalStateException( "Cannot render this item" );
 		}
 	}
 	

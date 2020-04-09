@@ -1,0 +1,15 @@
+com.steelypip.powerups.alert
+com.steelypip.powerups.charrepeater
+com.steelypip.powerups.common
+com.steelypip.powerups.fusion
+com.steelypip.powerups.fusion.evolvingproxy
+com.steelypip.powerups.fusion.io
+com.steelypip.powerups.fusion.jsonimpl
+com.steelypip.powerups.hydranode
+com.steelypip.powerups.hydraxml
+com.steelypip.powerups.io
+com.steelypip.powerups.json
+com.steelypip.powerups.minxconf
+com.steelypip.powerups.minxml
+com.steelypip.powerups.minxson
+com.steelypip.powerups.util

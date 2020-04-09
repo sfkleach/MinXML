@@ -132,3 +132,12 @@ def testNestedDiscard():
           ) ).readElement()
     )
     assert "author" == m.getName() 
+
+def testUnderscores():
+    m = (
+        Parser( io.StringIO(
+              "<author_record author_name='Jo Smith'/>"
+          ) ).readElement()
+    )
+    assert "author_record" == m.getName()
+    assert m.hasAttribute( "author_name" )

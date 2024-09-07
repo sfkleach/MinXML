@@ -6,13 +6,15 @@
 # predated the rise in popularity of maven/gradle that makes this irrelevant.
 .PHONEY: autodocs
 autodocs:
-	javadoc -quiet -d doc -sourcepath src -subpackages com.steelypip.powerups -cp org.eclipse.jdt.annotation_2.0.0.v20140415-1436.jar
+	( javadoc -quiet -d doc -sourcepath src -subpackages com.steelypip.powerups -cp org.eclipse.jdt.annotation_2.0.0.v20140415-1436.jar || true )
+
+JAVA_SRC_FILES = $(shell cd src; find . -iname '*.java')
 
 .PHONEY: release-java
 release-java:
 	mkdir -p _build/bin
 	(cd src; javac -cp ../org.eclipse.jdt.annotation_2.0.0.v20140415-1436.jar -d ../_build/bin $(JAVA_SRC_FILES))
-	(cd _build; jar cf minxml.jar-$(RELEASE) -C bin .)
+	(cd _build; jar cf minxml-$(RELEASE).jar -C bin .)
 
 .PHONEY: clean
 clean:

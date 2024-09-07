@@ -2,9 +2,11 @@
 # being a true dependency driven Makefile. 
 
 
+
+
+
 RELEASE = 0.3
 
-JAVA_SRC_FILES = $(shell cd java/src; find . -iname '*.java')
 
 # When doing a github release, I want to add the assets for 
 # 	* the Java source code and jarfile
@@ -20,9 +22,9 @@ github-release:
 
 .PHONEY: clean
 clean:
-	rm -rf _build/bin
-	rm -f _build/*.jar
-	rm -f _build/*.py
+	rm -rf _build/
+	mkdir -p _build
+	$(MAKE) -C java clean
 
 .PHONEY: release-python3
 release-python3:
@@ -32,6 +34,6 @@ release-python3:
 
 .PHONEY: release-java
 release-java:
-	$(MAKE) -C java autodocs
-	$(MAKE) -C java release-java
+	$(MAKE) -C java autodocs RELEASE=$(RELEASE)
+	$(MAKE) -C java release-java RELEASE=$(RELEASE)
 	cp java/_build/*.jar _build

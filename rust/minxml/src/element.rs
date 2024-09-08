@@ -1,6 +1,5 @@
-use std::rc::Rc;
+use std::{collections::HashMap, rc::Rc};
 use crate::symbol::Symbol;
-
 
 /// Represents an XML-like element with a mutable state.
 #[derive(Clone)]
@@ -56,12 +55,38 @@ impl Element {
         Rc::make_mut(state).children.push(child);
     }
 
+    // Sets the attributes of the current element from a map of key-value pairs.
+    pub fn set_attributes(&mut self, attributes: HashMap<String, String>) {
+        let Element::State(state) = self;
+        let state = Rc::make_mut(state);
+        state.attributes = attributes.iter()
+            .map(|(k, v)| (Symbol::new(k), v.clone()))
+            .collect();
+    }
+
+    // Gets the attributes of the current element as a map of key-value pairs.
+    pub fn get_attributes(&self) -> std::collections::HashMap<String, String> {
+        let Element::State(state) = self;
+        state.attributes.iter()
+            .map(|(k, v)| (k.as_str().to_string(), v.clone()))
+            .collect()
+    }
+
     // Adds an attribute to the current element.
-    pub fn add_attribute(&mut self, key: &str, value: &str) {
+    pub fn put_attribute(&mut self, key: &str, value: &str) {
         let key = Symbol::new(key);
         let value = value.to_string();
         let Element::State(state) = self;
-        Rc::make_mut(state).attributes.push((key, value));
+        let state = Rc::make_mut(state);
+    
+        // Check if the key already exists
+        if let Some(attr) = state.attributes.iter_mut().find(|(k, _)| *k == key) {
+            // Update the value if the key is found
+            attr.1 = value;
+        } else {
+            // Add the new key-value pair if the key is not found
+            state.attributes.push((key, value));
+        }
     }
 
     /// Returns the name of the given element.
